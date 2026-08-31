@@ -29,9 +29,11 @@ import {
   ChevronRight,
   ExternalLink,
   ShieldCheck,
+  LogOut,
 } from "lucide-react";
 import { NAVIGATION_CONFIG, NavItem } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   LayoutDashboard: <LayoutDashboard className="w-4 h-4" />,
@@ -62,6 +64,7 @@ export const Sidebar: React.FC<{
   onToggleCollapse?: () => void;
 }> = ({ className, isCollapsed = false, onToggleCollapse }) => {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   const isLinkActive = (item: NavItem) => {
     if (item.href === "/overview" && (pathname === "/overview" || pathname === "/dashboard")) {
@@ -193,6 +196,48 @@ export const Sidebar: React.FC<{
             </div>
           );
         })}
+      </div>
+
+      {/* User Info & Logout Button */}
+      <div className="p-3 border-t border-slate-200 bg-white">
+        {!isCollapsed ? (
+          <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-slate-50 border border-slate-200 shadow-xs">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                {user ? user.name.slice(0, 2).toUpperCase() : "AU"}
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-bold text-slate-900 truncate">
+                  {user?.name || "Growth Lead"}
+                </span>
+                <span className="text-[10px] text-slate-500 truncate">
+                  {user?.email || "admin@dmos.internal"}
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                logout();
+                window.location.href = "/login";
+              }}
+              title="Log Out of DMOS"
+              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => {
+              logout();
+              window.location.href = "/login";
+            }}
+            title="Log Out of DMOS"
+            className="w-full flex justify-center py-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Footer System Status */}
