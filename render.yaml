@@ -1,0 +1,32 @@
+# ==========================================
+# DMOS SEO & AEO Platform — Render Blueprint
+# ==========================================
+services:
+  # FastAPI Crawler & Audit Backend Service
+  - type: web
+    name: dmos-api
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:///./dmos_prod.db
+      - key: SYNC_DATABASE_URL
+        value: sqlite:///./dmos_prod.db
+      - key: CORS_ORIGINS
+        value: '["*"]'
+      - key: CRAWL_MAX_PAGES
+        value: "50"
+      - key: CRAWL_CONCURRENCY
+        value: "5"
+      - key: SECRET_KEY
+        generateValue: true
