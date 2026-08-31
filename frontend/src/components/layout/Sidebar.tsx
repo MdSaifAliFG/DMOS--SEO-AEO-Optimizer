@@ -87,8 +87,8 @@ export const Sidebar: React.FC<{
         className
       )}
     >
-      {/* Brand Header */}
-      <div className="h-14 px-4 flex items-center justify-between border-b border-slate-200 bg-white">
+      {/* Brand Header - Exactly h-16 to match main Header */}
+      <div className="h-16 px-4 flex items-center justify-between border-b border-slate-200 bg-white shrink-0">
         <Link href="/overview" className="flex items-center gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs shrink-0">
             <Globe className="w-4 h-4" />

@@ -5,18 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Menu,
-  Plus,
   Bell,
   Calendar,
-  User,
   ChevronDown,
-  Sparkles,
   LogOut,
   Settings,
   Puzzle,
-  ShieldCheck,
+  Globe,
 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
 import { api } from "@/lib/api-client";
 import { HealthResponse } from "@/lib/types";
 import { useAuth } from "@/lib/auth";
@@ -62,9 +58,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
     logout();
     window.location.href = "/login";
   };
-
-  const isAeoRoute = pathname.startsWith("/aeo");
-  const isSeoRoute = pathname.startsWith("/seo") || pathname.startsWith("/projects");
 
   // Determine Page Title and Subtitle based on route
   const getPageHeaderInfo = () => {
@@ -213,11 +206,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
         </button>
 
         {/* Dynamic Page Title & Subtitle */}
-        <div className="flex flex-col min-w-0">
-          <h1 className="text-base md:text-lg font-bold text-slate-900 truncate">
+        <div className="flex flex-col justify-center min-w-0">
+          <h1 className="text-base md:text-lg font-bold text-slate-900 leading-tight truncate">
             {headerInfo.title}
           </h1>
-          <p className="text-[11px] text-slate-500 hidden sm:block truncate">
+          <p className="text-[11px] text-slate-500 hidden sm:block leading-tight truncate mt-0.5">
             {headerInfo.subtitle}
           </p>
         </div>
@@ -251,36 +244,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
           <span className="w-1.5 h-1.5 rounded-full bg-blue-600 absolute top-2 right-2" />
         </button>
 
-        {/* Contextual CTA Button */}
-        {isAeoRoute ? (
-          <Link href="/aeo/projects">
-            <Button
-              size="sm"
-              variant="aeo"
-              leftIcon={<Sparkles className="w-3.5 h-3.5" />}
-            >
-              <span className="hidden sm:inline">+ Add AEO Project</span>
-              <span className="sm:hidden">+ AEO</span>
-            </Button>
-          </Link>
-        ) : (
-          <Link href="/seo/projects">
-            <Button
-              size="sm"
-              variant="primary"
-              leftIcon={<Plus className="w-3.5 h-3.5" />}
-            >
-              <span className="hidden sm:inline">+ Add SEO Project</span>
-              <span className="sm:hidden">+ SEO</span>
-            </Button>
-          </Link>
-        )}
-
         {/* User Profile Avatar with Dropdown */}
         <div className="relative" ref={userMenuRef}>
           <button
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-            className="flex items-center gap-2 p-1 rounded-full hover:bg-slate-100 transition-colors focus:outline-none"
+            className="flex items-center gap-1.5 p-1 rounded-full hover:bg-slate-100 transition-colors focus:outline-none"
             title="User Account Menu"
           >
             <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
