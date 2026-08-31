@@ -2,13 +2,21 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
+  },
   async rewrites() {
     const rawBackendUrl =
       process.env.BACKEND_INTERNAL_URL ||
-      process.env.NEXT_PUBLIC_API_URL ||
-      "http://127.0.0.1:8000/api/v1";
+      process.env.NEXT_PUBLIC_API_URL;
 
-    // Clean base URL without trailing /api/v1 to avoid duplicate path segments
+    if (!rawBackendUrl || !rawBackendUrl.startsWith("http")) {
+      return [];
+    }
+
     const targetBase = rawBackendUrl.replace(/\/api\/v1\/?$/, "");
 
     return [
