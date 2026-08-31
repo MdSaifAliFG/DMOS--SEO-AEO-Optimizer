@@ -27,17 +27,14 @@ __pycache__/
 *.egg-info/
 eggs/
 .eggs/
-parts/
-var/
-sdist/
-develop-eggs/
-.installed.cfg
-lib/
-lib64/
-
+# --- Python Virtual Environment Libs ---
 .venv/
 venv/
 ENV/
+env/
+backend/.venv/
+backend/venv/
+!frontend/src/lib/
 env/
 backend/.venv/
 backend/venv/
