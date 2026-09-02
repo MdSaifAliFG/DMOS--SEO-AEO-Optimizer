@@ -20,9 +20,18 @@ def normalize_domain(v: str) -> str:
 
 class ProjectBase(BaseModel):
     name: str = Field(..., min_length=2, max_length=255, description="Project or organization name")
-    domain: str = Field(..., min_length=3, max_length=255, description="Root website domain (e.g. example.com)")
+    domain: str = Field(..., min_length=3, max_length=255, description="Root website domain (e.g. example.com or https://example.com)")
+    website_url: Optional[str] = Field(None, description="Normalized root website URL")
     description: Optional[str] = Field(None, max_length=1000, description="Optional project description")
-    settings: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Project crawling and audit settings")
+    settings: Optional[Dict[str, Any]] = Field(
+        default_factory=lambda: {
+            "crawl_limit": 100,
+            "respect_robots": True,
+            "follow_external_links": False,
+            "include_subdomains": False,
+        },
+        description="Project crawling and audit settings",
+    )
 
     @field_validator("domain")
     @classmethod
@@ -30,7 +39,7 @@ class ProjectBase(BaseModel):
         clean = normalize_domain(v)
         # Check basic domain structure (at least one dot and valid chars or localhost for testing)
         if clean != "localhost" and not re.match(r"^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", clean):
-            raise ValueError("Please provide a valid domain name (e.g., example.com or app.example.com)")
+            raise ValueError("Please provide a valid domain name or website URL (e.g., https://example.com or app.example.com)")
         return clean
 
     @field_validator("name")
@@ -49,6 +58,7 @@ class ProjectCreate(ProjectBase):
 class ProjectUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=2, max_length=255)
     domain: Optional[str] = Field(None, min_length=3, max_length=255)
+    website_url: Optional[str] = None
     description: Optional[str] = Field(None, max_length=1000)
     is_active: Optional[bool] = None
     settings: Optional[Dict[str, Any]] = None
@@ -69,6 +79,7 @@ class ProjectSummaryScan(BaseModel):
     status: str
     progress: int
     current_step: str
+    overall_score: Optional[int] = None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

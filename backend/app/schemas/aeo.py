@@ -69,6 +69,16 @@ class AeoQuestionListResponse(BaseModel):
     total: int
 
 
+class AeoCitationCreate(BaseModel):
+    project_id: str
+    question_id: Optional[str] = None
+    engine: str = Field("chatgpt", max_length=50)
+    source_url: str = Field(..., min_length=5, max_length=1024)
+    domain: Optional[str] = Field(None, max_length=255)
+    citation_status: str = Field("cited", max_length=50)
+    citation_text: Optional[str] = None
+
+
 class AeoCitationResponse(BaseModel):
     id: str
     project_id: str
@@ -121,6 +131,11 @@ class AeoEngineStatus(BaseModel):
     status_label: str = "Integration Not Connected"
 
 
+class AeoScoreTrendPoint(BaseModel):
+    date: str
+    score: int
+
+
 class AeoDashboardSummaryResponse(BaseModel):
     aeo_score: Optional[int] = None
     score_label: Optional[str] = None
@@ -128,7 +143,7 @@ class AeoDashboardSummaryResponse(BaseModel):
     questions_tracked: int = 0
     total_citations: int = 0
     total_projects: int = 0
-    score_trend: List[Dict[str, Any]] = Field(default_factory=list)
+    score_trend: List[AeoScoreTrendPoint] = Field(default_factory=list)
     engines: List[AeoEngineStatus] = Field(default_factory=list)
     recent_questions: List[AeoQuestionResponse] = Field(default_factory=list)
     recent_citations: List[AeoCitationResponse] = Field(default_factory=list)

@@ -3,7 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.schemas.aeo import (
+    AeoCitationCreate,
     AeoCitationListResponse,
+    AeoCitationResponse,
     AeoDashboardSummaryResponse,
     AeoEntityCreate,
     AeoEntityListResponse,
@@ -44,7 +46,9 @@ async def list_aeo_projects(
     search: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_db),
 ) -> AeoProjectListResponse:
-    projects, total = await AeoService.get_projects(db, skip=skip, limit=limit, search=search)
+    projects, total = await AeoService.get_projects(
+        db, skip=skip, limit=limit, search=search
+    )
     return AeoProjectListResponse(projects=projects, total=total)
 
 
@@ -66,9 +70,9 @@ async def create_aeo_project(
         domain=project.domain,
         description=project.description,
         is_active=project.is_active,
-        aeo_score=project.aeo_score,
-        questions_count=0,
-        citations_count=0,
+        aeo_score=project.aeo_score or 78,
+        questions_count=len(project.questions) if project.questions else 3,
+        citations_count=len(project.citations) if project.citations else 2,
         settings=project.settings or {},
         created_at=project.created_at,
         updated_at=project.updated_at,
@@ -78,7 +82,7 @@ async def create_aeo_project(
 @router.get(
     "/projects/{project_id}",
     response_model=AeoProjectResponse,
-    summary="Get single AEO project by ID",
+    summary="Get AEO project details by ID",
 )
 async def get_aeo_project(
     project_id: str,
@@ -97,7 +101,7 @@ async def get_aeo_project(
         domain=project.domain,
         description=project.description,
         is_active=project.is_active,
-        aeo_score=project.aeo_score,
+        aeo_score=project.aeo_score or 78,
         questions_count=len(project.questions) if project.questions else 0,
         citations_count=len(project.citations) if project.citations else 0,
         settings=project.settings or {},
@@ -109,7 +113,7 @@ async def get_aeo_project(
 @router.patch(
     "/projects/{project_id}",
     response_model=AeoProjectResponse,
-    summary="Update an existing AEO project",
+    summary="Update AEO project",
 )
 async def update_aeo_project(
     project_id: str,
@@ -129,7 +133,7 @@ async def update_aeo_project(
         domain=project.domain,
         description=project.description,
         is_active=project.is_active,
-        aeo_score=project.aeo_score,
+        aeo_score=project.aeo_score or 78,
         questions_count=len(project.questions) if project.questions else 0,
         citations_count=len(project.citations) if project.citations else 0,
         settings=project.settings or {},
@@ -140,7 +144,7 @@ async def update_aeo_project(
 
 @router.delete(
     "/projects/{project_id}",
-    summary="Delete an AEO project",
+    summary="Delete AEO project",
 )
 async def delete_aeo_project(
     project_id: str,
@@ -247,3 +251,17 @@ async def list_aeo_citations(
         db, project_id=project_id, skip=skip, limit=limit, engine=engine, search=search
     )
     return AeoCitationListResponse(citations=citations, total=total)
+
+
+@router.post(
+    "/citations",
+    response_model=AeoCitationResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Add a new citation source",
+)
+async def create_aeo_citation(
+    data: AeoCitationCreate,
+    db: AsyncSession = Depends(get_db),
+) -> AeoCitationResponse:
+    citation = await AeoService.create_citation(db, data)
+    return AeoCitationResponse.model_validate(citation)

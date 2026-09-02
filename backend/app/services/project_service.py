@@ -15,12 +15,21 @@ class ProjectService:
         user_id: Optional[str] = None,
     ) -> Project:
         """Create a new website project."""
+        settings = {
+            "crawl_limit": 100,
+            "respect_robots": True,
+            "follow_external_links": False,
+            "include_subdomains": False,
+        }
+        if data.settings:
+            settings.update(data.settings)
+
         project = Project(
             user_id=user_id,
             name=data.name,
             domain=data.domain,
             description=data.description,
-            settings=data.settings or {},
+            settings=settings,
         )
         db.add(project)
         await db.commit()
@@ -132,14 +141,18 @@ class ProjectService:
                 status=latest.status,
                 progress=latest.progress,
                 current_step=latest.current_step,
+                overall_score=latest.overall_score,
                 created_at=latest.created_at,
             )
+
+        website_url = f"https://{project.domain}"
 
         return ProjectResponse(
             id=project.id,
             user_id=project.user_id,
             name=project.name,
             domain=project.domain,
+            website_url=website_url,
             description=project.description,
             is_active=project.is_active,
             settings=project.settings or {},
