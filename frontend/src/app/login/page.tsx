@@ -47,14 +47,14 @@ export default function LoginPage() {
         ? "SEO Growth Lead"
         : "AEO Strategist";
     login(email, roleTitle);
-    window.location.href = selectedRole === "aeo" ? "/aeo/dashboard" : "/seo/dashboard";
+    window.location.href = "/overview";
   };
 
   const handleDemoAccess = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsLoading(true);
     login("demo@dmos.internal", "Enterprise Demo User");
-    window.location.href = "/seo/dashboard";
+    window.location.href = "/overview";
   };
 
   return (

@@ -57,13 +57,13 @@ export const HeroSection: React.FC = () => {
 
             {/* Side-by-Side Pill CTA Buttons */}
             <div className="flex flex-wrap items-center gap-3.5 pt-1">
-              <Link href={isAuthenticated ? "/seo/dashboard" : "/login"}>
+              <Link href={isAuthenticated ? "/overview" : "/login"}>
                 <button className="px-7 sm:px-8 py-3.5 rounded-full bg-[#1D63FF] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm tracking-wide shadow-xl shadow-blue-600/40 hover:scale-[1.02] active:scale-95 transition-all">
                   Try free audit
                 </button>
               </Link>
 
-              <Link href={isAuthenticated ? "/seo/dashboard" : "/login"}>
+              <Link href={isAuthenticated ? "/overview" : "/login"}>
                 <button className="px-7 sm:px-8 py-3.5 rounded-full bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs sm:text-sm tracking-wide shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
                   Scan your website
                 </button>
