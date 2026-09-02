@@ -1,5 +1,6 @@
+from __future__ import annotations
 import logging
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List, Optional, Set
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from app.services.crawler.http_client import AsyncCrawlerHttpClient
