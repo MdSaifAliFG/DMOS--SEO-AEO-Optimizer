@@ -153,11 +153,20 @@ class ScanRunner:
                 if not ok:
                     return
 
+                crawl_limit = crawl_settings.get("crawl_limit", 100)
+                respect_robots = crawl_settings.get("respect_robots", True)
+                follow_external = crawl_settings.get("follow_external_links", False)
+                include_subdomains = crawl_settings.get("include_subdomains", False)
+
                 crawler = WebsiteCrawler(
                     scan_id=scan_id,
                     target_url=scan.target_url,
                     project_domain=project_domain,
+                    max_pages=crawl_limit,
                     max_depth=max_depth,
+                    respect_robots=respect_robots,
+                    follow_external_links=follow_external,
+                    include_subdomains=include_subdomains,
                     progress_callback=progress_callback,
                     cancellation_check=is_cancelled_check,
                     log_callback=log_callback,

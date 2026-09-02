@@ -63,6 +63,9 @@ class WebsiteCrawler:
         max_depth: Optional[int] = None,
         concurrency: Optional[int] = None,
         timeout: Optional[int] = None,
+        respect_robots: bool = True,
+        follow_external_links: bool = False,
+        include_subdomains: bool = False,
         progress_callback: Optional[Callable[[int, int, int, str], Coroutine[Any, Any, None]]] = None,
         cancellation_check: Optional[Callable[[], Coroutine[Any, Any, bool]]] = None,
         log_callback: Optional[Callable[[str, str, str], Coroutine[Any, Any, None]]] = None,
@@ -74,6 +77,9 @@ class WebsiteCrawler:
         self.max_depth = max_depth or settings.CRAWL_MAX_DEPTH
         self.concurrency = concurrency or settings.CRAWL_CONCURRENCY
         self.timeout = timeout or settings.CRAWL_TIMEOUT
+        self.respect_robots = respect_robots
+        self.follow_external_links = follow_external_links
+        self.include_subdomains = include_subdomains
         self.progress_callback = progress_callback
         self.cancellation_check = cancellation_check
         self.log_callback = log_callback
@@ -106,7 +112,7 @@ class WebsiteCrawler:
 
         await self._emit_log(
             "Crawl Initialization",
-            f"Starting crawler for '{self.target_url}' (domain: {self.project_domain}, max pages: {self.max_pages}, max depth: {self.max_depth})",
+            f"Starting crawler for '{self.target_url}' (domain: {self.project_domain}, max pages: {self.max_pages}, max depth: {self.max_depth}, respect robots: {self.respect_robots})",
             "INFO",
         )
 
@@ -120,33 +126,38 @@ class WebsiteCrawler:
                 "INFO",
             )
         else:
-            await self._emit_log("Robots.txt", "No robots.txt found. All paths allowed by default.", "INFO")
+            await self._emit_log("Robots.txt", "No robots.txt found (status 404/unavailable); proceeding with unrestricted crawl.", "INFO")
 
-        # 2. Discover Sitemaps
-        await self._emit_log("Sitemap Discovery", "Scanning standard locations and robots directives for sitemaps...", "INFO")
-        sitemap_res = await SitemapParser.discover_and_parse(
+        if await self._is_cancelled():
+            await self.http_client.close()
+            return CrawlExecutionResult(self.scan_id, [], robots_res, SitemapResult(self.target_url), 0, 0, 0, 0, 0.0)
+
+        # 2. Fetch & Parse Sitemap XML
+        await self._emit_log("Sitemap.xml", f"Checking sitemaps for {self.project_domain}...", "INFO")
+        sitemap_res = await SitemapParser.fetch_and_parse(
             self.http_client,
             self.target_url,
-            self.project_domain,
-            robots_res.sitemaps,
+            declared_sitemaps=robots_res.sitemaps,
         )
-        if sitemap_res.found:
+        if sitemap_res.exists:
             await self._emit_log(
-                "Sitemap Discovery",
-                f"Discovered sitemaps with {len(sitemap_res.discovered_urls)} internal URLs.",
+                "Sitemap.xml",
+                f"Sitemap discovered ({len(sitemap_res.discovered_urls)} URLs indexed across {len(sitemap_res.sitemaps_found)} sitemap files).",
                 "INFO",
             )
         else:
-            await self._emit_log("Sitemap Discovery", "No XML sitemaps discovered on target website.", "INFO")
+            await self._emit_log("Sitemap.xml", "No XML sitemap detected at standard locations.", "INFO")
 
-        # 3. Seed Crawl Queue
+        if await self._is_cancelled():
+            await self.http_client.close()
+            return CrawlExecutionResult(self.scan_id, [], robots_res, sitemap_res, 0, 0, 0, 0, 0.0)
+
+        # 3. Initialize BFS Queue
         queue: List[CrawlItem] = []
 
-        # Seed homepage
-        norm_start = normalize_url(self.target_url)
-        if norm_start:
-            queue.append(CrawlItem(url=norm_start, depth=0))
-            self.queued_urls.add(norm_start)
+        # Seed start URL
+        queue.append(CrawlItem(url=self.target_url, depth=0))
+        self.queued_urls.add(self.target_url)
 
         # Seed sitemap URLs (up to max_pages)
         for sm_url in sitemap_res.discovered_urls:
@@ -182,8 +193,8 @@ class WebsiteCrawler:
                     url = item.url
                     self.visited_urls.add(url)
 
-                    # Check robots.txt permissions
-                    if not robots_res.is_allowed(url):
+                    # Check robots.txt permissions if respect_robots is True
+                    if self.respect_robots and not robots_res.is_allowed(url):
                         self.pages_skipped += 1
                         await self._emit_log("Robots Disallowed", f"Skipping {url} (blocked by robots.txt rules)", "INFO")
                         return None
@@ -264,13 +275,14 @@ class WebsiteCrawler:
                                 )
 
                                 # Enqueue internal link if within max depth
-                                if (
-                                    link_d["is_internal"]
+                                should_enqueue = (
+                                    (link_d["is_internal"] or self.follow_external_links)
                                     and item.depth + 1 <= self.max_depth
                                     and link_d["target_url"] not in self.visited_urls
                                     and link_d["target_url"] not in self.queued_urls
                                     and len(self.queued_urls) < self.max_pages * 3
-                                ):
+                                )
+                                if should_enqueue:
                                     self.queued_urls.add(link_d["target_url"])
                                     queue.append(CrawlItem(url=link_d["target_url"], depth=item.depth + 1))
 

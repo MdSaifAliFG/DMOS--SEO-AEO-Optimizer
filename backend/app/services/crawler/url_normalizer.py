@@ -35,7 +35,7 @@ def normalize_url(url: str, base_url: str | None = None) -> str:
     - Cleans dot segments in paths (/a/b/../c -> /a/c).
     - Strips marketing/tracking query parameters while preserving content parameters.
     - Sorts query parameters deterministically.
-    - Normalizes trailing slashes consistently.
+    - Normalizes trailing slashes consistently (root remains '/', subpaths stripped).
     """
     if not url or not isinstance(url, str):
         return ""
@@ -72,8 +72,8 @@ def normalize_url(url: str, base_url: str | None = None) -> str:
         # Normalize double slashes and path traversal
         path = re.sub(r"/+", "/", path)
         norm_path = posixpath.normpath(path)
-        if path.endswith("/") and not norm_path.endswith("/"):
-            norm_path += "/"
+        if norm_path != "/" and norm_path.endswith("/"):
+            norm_path = norm_path.rstrip("/")
         path = norm_path
     except Exception:
         pass
