@@ -61,8 +61,26 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_db() -> None:
-    """Initialize database tables."""
+    """Initialize database tables and clean legacy project domain formats."""
     async with engine.begin() as conn:
         # Import all models to ensure they are registered with Base.metadata
-        from app.models import user, project, scan  # noqa: F401
+        import app.models  # noqa: F401
         await conn.run_sync(Base.metadata.create_all)
+
+    # Sanitize existing project domains if any stored with protocol prefixes
+    async with AsyncSessionLocal() as session:
+        try:
+            from sqlalchemy import select
+            from app.models.project import Project
+            from app.services.crawler.url_normalizer import get_root_domain
+
+            res = await session.execute(select(Project))
+            projects = res.scalars().all()
+            for p in projects:
+                if p.domain and ("://" in p.domain or "/" in p.domain or p.domain.startswith("www.")):
+                    cleaned = get_root_domain(p.domain)
+                    if cleaned and cleaned != p.domain:
+                        p.domain = cleaned
+            await session.commit()
+        except Exception:
+            pass

@@ -39,6 +39,13 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
         icon: "BarChart3",
       },
       {
+        title: "Action Center",
+        href: "/seo/actions",
+        icon: "ListTodo",
+        badge: "Actions",
+        badgeVariant: "primary",
+      },
+      {
         title: "Projects",
         href: "/seo/projects",
         icon: "FolderKanban",
@@ -59,6 +66,11 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
         icon: "AlertTriangle",
       },
       {
+        title: "Metadata Optimizer",
+        href: "/seo/optimize/metadata",
+        icon: "Sparkles",
+      },
+      {
         title: "Technical SEO",
         href: "/seo/technical",
         icon: "Wrench",
@@ -72,6 +84,11 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
         title: "Links",
         href: "/seo/links",
         icon: "Link2",
+      },
+      {
+        title: "Optimization History",
+        href: "/seo/optimization-history",
+        icon: "History",
       },
       {
         title: "Reports",

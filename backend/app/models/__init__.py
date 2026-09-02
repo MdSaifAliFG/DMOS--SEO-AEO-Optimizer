@@ -4,6 +4,14 @@ from app.models.project import Project
 from app.models.scan import Scan, ScanStatus, ScanType
 from app.models.seo_page import SeoPage, SeoPageImage, SeoPageLink
 from app.models.seo_issue import SeoIssue, IssueCategory, IssueSeverity, IssueStatus
+from app.models.seo_recommendation import (
+    SeoRecommendation,
+    RecommendationPriority,
+    RecommendationStatus,
+    RecommendationEffort,
+)
+from app.models.optimization_history import OptimizationHistory
+from app.models.ai_recommendation import AiRecommendation
 from app.models.aeo import AeoProject, AeoQuestion, AeoCitation, AeoEntity, AeoIntent, AeoEngine
 
 __all__ = [
@@ -21,6 +29,12 @@ __all__ = [
     "IssueCategory",
     "IssueSeverity",
     "IssueStatus",
+    "SeoRecommendation",
+    "RecommendationPriority",
+    "RecommendationStatus",
+    "RecommendationEffort",
+    "OptimizationHistory",
+    "AiRecommendation",
     "AeoProject",
     "AeoQuestion",
     "AeoCitation",

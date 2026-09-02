@@ -103,11 +103,35 @@ def normalize_url(url: str, base_url: str | None = None) -> str:
 
 
 def get_root_domain(hostname: str) -> str:
-    """Extract root domain stripping leading www. and lowercase."""
-    h = hostname.lower().strip()
+    """
+    Extract root domain stripping protocol (http/https), leading www, port, paths, and lowercase.
+    Handles 'https://zobay.ai', 'http://www.zobay.ai/subpath', 'zobay.ai:8000', 'zobay.ai'.
+    """
+    if not hostname or not isinstance(hostname, str):
+        return ""
+    h = hostname.strip().lower()
+
+    # If scheme exists, parse with urlparse
+    if "://" in h:
+        try:
+            parsed = urlparse(h)
+            h = parsed.hostname or h.split("://", 1)[1]
+        except Exception:
+            h = h.split("://", 1)[1]
+
+    # Strip path/query if attached
+    if "/" in h:
+        h = h.split("/", 1)[0]
+
+    # Strip port if present
+    if ":" in h:
+        h = h.split(":", 1)[0]
+
+    # Strip leading www.
     if h.startswith("www."):
         h = h[4:]
-    return h
+
+    return h.strip()
 
 
 def is_internal_url(target_url: str, project_domain: str) -> bool:

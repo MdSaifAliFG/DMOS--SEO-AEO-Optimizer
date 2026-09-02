@@ -20,7 +20,7 @@ from app.schemas.seo import (
     SeoPageListResponse,
     SeoPageResponse,
 )
-from app.services.crawler.url_normalizer import normalize_url
+from app.services.crawler.url_normalizer import get_root_domain, normalize_url
 from app.services.crawler.url_validator import is_url_safe, validate_url
 from app.services.scan_runner import ScanRunner, get_iso_now
 from app.services.seo.scoring import get_score_label
@@ -35,10 +35,10 @@ class ScanService:
         project: Project,
         data: ScanCreate,
     ) -> Scan:
-        """Create and queue a new scan for the specified project."""
         target_url = data.target_url
+        clean_domain = get_root_domain(project.domain) if project.domain else "example.com"
         if not target_url:
-            target_url = f"https://{project.domain}"
+            target_url = f"https://{clean_domain}"
         elif not target_url.startswith("http://") and not target_url.startswith("https://"):
             target_url = f"https://{target_url}"
 

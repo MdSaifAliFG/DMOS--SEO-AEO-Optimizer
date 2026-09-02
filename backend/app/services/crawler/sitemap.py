@@ -13,15 +13,27 @@ class SitemapResult:
 
     def __init__(
         self,
-        found: bool,
-        sitemap_urls: List[str],
-        discovered_urls: List[str],
-        details: List[Dict[str, Any]],
+        found: Any = False,
+        sitemap_urls: Optional[List[str]] = None,
+        discovered_urls: Optional[List[str]] = None,
+        details: Optional[List[Dict[str, Any]]] = None,
+        **kwargs: Any,
     ):
-        self.found = found
-        self.sitemap_urls = sitemap_urls
-        self.discovered_urls = discovered_urls
-        self.details = details
+        if isinstance(found, str):
+            self.found = False
+        else:
+            self.found = bool(found)
+        self.sitemap_urls = sitemap_urls or []
+        self.discovered_urls = discovered_urls or []
+        self.details = details or []
+
+    @property
+    def exists(self) -> bool:
+        return self.found
+
+    @property
+    def sitemaps_found(self) -> List[str]:
+        return self.sitemap_urls
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -34,6 +46,23 @@ class SitemapResult:
 
 class SitemapParser:
     """Discovers and parses standard XML sitemaps and sitemap indexes."""
+
+    @classmethod
+    async def fetch_and_parse(
+        cls,
+        http_client: AsyncCrawlerHttpClient,
+        target_url: str,
+        declared_sitemaps: Optional[List[str]] = None,
+        project_domain: Optional[str] = None,
+    ) -> SitemapResult:
+        from urllib.parse import urlparse
+        p_domain = project_domain or urlparse(target_url).hostname or "example.com"
+        return await cls.discover_and_parse(
+            http_client=http_client,
+            target_url=target_url,
+            project_domain=p_domain,
+            robots_sitemaps=declared_sitemaps or [],
+        )
 
     @staticmethod
     async def discover_and_parse(
