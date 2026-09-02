@@ -57,13 +57,14 @@ class AEORecommendationEngine:
         # 3. Uncovered Questions
         if unmentioned_questions:
             top_uncovered = unmentioned_questions[:3]
+            uncovered_preview = ", ".join(f"'{q}'" for q in top_uncovered)
             recommendations.append({
                 "title": "Create Content Targeting Unanswered AI Prompts",
                 "category": "Question Coverage",
                 "priority": "medium",
                 "opportunity_score": 75,
                 "reason": f"{len(unmentioned_questions)} tracked queries currently do not mention {brand_name}.",
-                "current_state": f"Missing from answers for: {', '.join(f'\"{q}\"' for q in top_uncovered)}.",
+                "current_state": f"Missing from answers for: {uncovered_preview}.",
                 "recommended_action": "Publish targeted comparison guides and solution landing pages directly answering these search intents.",
                 "expected_impact": "Broadens answer engine coverage across bottom-of-funnel queries.",
                 "status": "open",
