@@ -7,6 +7,8 @@ from app.models.seo_page import SeoPage
 from app.services.crawler.robots import RobotsResult
 from app.services.crawler.sitemap import SitemapResult
 from app.services.seo.rules.canonical import evaluate_page_canonical
+from app.services.seo.rules.content import evaluate_page_content
+from app.services.seo.rules.depth import evaluate_page_depth
 from app.services.seo.rules.headings import evaluate_page_headings
 from app.services.seo.rules.https import evaluate_page_https
 from app.services.seo.rules.images import evaluate_page_images
@@ -14,8 +16,10 @@ from app.services.seo.rules.indexability import evaluate_page_indexability
 from app.services.seo.rules.links import evaluate_page_links
 from app.services.seo.rules.meta import evaluate_page_meta
 from app.services.seo.rules.mixed_content import evaluate_page_mixed_content
+from app.services.seo.rules.performance import evaluate_page_performance
 from app.services.seo.rules.robots import evaluate_robots_result
 from app.services.seo.rules.sitemap import evaluate_sitemap_result
+from app.services.seo.rules.social import evaluate_page_social
 from app.services.seo.rules.status import evaluate_page_status
 from app.services.seo.rules.title import evaluate_page_title
 
@@ -68,6 +72,10 @@ class SeoAnalyzer:
             all_issues.extend(evaluate_page_images(page))
             all_issues.extend(evaluate_page_links(page, crawled_status_map))
             all_issues.extend(evaluate_page_mixed_content(page))
+            all_issues.extend(evaluate_page_content(page))
+            all_issues.extend(evaluate_page_social(page))
+            all_issues.extend(evaluate_page_depth(page))
+            all_issues.extend(evaluate_page_performance(page))
 
             # Collect for duplicate checks (if title / desc exists and is non-empty)
             if page.title and len(page.title.strip()) > 3:
