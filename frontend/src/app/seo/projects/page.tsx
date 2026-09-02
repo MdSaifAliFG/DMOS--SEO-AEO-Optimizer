@@ -13,6 +13,8 @@ import {
   AlertTriangle,
   RotateCcw,
   FolderKanban,
+  Settings2,
+  Check,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
@@ -35,9 +37,14 @@ export default function SeoProjectsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedProjectForAudit, setSelectedProjectForAudit] = useState<Project | null>(null);
 
-  // New Project Form
+  // New Project Form with Phase 3 configuration
   const [newProjectName, setNewProjectName] = useState("");
   const [newProjectDomain, setNewProjectDomain] = useState("");
+  const [crawlLimit, setCrawlLimit] = useState<number>(100);
+  const [respectRobots, setRespectRobots] = useState<boolean>(true);
+  const [includeSubdomains, setIncludeSubdomains] = useState<boolean>(false);
+  const [followExternal, setFollowExternal] = useState<boolean>(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { success, error } = useToast();
@@ -61,18 +68,29 @@ export default function SeoProjectsPage() {
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newProjectName || !newProjectDomain) return;
+    if (!newProjectName.trim() || !newProjectDomain.trim()) return;
 
     setIsSubmitting(true);
     try {
       const created = await api.createProject({
-        name: newProjectName,
-        domain: newProjectDomain,
+        name: newProjectName.trim(),
+        domain: newProjectDomain.trim(),
+        settings: {
+          crawl_limit: crawlLimit,
+          respect_robots: respectRobots,
+          include_subdomains: includeSubdomains,
+          follow_external_links: followExternal,
+        },
       });
       success("SEO Project Created", `Project '${created.name}' registered successfully`);
       setIsAddModalOpen(false);
       setNewProjectName("");
       setNewProjectDomain("");
+      setCrawlLimit(100);
+      setRespectRobots(true);
+      setIncludeSubdomains(false);
+      setFollowExternal(false);
+      setShowAdvanced(false);
       fetchProjects();
     } catch (err: any) {
       error("Failed to create project", err.message);
@@ -228,21 +246,28 @@ export default function SeoProjectsPage() {
         {isAddModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in">
             <div
-              className="relative w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-xl p-6 space-y-4"
+              className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl p-6 space-y-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-base font-bold text-slate-900">Add New SEO Project</h3>
-              <p className="text-xs text-slate-500">
-                Register a new domain to run automated BFS crawling, metadata parsing, and SEO audits.
-              </p>
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">Add New SEO Project</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Register a website domain for automated BFS crawling and technical audits.
+                  </p>
+                </div>
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <Globe className="w-4 h-4" />
+                </div>
+              </div>
 
-              <form onSubmit={handleCreateProject} className="space-y-4 pt-2">
+              <form onSubmit={handleCreateProject} className="space-y-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Project Name</label>
+                  <label className="text-xs font-semibold text-slate-700">Project Name *</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Stripe Marketing Site"
+                    placeholder="e.g. My Company Website"
                     value={newProjectName}
                     onChange={(e) => setNewProjectName(e.target.value)}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-blue-500"
@@ -250,15 +275,83 @@ export default function SeoProjectsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Website URL / Domain</label>
+                  <label className="text-xs font-semibold text-slate-700">Website URL / Domain *</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. stripe.com or https://stripe.com"
+                    placeholder="e.g. https://example.com or example.com"
                     value={newProjectDomain}
                     onChange={(e) => setNewProjectDomain(e.target.value)}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-blue-500 font-mono"
                   />
+                </div>
+
+                {/* Advanced Crawl Settings Accordion */}
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAdvanced(!showAdvanced)}
+                    className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                  >
+                    <Settings2 className="w-3.5 h-3.5" />
+                    <span>{showAdvanced ? "Hide Crawl Settings" : "Configure Crawl Settings"}</span>
+                  </button>
+
+                  {showAdvanced && (
+                    <div className="mt-3 p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-3 animate-in fade-in">
+                      {/* Crawl Limit */}
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-slate-700">
+                          Crawl Page Limit
+                        </label>
+                        <select
+                          value={crawlLimit}
+                          onChange={(e) => setCrawlLimit(Number(e.target.value))}
+                          className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-blue-500"
+                        >
+                          <option value={10}>10 Pages (Quick Test)</option>
+                          <option value={50}>50 Pages</option>
+                          <option value={100}>100 Pages (Standard Default)</option>
+                          <option value={250}>250 Pages</option>
+                          <option value={500}>500 Pages</option>
+                          <option value={1000}>1,000 Pages (Enterprise)</option>
+                        </select>
+                      </div>
+
+                      {/* Toggles */}
+                      <div className="space-y-2 pt-1">
+                        <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={respectRobots}
+                            onChange={(e) => setRespectRobots(e.target.checked)}
+                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span>Respect <code>robots.txt</code> crawl directives (Recommended)</span>
+                        </label>
+
+                        <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={includeSubdomains}
+                            onChange={(e) => setIncludeSubdomains(e.target.checked)}
+                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span>Include subdomains during URL discovery</span>
+                        </label>
+
+                        <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={followExternal}
+                            onChange={(e) => setFollowExternal(e.target.checked)}
+                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span>Follow external links</span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">

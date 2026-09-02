@@ -340,6 +340,16 @@ export interface AeoCitation {
   created_at: string;
 }
 
+export interface AeoCitationCreateInput {
+  project_id: string;
+  question_id?: string;
+  engine: string;
+  source_url: string;
+  domain?: string;
+  citation_status?: string;
+  citation_text?: string;
+}
+
 export interface AeoCitationListResponse {
   citations: AeoCitation[];
   total: number;

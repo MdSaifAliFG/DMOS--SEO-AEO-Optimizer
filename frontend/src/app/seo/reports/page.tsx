@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Clock,
   ArrowRight,
+  Printer,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
@@ -35,7 +36,7 @@ export default function SeoReportsPage() {
 
         if (projData.projects?.length > 0) {
           const allScans: Scan[] = [];
-          for (const p of projData.projects.slice(0, 5)) {
+          for (const p of projData.projects.slice(0, 10)) {
             const scData = await api.getProjectScans(p.id, { limit: 5 });
             if (scData.scans) allScans.push(...scData.scans);
           }
@@ -51,6 +52,24 @@ export default function SeoReportsPage() {
     fetchData();
   }, []);
 
+  const handleExportCSV = () => {
+    if (scans.length === 0) return;
+    const headers = "Scan ID,Target URL,Date,Overall Score,Technical Score,Indexability Score,Metadata Score,Links Score,Crawled Pages,Issues Count\n";
+    const rows = scans
+      .map((s) =>
+        `"${s.id}","${s.target_url}","${s.created_at}",${s.overall_score ?? ""},${s.technical_score ?? ""},${s.indexability_score ?? ""},${s.metadata_score ?? ""},${s.links_score ?? ""},${s.pages_crawled},${s.issues_count}`
+      )
+      .join("\n");
+    const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `dmos_seo_reports_${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <DashboardShell>
       <div className="space-y-6">
@@ -62,6 +81,27 @@ export default function SeoReportsPage() {
               Audit log archive with score breakdowns, technical health diagnostics, and historical records.
             </p>
           </div>
+
+          {scans.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => window.print()}
+                leftIcon={<Printer className="w-3.5 h-3.5" />}
+              >
+                Print Reports
+              </Button>
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={handleExportCSV}
+                leftIcon={<Download className="w-3.5 h-3.5" />}
+              >
+                Export CSV
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Reports Table */}
@@ -115,7 +155,7 @@ export default function SeoReportsPage() {
                       </td>
 
                       <td className="py-3.5 px-4 text-center">
-                        {scan.overall_score !== null ? (
+                        {scan.overall_score !== null && scan.overall_score !== undefined ? (
                           <ScoreRing score={scan.overall_score} size="sm" showRating={false} />
                         ) : (
                           <span className="text-[11px] text-slate-400 italic">Pending</span>

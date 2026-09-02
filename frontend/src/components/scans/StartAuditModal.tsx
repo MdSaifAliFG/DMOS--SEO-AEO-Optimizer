@@ -44,7 +44,7 @@ export const StartAuditModal: React.FC<StartAuditModalProps> = ({
       if (onScanCreated) {
         onScanCreated(scan.id);
       } else {
-        router.push(`/projects/${project.id}/audit?scanId=${scan.id}`);
+        router.push(`/seo/projects/${project.id}?scanId=${scan.id}`);
       }
     } catch (err: any) {
       error("Failed to start scan", err.message || "An unexpected error occurred");
@@ -62,17 +62,17 @@ export const StartAuditModal: React.FC<StartAuditModalProps> = ({
       maxWidth="md"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Phase 1 disclaimer notice */}
-        <div className="p-3.5 rounded-xl bg-primary-500/10 border border-primary-500/20 text-xs text-primary-200 flex items-start gap-2.5">
-          <Info className="w-4 h-4 text-primary-400 shrink-0 mt-0.5" />
+        {/* Phase 3 info notice */}
+        <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 flex items-start gap-2.5">
+          <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
           <p className="leading-relaxed">
-            <strong>Phase 1 Engine:</strong> Demonstrates the live scan orchestration lifecycle (queued → initializing → crawling → analyzing → completed) without generating mock SEO scores.
+            <strong>Phase 3 SEO Engine:</strong> Runs asynchronous BFS crawling, respects robots.txt/sitemaps, inspects on-page HTML tags, evaluates 20+ technical rules, and computes deterministic SEO health scores.
           </p>
         </div>
 
         {/* Scan Type Selection */}
         <div className="space-y-2">
-          <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
             Select Audit Profile
           </label>
           <div className="grid grid-cols-1 gap-2.5">
@@ -81,17 +81,17 @@ export const StartAuditModal: React.FC<StartAuditModalProps> = ({
               onClick={() => setScanType("full_audit")}
               className={`flex items-start gap-3 p-3.5 rounded-xl border text-left transition-all ${
                 scanType === "full_audit"
-                  ? "bg-primary-600/15 border-primary-500 text-slate-100 shadow-md"
-                  : "bg-surface-900/50 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-surface-900"
+                  ? "bg-blue-50/80 border-blue-500 text-slate-900 shadow-xs ring-1 ring-blue-500"
+                  : "bg-slate-50/50 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
               }`}
             >
-              <Sparkles className="w-5 h-5 text-primary-400 mt-0.5 shrink-0" />
+              <Sparkles className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
               <div>
-                <div className="text-xs font-bold text-slate-200">
-                  Full Website Audit
+                <div className="text-xs font-bold text-slate-900">
+                  Full Website Technical Audit
                 </div>
-                <div className="text-[11px] text-slate-400 mt-0.5">
-                  Complete crawl lifecycle, DNS verification, and DOM hierarchy inspection.
+                <div className="text-[11px] text-slate-500 mt-0.5">
+                  Complete BFS crawl, robots.txt, XML sitemap verification, and metadata inspection.
                 </div>
               </div>
             </button>
@@ -101,42 +101,63 @@ export const StartAuditModal: React.FC<StartAuditModalProps> = ({
               onClick={() => setScanType("technical_seo")}
               className={`flex items-start gap-3 p-3.5 rounded-xl border text-left transition-all ${
                 scanType === "technical_seo"
-                  ? "bg-primary-600/15 border-primary-500 text-slate-100 shadow-md"
-                  : "bg-surface-900/50 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-surface-900"
+                  ? "bg-blue-50/80 border-blue-500 text-slate-900 shadow-xs ring-1 ring-blue-500"
+                  : "bg-slate-50/50 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
               }`}
             >
-              <Shield className="w-5 h-5 text-cyan-400 mt-0.5 shrink-0" />
+              <Shield className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
               <div>
-                <div className="text-xs font-bold text-slate-200">
-                  Technical Architecture Crawl
+                <div className="text-xs font-bold text-slate-900">
+                  Technical SEO & Indexability
                 </div>
-                <div className="text-[11px] text-slate-400 mt-0.5">
-                  Focus on HTTP status codes, robots directives, and canonical tags.
+                <div className="text-[11px] text-slate-500 mt-0.5">
+                  Focus on HTTP status codes, canonicals, robots meta tags, and security headers.
+                </div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setScanType("quick_scan")}
+              className={`flex items-start gap-3 p-3.5 rounded-xl border text-left transition-all ${
+                scanType === "quick_scan"
+                  ? "bg-blue-50/80 border-blue-500 text-slate-900 shadow-xs ring-1 ring-blue-500"
+                  : "bg-slate-50/50 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+              }`}
+            >
+              <Zap className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+              <div>
+                <div className="text-xs font-bold text-slate-900">
+                  Homepage Quick Audit
+                </div>
+                <div className="text-[11px] text-slate-500 mt-0.5">
+                  Single-page high-speed scan for immediate health diagnostics.
                 </div>
               </div>
             </button>
           </div>
         </div>
 
-        {/* Target URL */}
-        <Input
-          label="Target Entry URL"
-          value={customUrl}
-          onChange={(e) => setCustomUrl(e.target.value)}
-          leftIcon={<Globe className="w-4 h-4" />}
-          helperText="Starting URL for the crawler orchestration pipeline"
-          required
-        />
+        {/* Target URL Override */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-semibold text-slate-700">
+            Target URL / Entrypoint
+          </label>
+          <div className="relative">
+            <Globe className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <input
+              type="url"
+              value={customUrl}
+              onChange={(e) => setCustomUrl(e.target.value)}
+              placeholder="https://example.com"
+              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-blue-500 font-mono"
+            />
+          </div>
+        </div>
 
-        {/* Modal Actions */}
-        <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-800">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            disabled={isLoading}
-          >
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <Button type="button" variant="ghost" size="sm" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>
           <Button
@@ -146,7 +167,7 @@ export const StartAuditModal: React.FC<StartAuditModalProps> = ({
             isLoading={isLoading}
             leftIcon={<Play className="w-3.5 h-3.5" />}
           >
-            Launch Scan Lifecycle
+            Start Audit
           </Button>
         </div>
       </form>

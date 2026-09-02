@@ -13,6 +13,12 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
+  HelpCircle,
+  X,
+  Sparkles,
+  ShieldCheck,
+  Layers,
+  Link2,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
@@ -29,6 +35,7 @@ export default function SeoDashboardPage() {
   const [summary, setSummary] = useState<SeoDashboardSummary | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isScoreModalOpen, setIsScoreModalOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -56,7 +63,7 @@ export default function SeoDashboardPage() {
     };
   }, []);
 
-  const overallScore = summary?.overall_score ?? (projects.length > 0 ? 84 : null);
+  const overallScore = summary?.overall_score ?? (projects.length > 0 && projects[0].latest_scan?.overall_score !== undefined ? projects[0].latest_scan.overall_score : null);
   const totalProjects = summary?.total_projects || projects.length;
   const totalPages = summary?.total_crawled_pages || 0;
   const totalIssues = summary?.total_issues || 0;
@@ -79,6 +86,15 @@ export default function SeoDashboardPage() {
     }
   };
 
+  const getScoreRatingBadge = (score: number | null) => {
+    if (score === null) return { label: "No Audits", color: "bg-slate-100 text-slate-600" };
+    if (score >= 90) return { label: "Excellent", color: "bg-emerald-50 text-emerald-700 border border-emerald-200" };
+    if (score >= 75) return { label: "Good", color: "bg-blue-50 text-blue-700 border border-blue-200" };
+    if (score >= 50) return { label: "Needs Improvement", color: "bg-amber-50 text-amber-700 border border-amber-200" };
+    if (score >= 25) return { label: "Poor", color: "bg-orange-50 text-orange-700 border border-orange-200" };
+    return { label: "Critical", color: "bg-rose-50 text-rose-700 border border-rose-200" };
+  };
+
   if (isLoading) {
     return (
       <DashboardShell>
@@ -97,6 +113,8 @@ export default function SeoDashboardPage() {
     );
   }
 
+  const ratingInfo = getScoreRatingBadge(overallScore);
+
   return (
     <DashboardShell>
       <div className="space-y-6">
@@ -114,11 +132,21 @@ export default function SeoDashboardPage() {
             </p>
           </div>
 
-          <Link href="/seo/projects">
-            <Button size="sm" variant="primary" leftIcon={<Plus className="w-3.5 h-3.5" />}>
-              + Add SEO Project
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setIsScoreModalOpen(true)}
+              className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-colors flex items-center gap-1.5"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
+              <span>Score Breakdown</span>
+            </button>
+
+            <Link href="/seo/projects">
+              <Button size="sm" variant="primary" leftIcon={<Plus className="w-3.5 h-3.5" />}>
+                + Add SEO Project
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* 4 Primary KPI Cards */}
@@ -127,8 +155,8 @@ export default function SeoDashboardPage() {
           <MetricCard
             title="SEO Health Score"
             value={overallScore !== null ? `${overallScore} / 100` : "—"}
-            subValue={summary?.score_label || (overallScore && overallScore >= 80 ? "Good" : "No Audits")}
-            change={overallScore ? { value: "+8 pts", trend: "up", label: "vs baseline" } : undefined}
+            subValue={ratingInfo.label}
+            change={overallScore ? { value: ratingInfo.label, trend: overallScore >= 75 ? "up" : "down", label: "rating" } : undefined}
             rightVisual={<ScoreRing score={overallScore} size="sm" showRating={false} />}
           />
 
@@ -147,7 +175,7 @@ export default function SeoDashboardPage() {
             title="Total Crawled Pages"
             value={totalPages.toLocaleString()}
             subValue="HTML Pages Audited"
-            change={totalPages > 0 ? { value: `+${totalPages}`, trend: "up", label: "discovered" } : undefined}
+            change={totalPages > 0 ? { value: `+${totalPages}`, trend: "up", label: "indexed" } : undefined}
             icon={<FileText className="w-5 h-5 text-emerald-600" />}
             variant="emerald"
           />
@@ -173,7 +201,7 @@ export default function SeoDashboardPage() {
                 <p className="text-xs text-slate-500">Historical performance across audit cycles</p>
               </div>
               <Link href="/seo/reports">
-                <span className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                <span className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer">
                   View Reports <ArrowRight className="w-3 h-3" />
                 </span>
               </Link>
@@ -206,7 +234,7 @@ export default function SeoDashboardPage() {
             )}
           </Card>
 
-          {/* Right 1 Col: Crawl Overview Donut / Breakdown */}
+          {/* Right 1 Col: Crawl Overview Breakdown */}
           <Card className="p-5 border-slate-200 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-slate-900">Crawl Overview</h3>
@@ -259,103 +287,206 @@ export default function SeoDashboardPage() {
           </Card>
         </div>
 
-        {/* Bottom Grid: Top Issues & Recent Scans */}
+        {/* Top Issues and Recent Scans */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Top Issues Card */}
           <Card className="p-5 border-slate-200 space-y-4">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Top Detected Issues</h3>
-                <p className="text-xs text-slate-500">Highest priority technical and metadata issues</p>
-              </div>
+              <h3 className="text-sm font-bold text-slate-900">Top Detected Issues</h3>
               <Link href="/seo/issues">
-                <span className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                <span className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer">
                   View All Issues <ArrowRight className="w-3 h-3" />
                 </span>
               </Link>
             </div>
 
             {summary?.top_issues && summary.top_issues.length > 0 ? (
-              <div className="divide-y divide-slate-100">
-                {summary.top_issues.map((iss, idx) => (
-                  <div key={idx} className="py-2.5 flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2.5 min-w-0 pr-2">
+              <div className="space-y-2.5">
+                {summary.top_issues.map((issue, idx) => (
+                  <Link
+                    key={idx}
+                    href="/seo/issues"
+                    className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200 flex items-center justify-between transition-colors block"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                          iss.severity === "critical"
-                            ? "bg-rose-50 text-rose-700 border border-rose-200"
-                            : iss.severity === "high"
-                            ? "bg-amber-50 text-amber-700 border border-amber-200"
-                            : "bg-blue-50 text-blue-700 border border-blue-200"
+                        className={`w-2 h-2 rounded-full shrink-0 ${
+                          issue.severity === "critical"
+                            ? "bg-rose-600"
+                            : issue.severity === "high"
+                            ? "bg-amber-600"
+                            : "bg-blue-600"
                         }`}
-                      >
-                        {iss.severity}
+                      />
+                      <span className="text-xs font-semibold text-slate-900 truncate">
+                        {issue.title}
                       </span>
-                      <span className="font-medium text-slate-800 truncate">{iss.title}</span>
                     </div>
-                    <span className="text-slate-500 font-mono shrink-0">
-                      {iss.affected_pages} page{iss.affected_pages > 1 ? "s" : ""}
+                    <span className="text-[11px] font-mono text-slate-500 shrink-0 ml-2">
+                      {issue.affected_pages} {issue.affected_pages === 1 ? "page" : "pages"}
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (
-              <div className="p-6 text-center text-xs text-slate-500 border border-dashed border-slate-200 rounded-xl">
-                No active issues recorded. All crawled pages are clean.
+              <div className="p-8 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                <CheckCircle2 className="w-6 h-6 text-emerald-500 mx-auto mb-1.5" />
+                <p className="text-xs font-semibold text-slate-700">No Critical SEO Issues</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  All audited pages adhere to baseline technical standards.
+                </p>
               </div>
             )}
           </Card>
 
-          {/* Recent Scans Table */}
+          {/* Monitored Projects Summary */}
           <Card className="p-5 border-slate-200 space-y-4">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Recent Audit Runs</h3>
-                <p className="text-xs text-slate-500">Latest website crawler executions</p>
-              </div>
-              <Link href="/seo/reports">
-                <span className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
-                  Audit History <ArrowRight className="w-3 h-3" />
+              <h3 className="text-sm font-bold text-slate-900">Monitored Websites</h3>
+              <Link href="/seo/projects">
+                <span className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer">
+                  Manage Projects <ArrowRight className="w-3 h-3" />
                 </span>
               </Link>
             </div>
 
-            {recentScans.length > 0 ? (
-              <div className="divide-y divide-slate-100">
-                {recentScans.map((scan) => (
-                  <div key={scan.id} className="py-2.5 flex items-center justify-between text-xs">
-                    <div className="min-w-0 pr-3">
+            {projects.length > 0 ? (
+              <div className="space-y-2.5">
+                {projects.map((p) => (
+                  <div
+                    key={p.id}
+                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between"
+                  >
+                    <div className="min-w-0">
                       <Link
-                        href={`/seo/projects/${scan.project_id}?scanId=${scan.id}`}
-                        className="font-semibold text-slate-900 hover:text-blue-600 truncate block"
+                        href={`/seo/projects/${p.id}`}
+                        className="text-xs font-bold text-slate-900 hover:text-blue-600 truncate block"
                       >
-                        {scan.target_url}
+                        {p.name}
                       </Link>
-                      <span className="text-[11px] text-slate-500 font-mono">
-                        {formatTimeAgo(scan.created_at)}
+                      <span className="text-[11px] text-slate-500 font-mono flex items-center gap-1 mt-0.5">
+                        <Globe className="w-3 h-3 text-slate-400" />
+                        {p.domain}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3 shrink-0">
-                      {scan.overall_score !== null && (
-                        <span className="font-bold font-mono text-slate-800">
-                          {scan.overall_score}/100
-                        </span>
+                      {p.latest_scan?.overall_score !== undefined && p.latest_scan?.overall_score !== null ? (
+                        <ScoreRing score={p.latest_scan.overall_score} size="sm" showRating={false} />
+                      ) : (
+                        <span className="text-[10px] text-slate-400 italic">No Scan</span>
                       )}
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${getStatusBadge(scan.status)}`}>
-                        {scan.status}
-                      </span>
+                      <Link href={`/seo/projects/${p.id}`}>
+                        <Button size="sm" variant="secondary">Open</Button>
+                      </Link>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="p-6 text-center text-xs text-slate-500 border border-dashed border-slate-200 rounded-xl">
-                No recent scans available.
+              <div className="p-8 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                <FolderKanban className="w-6 h-6 text-slate-400 mx-auto mb-1.5" />
+                <p className="text-xs font-semibold text-slate-700">No Projects Configured</p>
+                <p className="text-[11px] text-slate-500 mt-0.5 mb-3">
+                  Register your first website domain to begin automated auditing.
+                </p>
+                <Link href="/seo/projects">
+                  <Button size="sm" variant="primary">+ Add Project</Button>
+                </Link>
               </div>
             )}
           </Card>
         </div>
+
+        {/* Score Calculation Explanation Modal */}
+        {isScoreModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in">
+            <div
+              className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl p-6 space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900">How is my SEO score calculated?</h3>
+                    <p className="text-[11px] text-slate-500">DMOS Deterministic Diagnostic Model</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsScoreModalOpen(false)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-3.5 text-xs text-slate-600 leading-relaxed">
+                <p>
+                  The overall SEO Health Score (0–100) is a weighted composite of four deterministic technical categories:
+                </p>
+
+                <div className="grid grid-cols-2 gap-2.5 font-medium">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <div className="flex items-center justify-between text-slate-900 font-bold">
+                      <span>Technical SEO</span>
+                      <span className="text-blue-600 font-mono">30%</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-1">HTTP status, SSL/HTTPS, server response time, mixed content</p>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <div className="flex items-center justify-between text-slate-900 font-bold">
+                      <span>Indexability</span>
+                      <span className="text-blue-600 font-mono">25%</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-1">Robots.txt, meta robots, canonical URLs, XML sitemaps</p>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <div className="flex items-center justify-between text-slate-900 font-bold">
+                      <span>Metadata & Content</span>
+                      <span className="text-blue-600 font-mono">25%</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-1">Titles, descriptions, H1 tags, thin content, duplicate content</p>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <div className="flex items-center justify-between text-slate-900 font-bold">
+                      <span>Link Health</span>
+                      <span className="text-blue-600 font-mono">20%</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-1">Broken links, redirect loops, orphan pages, crawl depth</p>
+                  </div>
+                </div>
+
+                {/* Score Rating Tiers */}
+                <div className="p-3 bg-blue-50/60 border border-blue-100 rounded-xl space-y-1.5">
+                  <span className="font-bold text-slate-900 block text-xs">Rating Tiers:</span>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-[11px]">
+                    <span className="text-emerald-700"><strong>90–100:</strong> Excellent</span>
+                    <span className="text-blue-700"><strong>75–89:</strong> Good</span>
+                    <span className="text-amber-700"><strong>50–74:</strong> Needs Fixes</span>
+                    <span className="text-orange-700"><strong>25–49:</strong> Poor</span>
+                    <span className="text-rose-700"><strong>0–24:</strong> Critical</span>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-slate-400 italic">
+                  Note: This score is a DMOS diagnostic health metric designed to prioritize crawlability and technical compliance. It is not an official Google ranking score.
+                </p>
+              </div>
+
+              <div className="flex justify-end pt-2 border-t border-slate-100">
+                <Button size="sm" variant="primary" onClick={() => setIsScoreModalOpen(false)}>
+                  Got It
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardShell>
   );

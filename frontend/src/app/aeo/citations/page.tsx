@@ -8,6 +8,8 @@ import {
   Bot,
   Filter,
   CheckCircle2,
+  Plus,
+  X,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
@@ -29,7 +31,15 @@ export default function AeoCitationsPage() {
   const [engineFilter, setEngineFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
 
-  const { error } = useToast();
+  // Modal
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [newProject, setNewProject] = useState("");
+  const [newSourceUrl, setNewSourceUrl] = useState("");
+  const [newEngine, setNewEngine] = useState("chatgpt");
+  const [newSnippet, setNewSnippet] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { success, error } = useToast();
 
   const fetchCitations = async () => {
     setIsLoading(true);
@@ -42,7 +52,11 @@ export default function AeoCitationsPage() {
           search: searchQuery || undefined,
         }),
       ]);
-      setProjects(projData.projects || []);
+      const projs = projData.projects || [];
+      setProjects(projs);
+      if (projs.length > 0 && !newProject) {
+        setNewProject(projs[0].id);
+      }
       setCitations(citData.citations || []);
       setTotal(citData.total || 0);
     } catch (err: any) {
@@ -56,6 +70,30 @@ export default function AeoCitationsPage() {
     fetchCitations();
   }, [selectedProjectId, engineFilter, searchQuery]);
 
+  const handleAddCitation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSourceUrl.trim() || !newProject) return;
+
+    setIsSubmitting(true);
+    try {
+      await api.createAeoCitation({
+        project_id: newProject,
+        source_url: newSourceUrl.trim(),
+        engine: newEngine,
+        citation_text: newSnippet.trim() || undefined,
+      });
+      success("Citation Added", "Source URL registered for AEO citations tracking");
+      setIsAddOpen(false);
+      setNewSourceUrl("");
+      setNewSnippet("");
+      fetchCitations();
+    } catch (err: any) {
+      error("Failed to add citation", err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <DashboardShell>
       <div className="space-y-6">
@@ -67,6 +105,15 @@ export default function AeoCitationsPage() {
               Web links and source citations referenced by generative AI models during answer synthesis.
             </p>
           </div>
+
+          <Button
+            size="sm"
+            variant="aeo"
+            leftIcon={<Plus className="w-4 h-4" />}
+            onClick={() => setIsAddOpen(true)}
+          >
+            + Add Citation
+          </Button>
         </div>
 
         {/* Filter Bar */}
@@ -168,6 +215,102 @@ export default function AeoCitationsPage() {
             </table>
           </div>
         </Card>
+
+        {/* Add Citation Modal */}
+        {isAddOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in">
+            <div
+              className="relative w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-xl p-6 space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h3 className="text-base font-bold text-slate-900">Add AI Citation Source</h3>
+                <button
+                  onClick={() => setIsAddOpen(false)}
+                  className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddCitation} className="space-y-4 pt-1">
+                {projects.length > 0 && (
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-700">Target Project</label>
+                    <select
+                      value={newProject}
+                      onChange={(e) => setNewProject(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-purple-500"
+                    >
+                      {projects.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} ({p.domain})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Source URL *</label>
+                  <input
+                    type="url"
+                    required
+                    placeholder="https://example.com/blog/best-tools"
+                    value={newSourceUrl}
+                    onChange={(e) => setNewSourceUrl(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-purple-500 font-mono"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Answer Engine</label>
+                  <select
+                    value={newEngine}
+                    onChange={(e) => setNewEngine(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-purple-500"
+                  >
+                    <option value="chatgpt">ChatGPT (OpenAI)</option>
+                    <option value="perplexity">Perplexity AI</option>
+                    <option value="google_ai">Google AI Overviews</option>
+                    <option value="gemini">Google Gemini</option>
+                    <option value="copilot">Microsoft Copilot</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Snippet / Citation Text (Optional)</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Quoted reference or synthesis context from AI engine..."
+                    value={newSnippet}
+                    onChange={(e) => setNewSnippet(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-purple-500"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsAddOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="aeo"
+                    size="sm"
+                    isLoading={isSubmitting}
+                  >
+                    Add Citation
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardShell>
   );

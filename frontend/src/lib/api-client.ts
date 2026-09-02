@@ -1,5 +1,7 @@
 import { API_BASE_URL } from "./constants";
 import {
+  AeoCitation,
+  AeoCitationCreateInput,
   AeoCitationListResponse,
   AeoDashboardSummary,
   AeoEntityCreateInput,
@@ -336,6 +338,13 @@ class ApiClient {
 
     const qs = query.toString() ? `?${query.toString()}` : "";
     return this.request<AeoCitationListResponse>(`/aeo/citations${qs}`);
+  }
+
+  async createAeoCitation(input: AeoCitationCreateInput): Promise<AeoCitation> {
+    return this.request<AeoCitation>("/aeo/citations", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
   }
 }
 
