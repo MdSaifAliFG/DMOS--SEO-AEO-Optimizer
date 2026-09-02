@@ -126,24 +126,32 @@ export default function SeoPagesPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header & Project Selector */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-sky-950 via-cyan-900 to-slate-900 text-white shadow-md border border-sky-800/40">
           <div className="space-y-1">
-            <h2 className="text-base font-bold text-slate-900">Crawled Webpages ({total})</h2>
-            <p className="text-xs text-slate-500">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-sky-500/20 border border-sky-400/30">
+                <FileText className="w-5 h-5 text-sky-300" />
+              </div>
+              <h1 className="text-xl font-bold tracking-tight">Crawled Webpages ({total})</h1>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-sky-500/30 text-sky-200 border border-sky-400/20">
+                Site Hierarchy
+              </span>
+            </div>
+            <p className="text-xs text-sky-200/80 max-w-2xl">
               Detailed breakdown of discovered URLs, server response codes, on-page metadata, and indexability flags.
             </p>
           </div>
 
           {projects.length > 0 && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-600">Active Website:</span>
+            <div className="flex items-center gap-2 bg-sky-950/80 border border-sky-700/60 rounded-xl px-3 py-1.5">
+              <span className="text-xs font-semibold text-sky-200">Active Website:</span>
               <select
                 value={selectedProjectId}
                 onChange={(e) => handleProjectChange(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500"
+                className="bg-transparent text-xs font-semibold text-white focus:outline-none cursor-pointer"
               >
                 {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
+                  <option key={p.id} value={p.id} className="bg-slate-900 text-white">
                     {p.name} ({p.domain})
                   </option>
                 ))}

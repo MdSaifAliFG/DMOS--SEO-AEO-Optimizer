@@ -74,10 +74,18 @@ export default function SeoLinksPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-sky-950 via-cyan-900 to-slate-900 text-white shadow-md border border-sky-800/40">
           <div className="space-y-1">
-            <h2 className="text-base font-bold text-slate-900">Link Structure & Health</h2>
-            <p className="text-xs text-slate-500">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-sky-500/20 border border-sky-400/30">
+                <Link2 className="w-5 h-5 text-sky-300" />
+              </div>
+              <h1 className="text-xl font-bold tracking-tight">Link Structure & Health</h1>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-sky-500/30 text-sky-200 border border-sky-400/20">
+                Link Graph
+              </span>
+            </div>
+            <p className="text-xs text-sky-200/80 max-w-2xl">
               Analyze internal site architecture, anchor text distribution, external outgoing links, and broken URLs.
             </p>
           </div>

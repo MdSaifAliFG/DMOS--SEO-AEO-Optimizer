@@ -12,7 +12,20 @@ from app.models.seo_recommendation import (
 )
 from app.models.optimization_history import OptimizationHistory
 from app.models.ai_recommendation import AiRecommendation
-from app.models.aeo import AeoProject, AeoQuestion, AeoCitation, AeoEntity, AeoIntent, AeoEngine
+from app.models.aeo import (
+    AeoProject,
+    AeoQuestion,
+    AeoAnswer,
+    AeoCitation,
+    AeoEntity,
+    AeoVisibilitySnapshot,
+    AeoRecommendation,
+    AeoAnalysis,
+    AeoIntent,
+    AeoEngine,
+    AeoCitationType,
+    AeoAnalysisStatus,
+)
 
 __all__ = [
     "Base",
@@ -37,8 +50,14 @@ __all__ = [
     "AiRecommendation",
     "AeoProject",
     "AeoQuestion",
+    "AeoAnswer",
     "AeoCitation",
     "AeoEntity",
+    "AeoVisibilitySnapshot",
+    "AeoRecommendation",
+    "AeoAnalysis",
     "AeoIntent",
     "AeoEngine",
+    "AeoCitationType",
+    "AeoAnalysisStatus",
 ]

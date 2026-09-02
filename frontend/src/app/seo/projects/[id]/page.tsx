@@ -124,15 +124,18 @@ export default function SeoProjectDetailPage({
         </div>
 
         {/* Project Header Card */}
-        <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
+        <div className="p-6 rounded-2xl bg-gradient-to-r from-sky-950 via-cyan-900 to-slate-900 text-white shadow-md border border-sky-800/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200">
-                <Globe className="w-4 h-4" />
+              <div className="p-2 rounded-xl bg-sky-500/20 border border-sky-400/30 text-sky-300">
+                <Globe className="w-5 h-5" />
               </div>
-              <h2 className="text-lg font-bold text-slate-900 tracking-tight">{project.name}</h2>
+              <h1 className="text-xl font-bold tracking-tight text-white">{project.name}</h1>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-sky-500/30 text-sky-200 border border-sky-400/20">
+                Active Project
+              </span>
             </div>
-            <div className="flex items-center gap-3 text-xs text-slate-500 font-mono">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-sky-200/80 font-mono">
               <span>https://{cleanDomain(project.domain)}</span>
               <span>•</span>
               <span>Created {formatDate(project.created_at)}</span>
@@ -147,6 +150,7 @@ export default function SeoProjectDetailPage({
               variant="primary"
               onClick={() => setIsStartAuditOpen(true)}
               leftIcon={<Play className="w-3.5 h-3.5" />}
+              className="bg-sky-500 hover:bg-sky-400 text-white border-0 shadow-sm"
             >
               Run Website Audit
             </Button>
@@ -179,7 +183,7 @@ export default function SeoProjectDetailPage({
             onClick={() => setActiveTab("overview")}
             className={`pb-2.5 px-3 font-semibold transition-colors border-b-2 ${
               activeTab === "overview"
-                ? "border-blue-600 text-blue-600"
+                ? "border-sky-600 text-sky-700"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >

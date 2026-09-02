@@ -115,11 +115,19 @@ export default function SeoProjectsPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header & Actions Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-sky-950 via-cyan-900 to-slate-900 text-white shadow-md border border-sky-800/40">
           <div className="space-y-1">
-            <h2 className="text-base font-bold text-slate-900">SEO Projects ({total})</h2>
-            <p className="text-xs text-slate-500">
-              Manage website crawler domains, automated audits, and on-page technical performance.
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-sky-500/20 border border-sky-400/30">
+                <Globe className="w-5 h-5 text-sky-300" />
+              </div>
+              <h1 className="text-xl font-bold tracking-tight">SEO Projects ({total})</h1>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-sky-500/30 text-sky-200 border border-sky-400/20">
+                Crawler Hub
+              </span>
+            </div>
+            <p className="text-xs text-sky-200/80 max-w-2xl">
+              Manage website crawler domains, automated technical audits, and on-page performance.
             </p>
           </div>
 
@@ -128,6 +136,7 @@ export default function SeoProjectsPage() {
             variant="primary"
             onClick={() => setIsAddModalOpen(true)}
             leftIcon={<Plus className="w-3.5 h-3.5" />}
+            className="bg-sky-500 hover:bg-sky-400 text-white border-0 shadow-sm"
           >
             + Add SEO Project
           </Button>

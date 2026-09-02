@@ -124,31 +124,39 @@ export default function SeoDashboardPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Module Banner / Header CTA */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-sky-950 via-cyan-900 to-slate-900 text-white shadow-md border border-sky-800/40">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <h2 className="text-base font-bold text-slate-900">SEO Intelligence Hub</h2>
-              <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                Technical Audit & Crawling
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-sky-500/20 border border-sky-400/30">
+                <Globe className="w-5 h-5 text-sky-300" />
+              </div>
+              <h1 className="text-xl font-bold tracking-tight">SEO Optimization & Auditing</h1>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-sky-500/30 text-sky-200 border border-sky-400/20">
+                Core Engine
               </span>
             </div>
-            <p className="text-xs text-slate-500">
-              Deterministic technical analysis, crawl budget management, and on-page optimization.
+            <p className="text-xs text-sky-200/80 max-w-2xl">
+              Deterministic technical crawling, structured data auditing, metadata optimization, and crawl health telemetry.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <button
               onClick={() => setIsScoreModalOpen(true)}
-              className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-colors flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-xl border border-sky-700/60 bg-sky-950/80 text-xs font-semibold text-sky-100 hover:bg-sky-900 transition-colors flex items-center gap-1.5"
             >
-              <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
-              <span>Score Breakdown</span>
+              <HelpCircle className="w-3.5 h-3.5 text-sky-400" />
+              <span>Score Formula</span>
             </button>
 
             <Link href="/seo/projects">
-              <Button size="sm" variant="primary" leftIcon={<Plus className="w-3.5 h-3.5" />}>
-                + Add SEO Project
+              <Button
+                size="sm"
+                variant="primary"
+                leftIcon={<Plus className="w-3.5 h-3.5" />}
+                className="bg-sky-500 hover:bg-sky-400 text-white border-0 shadow-sm"
+              >
+                + New Project
               </Button>
             </Link>
           </div>

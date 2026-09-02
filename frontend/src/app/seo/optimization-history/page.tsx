@@ -65,8 +65,8 @@ export default function OptimizationHistoryPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center gap-1.5">
-              <History className="w-3.5 h-3.5" /> Scan-to-Scan Comparisons
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20 flex items-center gap-1.5">
+              <History className="w-3.5 h-3.5 text-sky-300" /> Scan-to-Scan Comparisons
             </span>
             <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
               SEO Optimization History
@@ -80,7 +80,7 @@ export default function OptimizationHistoryPage() {
         {/* Project Selector & Actions Link */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5">
-            <span className="text-xs text-slate-400 font-medium">Project:</span>
+            <span className="text-xs text-sky-300 font-medium">Project:</span>
             <select
               value={selectedProjectId}
               onChange={(e) => setSelectedProjectId(e.target.value)}
@@ -96,9 +96,9 @@ export default function OptimizationHistoryPage() {
 
           <Link
             href="/seo/actions"
-            className="px-3 py-1.5 text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition"
+            className="px-3 py-1.5 text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-white rounded-lg transition shadow-xs"
           >
-            Go to Action Center →
+            Go to Actions Center
           </Link>
         </div>
       </div>

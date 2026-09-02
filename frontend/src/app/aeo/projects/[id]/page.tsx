@@ -13,6 +13,12 @@ import {
   ChevronRight,
   Eye,
   CheckCircle2,
+  Play,
+  TrendingUp,
+  Bot,
+  Cpu,
+  X,
+  ExternalLink,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
@@ -20,9 +26,9 @@ import { Button } from "@/components/ui/Button";
 import { ScoreRing } from "@/components/ui/ScoreRing";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { AeoProject, AeoQuestion, AeoEntity, AeoCitation } from "@/lib/types";
+import { AeoProject, AeoQuestion, AeoEntity, AeoCitation, AeoVisibilityData } from "@/lib/types";
 import { api } from "@/lib/api-client";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatTimeAgo } from "@/lib/utils";
 import { useToast } from "@/hooks/useToast";
 
 export default function AeoProjectDetailPage({
@@ -37,13 +43,15 @@ export default function AeoProjectDetailPage({
   const [questions, setQuestions] = useState<AeoQuestion[]>([]);
   const [entities, setEntities] = useState<AeoEntity[]>([]);
   const [citations, setCitations] = useState<AeoCitation[]>([]);
+  const [visibility, setVisibility] = useState<AeoVisibilityData | null>(null);
   const [activeTab, setActiveTab] = useState<"questions" | "entities" | "citations">("questions");
   const [isLoading, setIsLoading] = useState(true);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Modals
   const [isAddQuestionOpen, setIsAddQuestionOpen] = useState(false);
   const [newQuestionText, setNewQuestionText] = useState("");
-  const [newQuestionCategory, setNewQuestionCategory] = useState("General");
+  const [newQuestionCategory, setNewQuestionCategory] = useState("Brand Overview");
   const [newQuestionIntent, setNewQuestionIntent] = useState("informational");
 
   const { success, error } = useToast();
@@ -54,14 +62,16 @@ export default function AeoProjectDetailPage({
       const proj = await api.getAeoProject(projectId);
       setProject(proj);
 
-      const [qData, eData, cData] = await Promise.all([
+      const [qData, eData, cData, vData] = await Promise.all([
         api.getAeoQuestions({ project_id: projectId }),
         api.getAeoEntities({ project_id: projectId }),
         api.getAeoCitations({ project_id: projectId }),
+        api.getAeoVisibility(projectId).catch(() => null),
       ]);
       setQuestions(qData.questions || []);
       setEntities(eData.entities || []);
       setCitations(cData.citations || []);
+      setVisibility(vData);
     } catch (err: any) {
       error("Failed to load AEO project details", err.message);
     } finally {
@@ -73,14 +83,29 @@ export default function AeoProjectDetailPage({
     loadData();
   }, [projectId]);
 
+  const handleRunAnalysis = async () => {
+    setIsAnalyzing(true);
+    try {
+      await api.triggerAeoAnalysis(projectId, { allow_test_mode: true });
+      success("AEO Analysis Started", "Querying answer engines and updating visibility...");
+      setTimeout(() => {
+        loadData();
+        setIsAnalyzing(false);
+      }, 3000);
+    } catch (err: any) {
+      error("Failed to trigger analysis", err.message);
+      setIsAnalyzing(false);
+    }
+  };
+
   const handleCreateQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newQuestionText) return;
+    if (!newQuestionText.trim()) return;
 
     try {
       await api.createAeoQuestion({
         project_id: projectId,
-        question_text: newQuestionText,
+        question_text: newQuestionText.trim(),
         category: newQuestionCategory,
         intent: newQuestionIntent,
       });
@@ -93,12 +118,22 @@ export default function AeoProjectDetailPage({
     }
   };
 
+  const handleGeneratePrompts = async () => {
+    try {
+      const gen = await api.generateAeoQuestions({ project_id: projectId, max_questions: 6 });
+      success("Prompts Generated", `Added ${gen.questions.length} high-intent search prompts.`);
+      loadData();
+    } catch (err: any) {
+      error("Failed to generate prompts", err.message);
+    }
+  };
+
   if (isLoading && !project) {
     return (
       <DashboardShell>
-        <div className="py-16 text-center text-slate-400">
+        <div className="py-24 text-center text-slate-400">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-purple-600 border-t-transparent" />
-          <p className="mt-3 text-xs">Loading AEO project...</p>
+          <p className="mt-3 text-xs">Loading AEO project workspace...</p>
         </div>
       </DashboardShell>
     );
@@ -107,11 +142,10 @@ export default function AeoProjectDetailPage({
   if (!project) {
     return (
       <DashboardShell>
-        <div className="p-8 text-center bg-white rounded-xl border border-slate-200">
-          <h2 className="text-base font-bold text-slate-800">AEO Project Not Found</h2>
-          <p className="text-xs text-slate-500 mt-1 mb-4">The requested project ID does not exist.</p>
+        <div className="py-16 text-center space-y-3">
+          <p className="text-sm font-semibold text-slate-700">Project Not Found</p>
           <Link href="/aeo/projects">
-            <Button size="sm" variant="aeo">Back to AEO Projects</Button>
+            <Button size="sm" variant="outline">Back to AEO Projects</Button>
           </Link>
         </div>
       </DashboardShell>
@@ -122,297 +156,309 @@ export default function AeoProjectDetailPage({
     <DashboardShell>
       <div className="space-y-6">
         {/* Navigation Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-500">
-          <Link href="/aeo/projects" className="hover:text-purple-600 font-medium">
+        <div className="flex items-center gap-2 text-xs text-slate-500">
+          <Link href="/aeo/projects" className="hover:text-purple-600 transition-colors">
             AEO Projects
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-slate-800 font-semibold truncate">{project.name}</span>
+          <ChevronRight className="w-3 h-3 text-slate-400" />
+          <span className="text-slate-800 font-semibold">{project.name}</span>
         </div>
 
-        {/* Project Header Card */}
-        <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
+        {/* Hero Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white shadow-md border border-purple-800/40">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-200">
-                <Sparkles className="w-4 h-4" />
+              <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-400/30">
+                <Bot className="w-6 h-6 text-purple-300" />
               </div>
-              <h2 className="text-lg font-bold text-slate-900 tracking-tight">{project.name}</h2>
-            </div>
-            <div className="flex items-center gap-3 text-xs text-slate-500 font-mono">
-              <span>{project.domain}</span>
-              <span>•</span>
-              <span>Created {formatDate(project.created_at)}</span>
-              <span>•</span>
-              <span>{questions.length} Tracked Prompts</span>
+              <div>
+                <h1 className="text-xl font-bold">{project.name}</h1>
+                <div className="flex items-center gap-2 text-xs text-purple-200">
+                  <Globe className="w-3.5 h-3.5" />
+                  <span>{project.domain}</span>
+                  {project.industry && <span>• {project.industry}</span>}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button
               size="sm"
-              variant="aeo"
-              onClick={() => setIsAddQuestionOpen(true)}
-              leftIcon={<Plus className="w-3.5 h-3.5" />}
+              variant="outline"
+              onClick={handleGeneratePrompts}
+              leftIcon={<Sparkles className="w-3.5 h-3.5" />}
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20 text-xs"
             >
-              + Track New Question
+              Generate Prompts
+            </Button>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={handleRunAnalysis}
+              isLoading={isAnalyzing}
+              leftIcon={<Play className="w-3.5 h-3.5" />}
+              className="bg-purple-600 hover:bg-purple-500 text-white border-0 shadow-xs text-xs"
+            >
+              Run Analysis
             </Button>
           </div>
         </div>
 
-        {/* KPI Grid */}
+        {/* Score & Pillar Breakdown */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard
-            title="AEO Score"
-            value={`${project.aeo_score ?? 80} / 100`}
-            subValue="Answer Visibility"
-            rightVisual={<ScoreRing score={project.aeo_score ?? 80} size="sm" showRating={false} />}
-          />
+          <Card className="p-5 border-slate-200 bg-white flex flex-col justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">AEO Visibility</span>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-3xl font-black text-purple-950">
+                {project.aeo_score !== null && project.aeo_score !== undefined ? `${project.aeo_score}/100` : "Untested"}
+              </span>
+              {project.score_label && (
+                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                  {project.score_label}
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-400 mt-2">Overall composite score</p>
+          </Card>
 
-          <MetricCard
-            title="Tracked Prompts"
-            value={questions.length}
-            subValue="Key buyer queries"
-            icon={<HelpCircle className="w-5 h-5 text-blue-600" />}
-            variant="blue"
-          />
+          <Card className="p-5 border-slate-200 bg-white flex flex-col justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Mentions (35%)</span>
+            <div className="mt-2">
+              <span className="text-3xl font-black text-slate-800">
+                {project.mention_score !== null && project.mention_score !== undefined ? `${project.mention_score}%` : "—"}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 mt-2">Direct brand mention rate</p>
+          </Card>
 
-          <MetricCard
-            title="Recognized Entities"
-            value={entities.length}
-            subValue="Knowledge graph nodes"
-            icon={<Boxes className="w-5 h-5 text-purple-600" />}
-            variant="purple"
-          />
+          <Card className="p-5 border-slate-200 bg-white flex flex-col justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Citations (25%)</span>
+            <div className="mt-2">
+              <span className="text-3xl font-black text-slate-800">
+                {project.citation_score !== null && project.citation_score !== undefined ? `${project.citation_score}%` : "—"}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 mt-2">Own domain citation share</p>
+          </Card>
 
-          <MetricCard
-            title="Extracted Citations"
-            value={citations.length}
-            subValue="Source references"
-            icon={<Quote className="w-5 h-5 text-emerald-600" />}
-            variant="emerald"
-          />
+          <Card className="p-5 border-slate-200 bg-white flex flex-col justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Coverage (20%)</span>
+            <div className="mt-2">
+              <span className="text-3xl font-black text-slate-800">
+                {project.coverage_score !== null && project.coverage_score !== undefined ? `${project.coverage_score}%` : "—"}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 mt-2">Tracked prompts coverage</p>
+          </Card>
         </div>
 
-        {/* Tabs Bar */}
-        <div className="flex items-center gap-2 border-b border-slate-200 text-xs">
-          <button
-            onClick={() => setActiveTab("questions")}
-            className={`pb-2.5 px-3 font-semibold transition-colors border-b-2 ${
-              activeTab === "questions"
-                ? "border-purple-600 text-purple-600"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Tracked Prompts ({questions.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("entities")}
-            className={`pb-2.5 px-3 font-semibold transition-colors border-b-2 ${
-              activeTab === "entities"
-                ? "border-purple-600 text-purple-600"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Knowledge Entities ({entities.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("citations")}
-            className={`pb-2.5 px-3 font-semibold transition-colors border-b-2 ${
-              activeTab === "citations"
-                ? "border-purple-600 text-purple-600"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Citations ({citations.length})
-          </button>
-        </div>
+        {/* Main Content Tabs */}
+        <Card className="p-6 border-slate-200 bg-white space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3 flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setActiveTab("questions")}
+                className={`text-xs font-bold pb-1 border-b-2 transition-colors ${
+                  activeTab === "questions"
+                    ? "border-purple-600 text-purple-700"
+                    : "border-transparent text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Tracked Prompts ({questions.length})
+              </button>
+              <button
+                onClick={() => setActiveTab("entities")}
+                className={`text-xs font-bold pb-1 border-b-2 transition-colors ${
+                  activeTab === "entities"
+                    ? "border-purple-600 text-purple-700"
+                    : "border-transparent text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Knowledge Entities ({entities.length})
+              </button>
+              <button
+                onClick={() => setActiveTab("citations")}
+                className={`text-xs font-bold pb-1 border-b-2 transition-colors ${
+                  activeTab === "citations"
+                    ? "border-purple-600 text-purple-700"
+                    : "border-transparent text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Extracted Citations ({citations.length})
+              </button>
+            </div>
 
-        {/* Tab Content */}
-        {activeTab === "questions" && (
-          <Card className="p-0 border-slate-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
-                  <tr>
-                    <th className="py-3 px-4">Tracked Question / Prompt</th>
-                    <th className="py-3 px-4">Category</th>
-                    <th className="py-3 px-4">Intent</th>
-                    <th className="py-3 px-4 text-center">Visibility</th>
-                    <th className="py-3 px-4 text-center">Score</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {questions.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="py-10 text-center">
-                        <EmptyState
-                          icon={<HelpCircle className="w-6 h-6 text-purple-500" />}
-                          title="No Questions Tracked Yet"
-                          description="Add key search queries and user prompts to track brand visibility across AI engines."
-                          actionLabel="+ Track Question"
-                          onAction={() => setIsAddQuestionOpen(true)}
-                        />
-                      </td>
-                    </tr>
-                  ) : (
-                    questions.map((q) => (
-                      <tr key={q.id} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="py-3.5 px-4 font-semibold text-slate-900 max-w-md truncate">
-                          {q.question_text}
-                        </td>
-                        <td className="py-3.5 px-4 text-slate-600">{q.category}</td>
-                        <td className="py-3.5 px-4 font-semibold text-[10px] uppercase text-slate-600">
-                          {q.intent}
-                        </td>
-                        <td className="py-3.5 px-4 text-center">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+            {activeTab === "questions" && (
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={() => setIsAddQuestionOpen(true)}
+                leftIcon={<Plus className="w-3.5 h-3.5" />}
+                className="bg-purple-600 hover:bg-purple-500 text-white text-xs h-8"
+              >
+                Add Question
+              </Button>
+            )}
+          </div>
+
+          {/* TAB 1: Questions */}
+          {activeTab === "questions" && (
+            <div className="space-y-3">
+              {questions.length === 0 ? (
+                <div className="py-12 text-center space-y-2">
+                  <p className="text-xs text-slate-500">No prompts tracked yet for this project.</p>
+                  <Button size="sm" variant="outline" onClick={handleGeneratePrompts} leftIcon={<Sparkles className="w-3 h-3" />}>
+                    Auto-Generate Questions
+                  </Button>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {questions.map((q) => (
+                    <div key={q.id} className="py-3 flex items-center justify-between gap-4">
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <p className="text-xs font-semibold text-slate-800 truncate">{q.question_text}</p>
+                        <div className="flex items-center gap-2 text-[10px] text-slate-500">
+                          <span className="px-1.5 py-0.5 rounded bg-slate-100 font-medium">{q.category}</span>
+                          <span>Intent: {q.intent}</span>
+                          {q.last_checked_at && <span>• Checked {formatTimeAgo(q.last_checked_at)}</span>}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {q.brand_mentioned ? (
+                          <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800">
+                            Mentioned {q.best_rank_position ? `(#${q.best_rank_position})` : ""}
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-slate-100 text-slate-600">
                             {q.visibility_status}
                           </span>
-                        </td>
-                        <td className="py-3.5 px-4 text-center font-bold font-mono text-slate-800">
-                          {q.visibility_score}%
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          </Card>
-        )}
+          )}
 
-        {activeTab === "entities" && (
-          <Card className="p-0 border-slate-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
-                  <tr>
-                    <th className="py-3 px-4">Entity Name</th>
-                    <th className="py-3 px-4">Type</th>
-                    <th className="py-3 px-4 text-center">Mentions Count</th>
-                    <th className="py-3 px-4 text-center">Visibility Rate</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {entities.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="py-10 text-center text-slate-400">
-                        No knowledge entities tracked yet.
-                      </td>
-                    </tr>
-                  ) : (
-                    entities.map((e) => (
-                      <tr key={e.id} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="py-3.5 px-4 font-semibold text-slate-900">{e.entity_name}</td>
-                        <td className="py-3.5 px-4 text-slate-600">{e.entity_type}</td>
-                        <td className="py-3.5 px-4 text-center font-mono font-semibold">{e.mentions_count}</td>
-                        <td className="py-3.5 px-4 text-center font-mono font-bold text-purple-700">{e.visibility_rate}%</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+          {/* TAB 2: Entities */}
+          {activeTab === "entities" && (
+            <div className="space-y-3">
+              {entities.length === 0 ? (
+                <p className="text-xs text-slate-400 py-8 text-center">Run an AEO analysis to extract knowledge graph entities.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {entities.map((e) => (
+                    <div key={e.id} className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-800">{e.entity_name}</span>
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-purple-100 text-purple-800">
+                          {e.entity_type}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+                        <span>Mentions: {e.mentions_count}</span>
+                        <span className="text-purple-700 font-bold">{e.visibility_rate}% Vis</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          </Card>
-        )}
+          )}
 
-        {activeTab === "citations" && (
-          <Card className="p-0 border-slate-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
-                  <tr>
-                    <th className="py-3 px-4">Domain</th>
-                    <th className="py-3 px-4">Source URL</th>
-                    <th className="py-3 px-4">Engine</th>
-                    <th className="py-3 px-4 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {citations.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="py-10 text-center text-slate-400">
-                        No citations extracted yet.
-                      </td>
-                    </tr>
-                  ) : (
-                    citations.map((c) => (
-                      <tr key={c.id} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="py-3.5 px-4 font-semibold text-slate-900">{c.domain}</td>
-                        <td className="py-3.5 px-4 font-mono text-[11px] text-slate-600 truncate max-w-sm">{c.source_url}</td>
-                        <td className="py-3.5 px-4 font-semibold uppercase text-[10px] text-purple-700">{c.engine}</td>
-                        <td className="py-3.5 px-4 text-right font-semibold text-emerald-700 text-[11px]">{c.citation_status}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+          {/* TAB 3: Citations */}
+          {activeTab === "citations" && (
+            <div className="space-y-3">
+              {citations.length === 0 ? (
+                <p className="text-xs text-slate-400 py-8 text-center">No citations extracted yet. Run an AEO analysis.</p>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {citations.map((c) => (
+                    <div key={c.id} className="py-3 flex items-center justify-between gap-4">
+                      <div className="space-y-0.5 min-w-0 flex-1">
+                        <a
+                          href={c.source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs font-semibold text-purple-900 hover:underline truncate block"
+                        >
+                          {c.domain}
+                        </a>
+                        <p className="text-[10px] text-slate-500 truncate">{c.source_url}</p>
+                      </div>
+                      <span className="px-2 py-0.5 text-[10px] font-semibold rounded bg-purple-50 text-purple-800 uppercase">
+                        {c.engine}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          </Card>
-        )}
+          )}
+        </Card>
 
-        {/* Add Question Modal */}
+        {/* Modal: Add Question */}
         {isAddQuestionOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in">
-            <div
-              className="relative w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-xl p-6 space-y-4"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-base font-bold text-slate-900">Track New User Question</h3>
-              <p className="text-xs text-slate-500">
-                Register a prompt to evaluate brand synthesis and citations across AI answer models.
-              </p>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-bold text-slate-900">Add Search Prompt</h3>
+                <button onClick={() => setIsAddQuestionOpen(false)} className="text-slate-400 hover:text-slate-600">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
 
-              <form onSubmit={handleCreateQuestion} className="space-y-4 pt-2">
+              <form onSubmit={handleCreateQuestion} className="space-y-3.5">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Question / Prompt Text</label>
+                  <label className="text-xs font-semibold text-slate-700">Question / Prompt</label>
                   <textarea
-                    required
-                    rows={3}
-                    placeholder="e.g. What is the best API for subscription billing and recurring payments?"
                     value={newQuestionText}
                     onChange={(e) => setNewQuestionText(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-purple-500"
+                    placeholder="e.g. Best CRM for real estate agents..."
+                    rows={3}
+                    required
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-slate-700">Category</label>
-                    <input
-                      type="text"
+                    <select
                       value={newQuestionCategory}
                       onChange={(e) => setNewQuestionCategory(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-purple-500"
-                    />
+                      className="w-full text-xs p-2 rounded-xl border border-slate-200"
+                    >
+                      <option value="Brand Overview">Brand Overview</option>
+                      <option value="Product Capabilities">Product Capabilities</option>
+                      <option value="Competitor Comparison">Competitor Comparison</option>
+                      <option value="Pricing & Commercial">Pricing & Commercial</option>
+                      <option value="Industry Best Practices">Industry Best Practices</option>
+                    </select>
                   </div>
-
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-slate-700">Intent</label>
                     <select
                       value={newQuestionIntent}
                       onChange={(e) => setNewQuestionIntent(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-purple-500"
+                      className="w-full text-xs p-2 rounded-xl border border-slate-200"
                     >
                       <option value="informational">Informational</option>
                       <option value="commercial">Commercial</option>
+                      <option value="comparison">Comparison</option>
                       <option value="transactional">Transactional</option>
                     </select>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsAddQuestionOpen(false)}
-                  >
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <Button type="button" size="sm" variant="ghost" onClick={() => setIsAddQuestionOpen(false)}>
                     Cancel
                   </Button>
-                  <Button type="submit" variant="aeo" size="sm">
-                    Add Question
+                  <Button type="submit" size="sm" variant="primary" className="bg-purple-600 text-white">
+                    Add Prompt
                   </Button>
                 </div>
               </form>

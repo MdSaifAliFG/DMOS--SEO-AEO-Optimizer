@@ -273,14 +273,35 @@ export interface SEOKeyword {
 
 // --- AEO Optimization Types ---
 
+export interface AeoCompetitor {
+  name: string;
+  domain: string;
+  mentions?: number;
+  mention_rate?: number;
+  visibility_score?: number;
+}
+
 export interface AeoProject {
   id: string;
   user_id?: string | null;
   name: string;
   domain: string;
+  brand_name?: string | null;
+  brand_aliases?: string[];
+  industry?: string | null;
+  country?: string | null;
+  target_audience?: string | null;
+  target_language?: string;
+  competitors?: AeoCompetitor[];
   description?: string | null;
   is_active: boolean;
   aeo_score?: number | null;
+  score_label?: string | null;
+  mention_score?: number | null;
+  citation_score?: number | null;
+  position_score?: number | null;
+  coverage_score?: number | null;
+  last_analyzed_at?: string | null;
   questions_count: number;
   citations_count: number;
   settings: Record<string, unknown>;
@@ -296,8 +317,29 @@ export interface AeoProjectListResponse {
 export interface AeoProjectCreateInput {
   name: string;
   domain: string;
+  brand_name?: string;
+  brand_aliases?: string[];
+  industry?: string;
+  country?: string;
+  target_audience?: string;
+  target_language?: string;
+  competitors?: Array<{ name: string; domain: string }>;
   description?: string;
   settings?: Record<string, unknown>;
+}
+
+export interface AeoProjectUpdateInput {
+  name?: string;
+  domain?: string;
+  brand_name?: string;
+  brand_aliases?: string[];
+  industry?: string;
+  country?: string;
+  target_audience?: string;
+  target_language?: string;
+  competitors?: Array<{ name: string; domain: string }>;
+  description?: string;
+  is_active?: boolean;
 }
 
 export interface AeoQuestion {
@@ -307,8 +349,10 @@ export interface AeoQuestion {
   category: string;
   intent: string;
   is_tracked: boolean;
-  visibility_status: "visible" | "partial" | "not_visible";
-  visibility_score: number;
+  visibility_status: "visible" | "partial" | "not_visible" | "untested";
+  visibility_score?: number | null;
+  brand_mentioned?: boolean;
+  best_rank_position?: number | null;
   trend_change: number;
   last_checked_at?: string | null;
   created_at: string;
@@ -326,6 +370,33 @@ export interface AeoQuestionCreateInput {
   question_text: string;
   category: string;
   intent: string;
+  is_tracked?: boolean;
+}
+
+export interface AeoAnswer {
+  id: string;
+  project_id: string;
+  question_id: string;
+  analysis_id?: string | null;
+  engine: string;
+  model?: string | null;
+  answer_text: string;
+  brand_mentioned: boolean;
+  brand_position?: number | null;
+  mention_snippets: string[];
+  competitor_mentions: Array<{ name: string; domain: string; mentioned: boolean; mention_count: number }>;
+  citations_count: number;
+  latency_ms?: number | null;
+  token_usage?: Record<string, unknown>;
+  status: string;
+  error_message?: string | null;
+  created_at: string;
+  question_text?: string | null;
+}
+
+export interface AeoAnswerListResponse {
+  answers: AeoAnswer[];
+  total: number;
 }
 
 export interface AeoCitation {
@@ -335,6 +406,7 @@ export interface AeoCitation {
   engine: string;
   source_url: string;
   domain: string;
+  citation_type?: "own_domain" | "competitor" | "third_party" | "news" | "review" | "documentation" | "government" | "other" | string;
   citation_status: string;
   citation_text?: string | null;
   created_at: string;
@@ -346,6 +418,7 @@ export interface AeoCitationCreateInput {
   engine: string;
   source_url: string;
   domain?: string;
+  citation_type?: string;
   citation_status?: string;
   citation_text?: string;
 }
@@ -362,6 +435,7 @@ export interface AeoEntity {
   entity_type: string;
   mentions_count: number;
   visibility_rate: number;
+  associated_concepts: string[];
   created_at: string;
 }
 
@@ -371,6 +445,9 @@ export interface AeoEntityCreateInput {
   project_id: string;
   entity_name: string;
   entity_type: string;
+  mentions_count?: number;
+  visibility_rate?: number;
+  associated_concepts?: string[];
 }
 
 export interface AeoEntityListResponse {
@@ -384,8 +461,78 @@ export interface AeoEngineStatus {
   is_connected: boolean;
   tracked_questions: number;
   visibility_rate: number;
-  citations_count: number;
   status_label: string;
+}
+
+export interface AeoLogEntry {
+  timestamp: string;
+  level: "INFO" | "SUCCESS" | "WARNING" | "ERROR";
+  step: string;
+  message: string;
+}
+
+export interface AeoAnalysis {
+  id: string;
+  project_id: string;
+  status: "queued" | "running" | "completed" | "completed_with_warnings" | "failed" | "cancelled";
+  progress: number;
+  current_step: string;
+  logs: AeoLogEntry[];
+  engines_analyzed: string[];
+  questions_analyzed_count: number;
+  answers_collected_count: number;
+  mentions_found_count: number;
+  citations_found_count: number;
+  overall_score?: number | null;
+  summary_data?: Record<string, unknown>;
+  error_message?: string | null;
+  started_at?: string | null;
+  completed_at?: string | null;
+  created_at: string;
+}
+
+export interface AeoVisibilityTrendPoint {
+  date: string;
+  score: number;
+  mention_score?: number;
+  citation_score?: number;
+  coverage_score?: number;
+}
+
+export interface AeoVisibilityData {
+  project_id: string;
+  project_name: string;
+  domain: string;
+  overall_score?: number | null;
+  score_label: string;
+  mention_score: number;
+  citation_score: number;
+  position_score: number;
+  coverage_score: number;
+  score_change: number;
+  last_analyzed_at?: string | null;
+  trend: AeoVisibilityTrendPoint[];
+  snapshots_count: number;
+}
+
+export interface AeoRecommendation {
+  id: string;
+  project_id: string;
+  title: string;
+  category: string;
+  priority: "critical" | "high" | "medium" | "low";
+  opportunity_score: number;
+  reason: string;
+  current_state: string;
+  recommended_action: string;
+  expected_impact: string;
+  status: "open" | "in_progress" | "implemented" | "dismissed";
+  created_at: string;
+}
+
+export interface AeoRecommendationListResponse {
+  recommendations: AeoRecommendation[];
+  total: number;
 }
 
 export interface AeoDashboardSummary {
@@ -395,6 +542,8 @@ export interface AeoDashboardSummary {
   questions_tracked: number;
   total_citations: number;
   total_projects: number;
+  active_project_id?: string | null;
+  active_project_name?: string | null;
   score_trend: Array<{ date: string; score: number }>;
   engines: AeoEngineStatus[];
   recent_questions: AeoQuestion[];

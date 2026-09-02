@@ -1,4 +1,5 @@
 from typing import AsyncGenerator
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -61,11 +62,39 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_db() -> None:
-    """Initialize database tables and clean legacy project domain formats."""
+    """Initialize database tables and run lightweight column schema migrations."""
     async with engine.begin() as conn:
         # Import all models to ensure they are registered with Base.metadata
         import app.models  # noqa: F401
         await conn.run_sync(Base.metadata.create_all)
+
+        # Migration helper for SQLite / Postgres to add newly introduced columns to existing tables
+        columns_to_ensure = [
+            ("aeo_projects", "brand_name", "VARCHAR(255)"),
+            ("aeo_projects", "brand_aliases", "JSON DEFAULT '[]'"),
+            ("aeo_projects", "industry", "VARCHAR(100)"),
+            ("aeo_projects", "country", "VARCHAR(100)"),
+            ("aeo_projects", "target_audience", "VARCHAR(255)"),
+            ("aeo_projects", "target_language", "VARCHAR(20) DEFAULT 'en'"),
+            ("aeo_projects", "competitors", "JSON DEFAULT '[]'"),
+            ("aeo_projects", "score_label", "VARCHAR(50)"),
+            ("aeo_projects", "mention_score", "INTEGER"),
+            ("aeo_projects", "citation_score", "INTEGER"),
+            ("aeo_projects", "position_score", "INTEGER"),
+            ("aeo_projects", "coverage_score", "INTEGER"),
+            ("aeo_projects", "last_analyzed_at", "DATETIME"),
+            ("aeo_questions", "brand_mentioned", "BOOLEAN DEFAULT 0"),
+            ("aeo_questions", "best_rank_position", "INTEGER"),
+            ("aeo_citations", "citation_type", "VARCHAR(50) DEFAULT 'third_party'"),
+            ("aeo_entities", "associated_concepts", "JSON DEFAULT '[]'"),
+        ]
+
+        for table, col, col_type in columns_to_ensure:
+            try:
+                await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
+            except Exception:
+                # Column already exists or table not ready
+                pass
 
     # Sanitize existing project domains if any stored with protocol prefixes
     async with AsyncSessionLocal() as session:

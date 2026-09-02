@@ -8,12 +8,14 @@ import {
   CheckCircle2,
   ExternalLink,
   Sparkles,
+  Tag,
+  Eye,
+  X,
+  Bot,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { MetricCard } from "@/components/ui/MetricCard";
-import { FilterBar } from "@/components/ui/FilterBar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { AeoEntity, AeoProject } from "@/lib/types";
 import { api } from "@/lib/api-client";
@@ -26,11 +28,14 @@ export default function AeoEntitiesPage() {
   const [selectedProjectId, setSelectedProjectId] = useState("");
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
+
+  // Add Entity Modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newEntityName, setNewEntityName] = useState("");
   const [newEntityType, setNewEntityType] = useState("Brand");
-  const [targetProjectId, setTargetProjectId] = useState("");
+  const [conceptsInput, setConceptsInput] = useState("");
 
   const { success, error } = useToast();
 
@@ -41,12 +46,14 @@ export default function AeoEntitiesPage() {
         api.getAeoProjects({ limit: 50 }),
         api.getAeoEntities({
           project_id: selectedProjectId || undefined,
+          entity_type: typeFilter !== "all" ? typeFilter : undefined,
           search: searchQuery || undefined,
         }),
       ]);
-      setProjects(projData.projects || []);
-      if (!targetProjectId && projData.projects?.length > 0) {
-        setTargetProjectId(projData.projects[0].id);
+      const projList = projData.projects || [];
+      setProjects(projList);
+      if (!selectedProjectId && projList.length > 0) {
+        setSelectedProjectId(projList[0].id);
       }
       setEntities(entData.entities || []);
       setTotal(entData.total || 0);
@@ -59,21 +66,28 @@ export default function AeoEntitiesPage() {
 
   useEffect(() => {
     fetchEntities();
-  }, [selectedProjectId, searchQuery]);
+  }, [selectedProjectId, typeFilter, searchQuery]);
 
   const handleAddEntity = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newEntityName || !targetProjectId) return;
+    if (!newEntityName.trim() || !selectedProjectId) return;
+
+    const concepts = conceptsInput
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
 
     try {
       await api.createAeoEntity({
-        project_id: targetProjectId,
-        entity_name: newEntityName,
+        project_id: selectedProjectId,
+        entity_name: newEntityName.trim(),
         entity_type: newEntityType,
+        associated_concepts: concepts,
       });
-      success("Entity Added", "New knowledge entity registered");
+      success("Entity Added", "New knowledge entity registered for tracking");
       setIsAddModalOpen(false);
       setNewEntityName("");
+      setConceptsInput("");
       fetchEntities();
     } catch (err: any) {
       error("Failed to add entity", err.message);
@@ -84,131 +98,162 @@ export default function AeoEntitiesPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200 shadow-xs">
           <div className="space-y-1">
-            <h2 className="text-base font-bold text-slate-900">Knowledge Graph Entities ({total})</h2>
+            <div className="flex items-center gap-2">
+              <Boxes className="w-5 h-5 text-purple-600" />
+              <h2 className="text-base font-bold text-slate-900">Knowledge Graph & Entities ({total})</h2>
+            </div>
             <p className="text-xs text-slate-500">
-              Track brand, product, and topical entities indexed by LLM answer models.
+              Track brand, product, and topical entities recognized across AI knowledge bases and generative search responses.
             </p>
           </div>
 
-          <Button
-            size="sm"
-            variant="aeo"
-            onClick={() => setIsAddModalOpen(true)}
-            leftIcon={<Plus className="w-3.5 h-3.5" />}
-          >
-            + Add Knowledge Entity
-          </Button>
+          <div className="flex items-center gap-3 flex-wrap">
+            {projects.length > 0 && (
+              <select
+                value={selectedProjectId}
+                onChange={(e) => setSelectedProjectId(e.target.value)}
+                className="text-xs font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} ({p.domain})
+                  </option>
+                ))}
+              </select>
+            )}
+
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => setIsAddModalOpen(true)}
+              leftIcon={<Plus className="w-3.5 h-3.5" />}
+              className="bg-purple-600 hover:bg-purple-500 text-white text-xs h-8 shadow-xs"
+            >
+              Add Entity
+            </Button>
+          </div>
         </div>
 
-        {/* Filter Bar */}
-        <FilterBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          searchPlaceholder="Search entity names..."
-          onReset={() => setSearchQuery("")}
-        />
+        {/* Filters Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white rounded-xl border border-slate-200">
+          <div className="flex items-center gap-3 flex-wrap flex-1">
+            <div className="relative flex-1 min-w-[200px] max-w-sm">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search entities or concepts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
 
-        {/* Entities Table */}
-        <Card className="p-0 border-slate-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
-                <tr>
-                  <th className="py-3 px-4">Entity Name</th>
-                  <th className="py-3 px-4">Entity Type</th>
-                  <th className="py-3 px-4 text-center">AI Mentions</th>
-                  <th className="py-3 px-4 text-right">Visibility Rate</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={4} className="py-12 text-center text-slate-400">
-                      <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-purple-600 border-t-transparent" />
-                      <p className="mt-2 text-xs">Loading entities...</p>
-                    </td>
-                  </tr>
-                ) : entities.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="py-12 text-center">
-                      <EmptyState
-                        icon={<Boxes className="w-6 h-6 text-purple-500" />}
-                        title="No Knowledge Entities Registered"
-                        description="Add your brand and core product names to track their recognition in AI answer models."
-                        actionLabel="+ Add Entity"
-                        onAction={() => setIsAddModalOpen(true)}
-                      />
-                    </td>
-                  </tr>
-                ) : (
-                  entities.map((ent) => (
-                    <tr key={ent.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3.5 px-4 font-semibold text-slate-900">
-                        {ent.entity_name}
-                      </td>
-
-                      <td className="py-3.5 px-4">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-purple-50 text-purple-700 border border-purple-200">
-                          {ent.entity_type}
-                        </span>
-                      </td>
-
-                      <td className="py-3.5 px-4 text-center font-mono font-semibold text-slate-800">
-                        {ent.mentions_count}
-                      </td>
-
-                      <td className="py-3.5 px-4 text-right font-mono font-bold text-purple-700">
-                        {ent.visibility_rate}%
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-
-        {/* Add Modal */}
-        {isAddModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in">
-            <div
-              className="relative w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-xl p-6 space-y-4"
-              onClick={(e) => e.stopPropagation()}
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
-              <h3 className="text-base font-bold text-slate-900">Add Knowledge Entity</h3>
+              <option value="all">All Entity Types</option>
+              <option value="Brand">Brand</option>
+              <option value="Product">Product</option>
+              <option value="Topic">Topic / Category</option>
+              <option value="Industry">Industry</option>
+              <option value="Competitor">Competitor</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Entities Grid */}
+        {isLoading ? (
+          <div className="py-20 text-center text-slate-400">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-purple-600 border-t-transparent" />
+            <p className="mt-3 text-xs">Loading knowledge graph entities...</p>
+          </div>
+        ) : entities.length === 0 ? (
+          <Card className="p-16 text-center border-dashed border-2 border-purple-200 bg-purple-50/20">
+            <div className="max-w-md mx-auto space-y-3">
+              <Boxes className="w-8 h-8 text-purple-400 mx-auto" />
+              <p className="text-sm font-bold text-slate-900">No Knowledge Entities Tracked</p>
               <p className="text-xs text-slate-500">
-                Register a brand entity to track recognition across AI answer engines.
+                Run an AEO analysis to auto-extract entities or register core brand products manually.
               </p>
+              <Button size="sm" variant="primary" onClick={() => setIsAddModalOpen(true)} className="bg-purple-600 text-white">
+                Add Knowledge Entity
+              </Button>
+            </div>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {entities.map((entity) => (
+              <Card
+                key={entity.id}
+                className="p-5 border-slate-200 hover:border-purple-300 bg-white space-y-3 transition-colors flex flex-col justify-between"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900">{entity.entity_name}</h3>
+                      <span className="text-[11px] font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-100 mt-1 inline-block">
+                        {entity.entity_type}
+                      </span>
+                    </div>
 
-              <form onSubmit={handleAddEntity} className="space-y-4 pt-2">
-                {projects.length > 0 && (
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-slate-700">Select Brand Project</label>
-                    <select
-                      value={targetProjectId}
-                      onChange={(e) => setTargetProjectId(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-purple-500 font-medium"
-                    >
-                      {projects.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} ({p.domain})
-                        </option>
-                      ))}
-                    </select>
+                    <div className="text-right">
+                      <span className="text-xs font-bold text-slate-900 block">{entity.visibility_rate}%</span>
+                      <span className="text-[10px] text-slate-400">Visibility</span>
+                    </div>
                   </div>
-                )}
 
+                  {/* Associated Concepts */}
+                  {entity.associated_concepts && entity.associated_concepts.length > 0 && (
+                    <div className="space-y-1 pt-1">
+                      <span className="text-[10px] text-slate-400 uppercase font-semibold">Associated Concepts:</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {entity.associated_concepts.map((concept, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-700 border border-slate-200"
+                          >
+                            {concept}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                  <span>Mentions: {entity.mentions_count}</span>
+                  <span className="text-purple-600 font-medium">Knowledge Graph Node</span>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Modal: Add Entity */}
+        {isAddModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-bold text-slate-900">Add Knowledge Entity</h3>
+                <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddEntity} className="space-y-3.5">
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-slate-700">Entity Name</label>
                   <input
                     type="text"
-                    required
-                    placeholder="e.g. Stripe Payments, Stripe Connect"
                     value={newEntityName}
                     onChange={(e) => setNewEntityName(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-purple-500"
+                    placeholder="e.g. Acme Enterprise Search"
+                    required
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
 
@@ -217,26 +262,33 @@ export default function AeoEntitiesPage() {
                   <select
                     value={newEntityType}
                     onChange={(e) => setNewEntityType(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-purple-500 font-medium"
+                    className="w-full text-xs p-2 rounded-xl border border-slate-200"
                   >
                     <option value="Brand">Brand</option>
                     <option value="Product">Product</option>
-                    <option value="Feature">Feature</option>
                     <option value="Topic">Topic</option>
+                    <option value="Industry">Industry</option>
+                    <option value="Competitor">Competitor</option>
                   </select>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsAddModalOpen(false)}
-                  >
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Associated Concepts (Comma-separated)</label>
+                  <input
+                    type="text"
+                    value={conceptsInput}
+                    onChange={(e) => setConceptsInput(e.target.value)}
+                    placeholder="e.g. cloud search, ai indexer, llm connector"
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <Button type="button" size="sm" variant="ghost" onClick={() => setIsAddModalOpen(false)}>
                     Cancel
                   </Button>
-                  <Button type="submit" variant="aeo" size="sm">
-                    Add Entity
+                  <Button type="submit" size="sm" variant="primary" className="bg-purple-600 text-white">
+                    Save Entity
                   </Button>
                 </div>
               </form>

@@ -1,18 +1,27 @@
 import { API_BASE_URL } from "./constants";
 import {
+  AeoAnalysis,
+  AeoAnswer,
+  AeoAnswerListResponse,
   AeoCitation,
   AeoCitationCreateInput,
   AeoCitationListResponse,
   AeoDashboardSummary,
+  AeoEntity,
   AeoEntityCreateInput,
   AeoEntityListResponse,
   AeoEntityResponse,
   AeoProject,
   AeoProjectCreateInput,
+  AeoProjectUpdateInput,
   AeoProjectListResponse,
+  AeoQuestion,
   AeoQuestionCreateInput,
   AeoQuestionListResponse,
   AeoQuestionResponse,
+  AeoRecommendation,
+  AeoRecommendationListResponse,
+  AeoVisibilityData,
   ApiError,
   HealthResponse,
   Project,
@@ -245,8 +254,9 @@ class ApiClient {
   // AEO OPTIMIZATION APIS
   // ==========================================
 
-  async getAeoDashboard(): Promise<AeoDashboardSummary> {
-    return this.request<AeoDashboardSummary>("/aeo/dashboard");
+  async getAeoDashboard(projectId?: string): Promise<AeoDashboardSummary> {
+    const qs = projectId ? `?project_id=${projectId}` : "";
+    return this.request<AeoDashboardSummary>(`/aeo/dashboard${qs}`);
   }
 
   async getAeoProjects(params?: {
@@ -274,6 +284,13 @@ class ApiClient {
     });
   }
 
+  async updateAeoProject(projectId: string, input: AeoProjectUpdateInput): Promise<AeoProject> {
+    return this.request<AeoProject>(`/aeo/projects/${projectId}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    });
+  }
+
   async deleteAeoProject(projectId: string): Promise<{ success: boolean; message: string }> {
     return this.request<{ success: boolean; message: string }>(
       `/aeo/projects/${projectId}`,
@@ -283,12 +300,27 @@ class ApiClient {
     );
   }
 
+  async triggerAeoAnalysis(
+    projectId: string,
+    input?: { engines?: string[]; allow_test_mode?: boolean }
+  ): Promise<AeoAnalysis> {
+    return this.request<AeoAnalysis>(`/aeo/projects/${projectId}/analyze`, {
+      method: "POST",
+      body: JSON.stringify(input || {}),
+    });
+  }
+
+  async getAeoAnalysis(analysisId: string): Promise<AeoAnalysis> {
+    return this.request<AeoAnalysis>(`/aeo/analysis/${analysisId}`);
+  }
+
   async getAeoQuestions(params?: {
     project_id?: string;
     skip?: number;
     limit?: number;
     search?: string;
     intent?: string;
+    category?: string;
     visibility_status?: string;
   }): Promise<AeoQuestionListResponse> {
     const query = new URLSearchParams();
@@ -297,6 +329,7 @@ class ApiClient {
     if (params?.limit !== undefined) query.set("limit", params.limit.toString());
     if (params?.search) query.set("search", params.search);
     if (params?.intent) query.set("intent", params.intent);
+    if (params?.category) query.set("category", params.category);
     if (params?.visibility_status) query.set("visibility_status", params.visibility_status);
 
     const qs = query.toString() ? `?${query.toString()}` : "";
@@ -310,14 +343,69 @@ class ApiClient {
     });
   }
 
+  async updateAeoQuestion(
+    questionId: string,
+    input: Partial<AeoQuestionCreateInput>
+  ): Promise<AeoQuestionResponse> {
+    return this.request<AeoQuestionResponse>(`/aeo/questions/${questionId}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async deleteAeoQuestion(questionId: string): Promise<{ success: boolean; message: string }> {
+    return this.request<{ success: boolean; message: string }>(
+      `/aeo/questions/${questionId}`,
+      {
+        method: "DELETE",
+      }
+    );
+  }
+
+  async generateAeoQuestions(input: {
+    project_id: string;
+    max_questions?: number;
+  }): Promise<AeoQuestionListResponse> {
+    return this.request<AeoQuestionListResponse>("/aeo/questions/generate", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async getAeoAnswers(params?: {
+    project_id?: string;
+    question_id?: string;
+    engine?: string;
+    brand_mentioned?: boolean;
+    skip?: number;
+    limit?: number;
+  }): Promise<AeoAnswerListResponse> {
+    const query = new URLSearchParams();
+    if (params?.project_id) query.set("project_id", params.project_id);
+    if (params?.question_id) query.set("question_id", params.question_id);
+    if (params?.engine) query.set("engine", params.engine);
+    if (params?.brand_mentioned !== undefined) query.set("brand_mentioned", params.brand_mentioned.toString());
+    if (params?.skip !== undefined) query.set("skip", params.skip.toString());
+    if (params?.limit !== undefined) query.set("limit", params.limit.toString());
+
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    return this.request<AeoAnswerListResponse>(`/aeo/answers${qs}`);
+  }
+
+  async getAeoAnswer(answerId: string): Promise<AeoAnswer> {
+    return this.request<AeoAnswer>(`/aeo/answers/${answerId}`);
+  }
+
   async getAeoEntities(params?: {
     project_id?: string;
+    entity_type?: string;
     skip?: number;
     limit?: number;
     search?: string;
   }): Promise<AeoEntityListResponse> {
     const query = new URLSearchParams();
     if (params?.project_id) query.set("project_id", params.project_id);
+    if (params?.entity_type) query.set("entity_type", params.entity_type);
     if (params?.skip !== undefined) query.set("skip", params.skip.toString());
     if (params?.limit !== undefined) query.set("limit", params.limit.toString());
     if (params?.search) query.set("search", params.search);
@@ -335,16 +423,18 @@ class ApiClient {
 
   async getAeoCitations(params?: {
     project_id?: string;
+    engine?: string;
+    citation_type?: string;
     skip?: number;
     limit?: number;
-    engine?: string;
     search?: string;
   }): Promise<AeoCitationListResponse> {
     const query = new URLSearchParams();
     if (params?.project_id) query.set("project_id", params.project_id);
+    if (params?.engine) query.set("engine", params.engine);
+    if (params?.citation_type) query.set("citation_type", params.citation_type);
     if (params?.skip !== undefined) query.set("skip", params.skip.toString());
     if (params?.limit !== undefined) query.set("limit", params.limit.toString());
-    if (params?.engine) query.set("engine", params.engine);
     if (params?.search) query.set("search", params.search);
 
     const qs = query.toString() ? `?${query.toString()}` : "";
@@ -356,6 +446,18 @@ class ApiClient {
       method: "POST",
       body: JSON.stringify(input),
     });
+  }
+
+  async getAeoVisibility(projectId: string): Promise<AeoVisibilityData> {
+    return this.request<AeoVisibilityData>(`/aeo/visibility/${projectId}`);
+  }
+
+  async getAeoRecommendations(projectId: string): Promise<AeoRecommendationListResponse> {
+    return this.request<AeoRecommendationListResponse>(`/aeo/recommendations/${projectId}`);
+  }
+
+  async getAeoReport(projectId: string): Promise<any> {
+    return this.request<any>(`/aeo/reports/${projectId}`);
   }
 
   // --- Phase 4 SEO Action Center & Optimization Methods ---

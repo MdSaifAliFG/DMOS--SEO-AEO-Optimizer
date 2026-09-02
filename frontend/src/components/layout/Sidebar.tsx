@@ -138,6 +138,7 @@ export const Sidebar: React.FC<{
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-4 scrollbar-thin">
         {NAVIGATION_CONFIG.map((group, gIdx) => {
           const isAeoGroup = group.groupKey === "aeo";
+          const isSeoGroup = group.groupKey === "seo";
           const isGroupCollapsed = Boolean(collapsedGroups[group.groupKey]);
 
           return (
@@ -152,7 +153,7 @@ export const Sidebar: React.FC<{
                     <h4
                       className={cn(
                         "text-[10px] font-bold uppercase tracking-wider",
-                        isAeoGroup ? "text-purple-700" : "text-slate-500"
+                        isAeoGroup ? "text-purple-700" : isSeoGroup ? "text-sky-700" : "text-slate-500"
                       )}
                     >
                       {group.groupName}
@@ -160,6 +161,11 @@ export const Sidebar: React.FC<{
                     {isAeoGroup && (
                       <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-50 text-purple-700 border border-purple-200">
                         AI
+                      </span>
+                    )}
+                    {isSeoGroup && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-sky-50 text-sky-700 border border-sky-200">
+                        CORE
                       </span>
                     )}
                   </div>
@@ -180,11 +186,15 @@ export const Sidebar: React.FC<{
 
                     const activeStyles = isAeoGroup
                       ? "bg-purple-50 text-purple-700 font-semibold border border-purple-200 shadow-xs"
-                      : "bg-blue-50 text-blue-700 font-semibold border border-blue-200 shadow-xs";
+                      : isSeoGroup
+                      ? "bg-sky-50 text-sky-700 font-semibold border border-sky-200/90 shadow-xs"
+                      : "bg-slate-100 text-slate-900 font-semibold border border-slate-200 shadow-xs";
 
                     const hoverStyles = isAeoGroup
                       ? "text-slate-600 hover:text-purple-700 hover:bg-purple-50/50"
-                      : "text-slate-600 hover:text-blue-700 hover:bg-blue-50/50";
+                      : isSeoGroup
+                      ? "text-slate-600 hover:text-sky-700 hover:bg-sky-50/60"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50";
 
                     return (
                       <Link

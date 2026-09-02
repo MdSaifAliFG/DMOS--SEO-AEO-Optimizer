@@ -1,4 +1,5 @@
-from abc import ABC, abstractmethod
+from __future__ import annotations
+import asyncio
 from datetime import datetime, timezone
 import logging
 from typing import Any, Dict, List, Optional
@@ -6,130 +7,93 @@ from urllib.parse import urlparse
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from app.models.aeo import AeoCitation, AeoEntity, AeoIntent, AeoProject, AeoQuestion
+
+from app.models.aeo import (
+    AeoAnalysis,
+    AeoAnalysisStatus,
+    AeoAnswer,
+    AeoCitation,
+    AeoEntity,
+    AeoIntent,
+    AeoProject,
+    AeoQuestion,
+    AeoRecommendation,
+    AeoVisibilitySnapshot,
+)
 from app.schemas.aeo import (
     AeoCitationCreate,
-    AeoCitationResponse,
-    AeoDashboardSummaryResponse,
-    AeoEngineStatus,
     AeoEntityCreate,
-    AeoEntityResponse,
     AeoProjectCreate,
-    AeoProjectResponse,
     AeoProjectUpdate,
     AeoQuestionCreate,
-    AeoQuestionResponse,
+    AeoQuestionUpdate,
 )
+from app.services.aeo.analysis_runner import AEOAnalysisRunner
+from app.services.aeo.citation_extractor import CitationExtractorEngine
+from app.services.aeo.competitor_detector import CompetitorDetectorEngine
+from app.services.aeo.provider_interface import AEOProviderRegistry
+from app.services.aeo.question_generator import QuestionGeneratorEngine
+from app.services.crawler.url_validator import validate_url
 
 logger = logging.getLogger(__name__)
 
 
-class AEOProvider(ABC):
-    """
-    Extensible Provider Interface for Answer Engine Optimization.
-    Designed for future clean integration with OpenAI, Perplexity, Google AI, Gemini, Microsoft Copilot.
-    """
-
-    @property
-    @abstractmethod
-    def provider_name(self) -> str:
-        pass
-
-    @abstractmethod
-    async def is_connected(self) -> bool:
-        """Verify API key and connectivity with external AI engine."""
-        pass
-
-    @abstractmethod
-    async def check_visibility(self, domain: str, question: str) -> Dict[str, Any]:
-        """Query answer engine and analyze brand visibility."""
-        pass
-
-    @abstractmethod
-    async def extract_citations(self, answer_text: str, domain: str) -> List[Dict[str, Any]]:
-        """Extract source URLs and citation links from generated answer."""
-        pass
-
-
 class AeoService:
-    """Service layer managing AEO Projects, Questions, Entities, Citations, and Dashboard Analytics."""
+    """
+    Comprehensive Database-Backed Service Layer for Answer Engine Optimization (AEO).
+    Manages Projects, Questions, Answers, Citations, Knowledge Entities,
+    Analyses, Visibility Snapshots, and Recommendations.
+    """
 
+    # --- Project Management ---
     @staticmethod
     async def create_project(db: AsyncSession, data: AeoProjectCreate) -> AeoProject:
-        domain = data.domain.lower().strip()
-        if domain.startswith("https://"):
-            domain = domain[8:]
-        elif domain.startswith("http://"):
-            domain = domain[7:]
-        if domain.endswith("/"):
-            domain = domain[:-1]
+        # Validate domain / URL safety
+        clean_url = data.domain if data.domain.startswith("http") else f"https://{data.domain}"
+        is_safe, err_msg = validate_url(clean_url, check_dns=False)
+        if not is_safe:
+            raise ValueError(f"Invalid or restricted domain target: {err_msg}")
+
+        parsed = urlparse(clean_url)
+        domain = parsed.netloc.lower() or parsed.path.lower().split("/")[0]
+        if domain.startswith("www."):
+            domain = domain[4:]
 
         project = AeoProject(
-            name=data.name,
+            name=data.name.strip(),
             domain=domain,
+            brand_name=data.brand_name or data.name.strip(),
+            brand_aliases=data.brand_aliases or [],
+            industry=data.industry,
+            country=data.country,
+            target_audience=data.target_audience,
+            target_language=data.target_language or "en",
+            competitors=data.competitors or [],
             description=data.description,
-            aeo_score=78,
             settings=data.settings or {},
         )
         db.add(project)
         await db.commit()
         await db.refresh(project)
 
-        # Seed initial starter questions for the project so AEO tracking is active immediately
-        q1 = AeoQuestion(
-            project_id=project.id,
-            question_text=f"What are the key capabilities of {data.name}?",
-            category="Product Overview",
-            intent=AeoIntent.INFORMATIONAL.value,
-            visibility_score=80,
-            visibility_status="visible",
+        # Generate initial starter prompt questions for the brand
+        starter_questions = QuestionGeneratorEngine.generate_questions(
+            brand_name=project.name,
+            domain=project.domain,
+            industry=project.industry,
+            target_audience=project.target_audience,
+            competitors=project.competitors,
+            max_questions=6,
         )
-        q2 = AeoQuestion(
-            project_id=project.id,
-            question_text=f"Top alternatives to {data.name} in 2026",
-            category="Competitor Analysis",
-            intent=AeoIntent.COMMERCIAL.value,
-            visibility_score=75,
-            visibility_status="visible",
-        )
-        q3 = AeoQuestion(
-            project_id=project.id,
-            question_text=f"How to integrate and use {data.name}?",
-            category="Documentation",
-            intent=AeoIntent.TRANSACTIONAL.value,
-            visibility_score=82,
-            visibility_status="visible",
-        )
-        db.add_all([q1, q2, q3])
-
-        # Seed initial citation records
-        c1 = AeoCitation(
-            project_id=project.id,
-            source_url=f"https://{domain}/",
-            domain=domain,
-            engine="chatgpt",
-            citation_status="cited",
-            citation_text=f"{data.name} official website and product documentation.",
-        )
-        c2 = AeoCitation(
-            project_id=project.id,
-            source_url=f"https://{domain}/docs",
-            domain=domain,
-            engine="perplexity",
-            citation_status="referenced",
-            citation_text=f"Developer and integration guides for {data.name}.",
-        )
-        db.add_all([c1, c2])
-
-        # Seed an entity
-        e1 = AeoEntity(
-            project_id=project.id,
-            entity_name=data.name,
-            entity_type="Brand",
-            mentions_count=5,
-            visibility_rate=80,
-        )
-        db.add(e1)
+        for sq in starter_questions:
+            q_obj = AeoQuestion(
+                project_id=project.id,
+                question_text=sq["question_text"],
+                category=sq["category"],
+                intent=sq["intent"],
+                is_tracked=True,
+            )
+            db.add(q_obj)
 
         await db.commit()
         await db.refresh(project)
@@ -142,8 +106,12 @@ class AeoService:
             .where(AeoProject.id == project_id)
             .options(
                 selectinload(AeoProject.questions),
+                selectinload(AeoProject.answers),
                 selectinload(AeoProject.citations),
                 selectinload(AeoProject.entities),
+                selectinload(AeoProject.snapshots),
+                selectinload(AeoProject.recommendations),
+                selectinload(AeoProject.analyses),
             )
         )
         res = await db.execute(query)
@@ -155,12 +123,13 @@ class AeoService:
         skip: int = 0,
         limit: int = 50,
         search: Optional[str] = None,
-    ) -> tuple[List[AeoProjectResponse], int]:
+    ) -> tuple[List[AeoProject], int]:
         query = (
             select(AeoProject)
             .options(
                 selectinload(AeoProject.questions),
                 selectinload(AeoProject.citations),
+                selectinload(AeoProject.snapshots),
             )
             .order_by(desc(AeoProject.created_at))
         )
@@ -168,9 +137,15 @@ class AeoService:
 
         if search:
             s_term = f"%{search.lower()}%"
-            query = query.where(func.lower(AeoProject.name).like(s_term) | func.lower(AeoProject.domain).like(s_term))
+            query = query.where(
+                func.lower(AeoProject.name).like(s_term)
+                | func.lower(AeoProject.domain).like(s_term)
+                | func.lower(AeoProject.industry).like(s_term)
+            )
             count_query = count_query.where(
-                func.lower(AeoProject.name).like(s_term) | func.lower(AeoProject.domain).like(s_term)
+                func.lower(AeoProject.name).like(s_term)
+                | func.lower(AeoProject.domain).like(s_term)
+                | func.lower(AeoProject.industry).like(s_term)
             )
 
         total_res = await db.execute(count_query)
@@ -179,45 +154,26 @@ class AeoService:
         query = query.offset(skip).limit(limit)
         res = await db.execute(query)
         projects = res.scalars().all()
-
-        responses = []
-        for p in projects:
-            q_count = len(p.questions) if p.questions else 0
-            c_count = len(p.citations) if p.citations else 0
-            responses.append(
-                AeoProjectResponse(
-                    id=p.id,
-                    user_id=p.user_id,
-                    name=p.name,
-                    domain=p.domain,
-                    description=p.description,
-                    is_active=p.is_active,
-                    aeo_score=p.aeo_score or 78,
-                    questions_count=q_count,
-                    citations_count=c_count,
-                    settings=p.settings or {},
-                    created_at=p.created_at,
-                    updated_at=p.updated_at,
-                )
-            )
-
-        return responses, total
+        return list(projects), total
 
     @staticmethod
-    async def update_project(db: AsyncSession, project_id: str, data: AeoProjectUpdate) -> Optional[AeoProject]:
+    async def update_project(
+        db: AsyncSession, project_id: str, data: AeoProjectUpdate
+    ) -> Optional[AeoProject]:
         project = await AeoService.get_project(db, project_id)
         if not project:
             return None
 
         update_data = data.model_dump(exclude_unset=True)
         if "domain" in update_data and update_data["domain"]:
-            d = update_data["domain"].lower().strip()
-            if d.startswith("https://"):
-                d = d[8:]
-            elif d.startswith("http://"):
-                d = d[7:]
-            if d.endswith("/"):
-                d = d[:-1]
+            clean_url = update_data["domain"] if update_data["domain"].startswith("http") else f"https://{update_data['domain']}"
+            is_safe, err_msg = validate_url(clean_url, check_dns=False)
+            if not is_safe:
+                raise ValueError(f"Invalid domain: {err_msg}")
+            parsed = urlparse(clean_url)
+            d = parsed.netloc.lower() or parsed.path.lower().split("/")[0]
+            if d.startswith("www."):
+                d = d[4:]
             update_data["domain"] = d
 
         for field, val in update_data.items():
@@ -232,22 +188,64 @@ class AeoService:
         project = await AeoService.get_project(db, project_id)
         if not project:
             return False
-
         await db.delete(project)
         await db.commit()
         return True
 
-    # --- Questions / Prompts ---
+    # --- Analysis Lifecycle Execution ---
+    @staticmethod
+    async def trigger_analysis(
+        db: AsyncSession,
+        project_id: str,
+        engines: Optional[List[str]] = None,
+        allow_test_mode: bool = False,
+    ) -> AeoAnalysis:
+        project = await AeoService.get_project(db, project_id)
+        if not project:
+            raise ValueError(f"Project '{project_id}' not found.")
+
+        target_engines = engines or ["chatgpt", "gemini", "perplexity"]
+
+        analysis = AeoAnalysis(
+            project_id=project.id,
+            status=AeoAnalysisStatus.QUEUED.value,
+            progress=0,
+            current_step="Queued for answer engine synthesis",
+            engines_analyzed=target_engines,
+        )
+        db.add(analysis)
+        await db.commit()
+        await db.refresh(analysis)
+
+        # Launch background task
+        asyncio.create_task(
+            AEOAnalysisRunner.run_analysis_lifecycle(
+                analysis_id=analysis.id,
+                engines_to_run=target_engines,
+                allow_test_mode=allow_test_mode,
+            )
+        )
+        return analysis
+
+    @staticmethod
+    async def get_analysis(db: AsyncSession, analysis_id: str) -> Optional[AeoAnalysis]:
+        res = await db.execute(
+            select(AeoAnalysis)
+            .where(AeoAnalysis.id == analysis_id)
+            .options(selectinload(AeoAnalysis.answers))
+        )
+        return res.scalar_one_or_none()
+
+    # --- Questions Management ---
     @staticmethod
     async def create_question(db: AsyncSession, data: AeoQuestionCreate) -> AeoQuestion:
         intent_val = data.intent.value if isinstance(data.intent, AeoIntent) else str(data.intent)
         question = AeoQuestion(
             project_id=data.project_id,
-            question_text=data.question_text,
-            category=data.category,
+            question_text=data.question_text.strip(),
+            category=data.category.strip(),
             intent=intent_val,
-            visibility_score=78,
-            visibility_status="visible",
+            is_tracked=data.is_tracked if data.is_tracked is not None else True,
         )
         db.add(question)
         await db.commit()
@@ -262,9 +260,17 @@ class AeoService:
         limit: int = 50,
         search: Optional[str] = None,
         intent: Optional[str] = None,
+        category: Optional[str] = None,
         visibility_status: Optional[str] = None,
-    ) -> tuple[List[AeoQuestionResponse], int]:
-        query = select(AeoQuestion).order_by(desc(AeoQuestion.created_at))
+    ) -> tuple[List[AeoQuestion], int]:
+        query = (
+            select(AeoQuestion)
+            .options(
+                selectinload(AeoQuestion.answers),
+                selectinload(AeoQuestion.citations),
+            )
+            .order_by(desc(AeoQuestion.created_at))
+        )
         count_query = select(func.count(AeoQuestion.id))
 
         if project_id:
@@ -275,6 +281,10 @@ class AeoService:
             query = query.where(AeoQuestion.intent == intent)
             count_query = count_query.where(AeoQuestion.intent == intent)
 
+        if category and category != "all":
+            query = query.where(AeoQuestion.category == category)
+            count_query = count_query.where(AeoQuestion.category == category)
+
         if visibility_status and visibility_status != "all":
             query = query.where(AeoQuestion.visibility_status == visibility_status)
             count_query = count_query.where(AeoQuestion.visibility_status == visibility_status)
@@ -282,10 +292,12 @@ class AeoService:
         if search:
             s_term = f"%{search.lower()}%"
             query = query.where(
-                func.lower(AeoQuestion.question_text).like(s_term) | func.lower(AeoQuestion.category).like(s_term)
+                func.lower(AeoQuestion.question_text).like(s_term)
+                | func.lower(AeoQuestion.category).like(s_term)
             )
             count_query = count_query.where(
-                func.lower(AeoQuestion.question_text).like(s_term) | func.lower(AeoQuestion.category).like(s_term)
+                func.lower(AeoQuestion.question_text).like(s_term)
+                | func.lower(AeoQuestion.category).like(s_term)
             )
 
         total_res = await db.execute(count_query)
@@ -294,30 +306,134 @@ class AeoService:
         query = query.offset(skip).limit(limit)
         res = await db.execute(query)
         questions = res.scalars().all()
+        return list(questions), total
 
-        return [AeoQuestionResponse.model_validate(q) for q in questions], total
+    @staticmethod
+    async def update_question(
+        db: AsyncSession, question_id: str, data: AeoQuestionUpdate
+    ) -> Optional[AeoQuestion]:
+        q = await db.get(AeoQuestion, question_id)
+        if not q:
+            return None
+        up_data = data.model_dump(exclude_unset=True)
+        if "intent" in up_data and isinstance(up_data["intent"], AeoIntent):
+            up_data["intent"] = up_data["intent"].value
+        for f, v in up_data.items():
+            setattr(q, f, v)
+        await db.commit()
+        await db.refresh(q)
+        return q
 
     @staticmethod
     async def delete_question(db: AsyncSession, question_id: str) -> bool:
-        query = select(AeoQuestion).where(AeoQuestion.id == question_id)
-        res = await db.execute(query)
-        q = res.scalar_one_or_none()
+        q = await db.get(AeoQuestion, question_id)
         if not q:
             return False
         await db.delete(q)
         await db.commit()
         return True
 
-    # --- Citations ---
+    @staticmethod
+    async def generate_and_save_questions(
+        db: AsyncSession,
+        project_id: str,
+        max_questions: int = 10,
+    ) -> List[AeoQuestion]:
+        project = await AeoService.get_project(db, project_id)
+        if not project:
+            raise ValueError(f"Project '{project_id}' not found.")
+
+        generated = QuestionGeneratorEngine.generate_questions(
+            brand_name=project.name,
+            domain=project.domain,
+            industry=project.industry,
+            target_audience=project.target_audience,
+            competitors=project.competitors,
+            max_questions=max_questions,
+        )
+
+        existing_texts = {q.question_text.lower() for q in (project.questions or [])}
+        created = []
+        for g in generated:
+            if g["question_text"].lower() not in existing_texts:
+                q_obj = AeoQuestion(
+                    project_id=project.id,
+                    question_text=g["question_text"],
+                    category=g["category"],
+                    intent=g["intent"],
+                    is_tracked=True,
+                )
+                db.add(q_obj)
+                created.append(q_obj)
+
+        if created:
+            await db.commit()
+            for q in created:
+                await db.refresh(q)
+
+        return created
+
+    # --- Answers Management ---
+    @staticmethod
+    async def get_answers(
+        db: AsyncSession,
+        project_id: Optional[str] = None,
+        question_id: Optional[str] = None,
+        engine: Optional[str] = None,
+        brand_mentioned: Optional[bool] = None,
+        skip: int = 0,
+        limit: int = 50,
+    ) -> tuple[List[AeoAnswer], int]:
+        query = (
+            select(AeoAnswer)
+            .options(selectinload(AeoAnswer.question))
+            .order_by(desc(AeoAnswer.created_at))
+        )
+        count_query = select(func.count(AeoAnswer.id))
+
+        if project_id:
+            query = query.where(AeoAnswer.project_id == project_id)
+            count_query = count_query.where(AeoAnswer.project_id == project_id)
+
+        if question_id:
+            query = query.where(AeoAnswer.question_id == question_id)
+            count_query = count_query.where(AeoAnswer.question_id == question_id)
+
+        if engine and engine != "all":
+            query = query.where(AeoAnswer.engine == engine.lower())
+            count_query = count_query.where(AeoAnswer.engine == engine.lower())
+
+        if brand_mentioned is not None:
+            query = query.where(AeoAnswer.brand_mentioned == brand_mentioned)
+            count_query = count_query.where(AeoAnswer.brand_mentioned == brand_mentioned)
+
+        total_res = await db.execute(count_query)
+        total = total_res.scalar() or 0
+
+        query = query.offset(skip).limit(limit)
+        res = await db.execute(query)
+        answers = res.scalars().all()
+        return list(answers), total
+
+    @staticmethod
+    async def get_answer(db: AsyncSession, answer_id: str) -> Optional[AeoAnswer]:
+        res = await db.execute(
+            select(AeoAnswer)
+            .where(AeoAnswer.id == answer_id)
+            .options(
+                selectinload(AeoAnswer.question),
+                selectinload(AeoAnswer.project),
+            )
+        )
+        return res.scalar_one_or_none()
+
+    # --- Citations Management ---
     @staticmethod
     async def create_citation(db: AsyncSession, data: AeoCitationCreate) -> AeoCitation:
-        domain = data.domain
-        if not domain:
-            try:
-                parsed = urlparse(data.source_url)
-                domain = parsed.netloc or parsed.path.split("/")[0]
-            except Exception:
-                domain = "unknown"
+        parsed = urlparse(data.source_url)
+        domain = data.domain or parsed.netloc.lower() or "unknown"
+        if domain.startswith("www."):
+            domain = domain[4:]
 
         citation = AeoCitation(
             project_id=data.project_id,
@@ -325,7 +441,8 @@ class AeoService:
             engine=data.engine.lower(),
             source_url=data.source_url,
             domain=domain,
-            citation_status=data.citation_status,
+            citation_type=data.citation_type or "third_party",
+            citation_status=data.citation_status or "cited",
             citation_text=data.citation_text,
         )
         db.add(citation)
@@ -338,10 +455,11 @@ class AeoService:
         db: AsyncSession,
         project_id: Optional[str] = None,
         engine: Optional[str] = None,
+        citation_type: Optional[str] = None,
         skip: int = 0,
         limit: int = 50,
         search: Optional[str] = None,
-    ) -> tuple[List[AeoCitationResponse], int]:
+    ) -> tuple[List[AeoCitation], int]:
         query = select(AeoCitation).order_by(desc(AeoCitation.created_at))
         count_query = select(func.count(AeoCitation.id))
 
@@ -353,13 +471,19 @@ class AeoService:
             query = query.where(AeoCitation.engine == engine.lower())
             count_query = count_query.where(AeoCitation.engine == engine.lower())
 
+        if citation_type and citation_type != "all":
+            query = query.where(AeoCitation.citation_type == citation_type)
+            count_query = count_query.where(AeoCitation.citation_type == citation_type)
+
         if search:
             s_term = f"%{search.lower()}%"
             query = query.where(
-                func.lower(AeoCitation.source_url).like(s_term) | func.lower(AeoCitation.domain).like(s_term)
+                func.lower(AeoCitation.source_url).like(s_term)
+                | func.lower(AeoCitation.domain).like(s_term)
             )
             count_query = count_query.where(
-                func.lower(AeoCitation.source_url).like(s_term) | func.lower(AeoCitation.domain).like(s_term)
+                func.lower(AeoCitation.source_url).like(s_term)
+                | func.lower(AeoCitation.domain).like(s_term)
             )
 
         total_res = await db.execute(count_query)
@@ -368,18 +492,18 @@ class AeoService:
         query = query.offset(skip).limit(limit)
         res = await db.execute(query)
         citations = res.scalars().all()
+        return list(citations), total
 
-        return [AeoCitationResponse.model_validate(c) for c in citations], total
-
-    # --- Entities ---
+    # --- Entities Management ---
     @staticmethod
     async def create_entity(db: AsyncSession, data: AeoEntityCreate) -> AeoEntity:
         entity = AeoEntity(
             project_id=data.project_id,
-            entity_name=data.entity_name,
-            entity_type=data.entity_type,
-            mentions_count=1,
-            visibility_rate=80,
+            entity_name=data.entity_name.strip(),
+            entity_type=data.entity_type.strip(),
+            mentions_count=data.mentions_count or 1,
+            visibility_rate=data.visibility_rate or 80,
+            associated_concepts=data.associated_concepts or [],
         )
         db.add(entity)
         await db.commit()
@@ -390,16 +514,21 @@ class AeoService:
     async def get_entities(
         db: AsyncSession,
         project_id: Optional[str] = None,
+        entity_type: Optional[str] = None,
         skip: int = 0,
         limit: int = 50,
         search: Optional[str] = None,
-    ) -> tuple[List[AeoEntityResponse], int]:
+    ) -> tuple[List[AeoEntity], int]:
         query = select(AeoEntity).order_by(desc(AeoEntity.mentions_count))
         count_query = select(func.count(AeoEntity.id))
 
         if project_id:
             query = query.where(AeoEntity.project_id == project_id)
             count_query = count_query.where(AeoEntity.project_id == project_id)
+
+        if entity_type and entity_type != "all":
+            query = query.where(AeoEntity.entity_type == entity_type)
+            count_query = count_query.where(AeoEntity.entity_type == entity_type)
 
         if search:
             s_term = f"%{search.lower()}%"
@@ -412,173 +541,171 @@ class AeoService:
         query = query.offset(skip).limit(limit)
         res = await db.execute(query)
         entities = res.scalars().all()
+        return list(entities), total
 
-        return [AeoEntityResponse.model_validate(e) for e in entities], total
-
-    # --- Dashboard Summary ---
+    # --- Visibility & Recommendations ---
     @staticmethod
-    async def get_dashboard_summary(db: AsyncSession) -> AeoDashboardSummaryResponse:
-        """Aggregates real AEO metrics across projects, questions, citations, and engine monitoring."""
+    async def get_visibility_data(db: AsyncSession, project_id: str) -> Dict[str, Any]:
+        project = await AeoService.get_project(db, project_id)
+        if not project:
+            raise ValueError(f"Project '{project_id}' not found.")
+
+        # Load snapshots ordered chronologically
+        snapshots_res = await db.execute(
+            select(AeoVisibilitySnapshot)
+            .where(AeoVisibilitySnapshot.project_id == project_id)
+            .order_by(AeoVisibilitySnapshot.created_at.asc())
+        )
+        snapshots = list(snapshots_res.scalars().all())
+
+        trend_points = [
+            {
+                "date": s.created_at.strftime("%b %d, %H:%M"),
+                "score": s.overall_score,
+                "mention_score": s.mention_score,
+                "citation_score": s.citation_score,
+                "coverage_score": s.coverage_score,
+            }
+            for s in snapshots
+        ]
+
+        latest_snapshot = snapshots[-1] if snapshots else None
+        prev_snapshot = snapshots[-2] if len(snapshots) >= 2 else None
+
+        score_change = (
+            latest_snapshot.overall_score - prev_snapshot.overall_score
+            if latest_snapshot and prev_snapshot
+            else 0
+        )
+
+        return {
+            "project_id": project.id,
+            "project_name": project.name,
+            "domain": project.domain,
+            "overall_score": project.aeo_score,
+            "score_label": project.score_label or "Untested",
+            "mention_score": project.mention_score or 0,
+            "citation_score": project.citation_score or 0,
+            "position_score": project.position_score or 0,
+            "coverage_score": project.coverage_score or 0,
+            "score_change": score_change,
+            "last_analyzed_at": project.last_analyzed_at,
+            "trend": trend_points,
+            "snapshots_count": len(snapshots),
+        }
+
+    @staticmethod
+    async def get_recommendations(
+        db: AsyncSession, project_id: str
+    ) -> List[AeoRecommendation]:
+        res = await db.execute(
+            select(AeoRecommendation)
+            .where(AeoRecommendation.project_id == project_id)
+            .order_by(desc(AeoRecommendation.opportunity_score))
+        )
+        return list(res.scalars().all())
+
+    # --- Dashboard Aggregation ---
+    @staticmethod
+    async def get_dashboard_summary(
+        db: AsyncSession, project_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Computes 100% real database metrics for the AEO Dashboard.
+        Never returns fabricated numbers or placeholder engine percentages.
+        """
+        # Projects
         proj_count_res = await db.execute(select(func.count(AeoProject.id)))
         total_projects = proj_count_res.scalar() or 0
 
-        q_count_res = await db.execute(select(func.count(AeoQuestion.id)))
+        target_project = None
+        if project_id:
+            target_project = await AeoService.get_project(db, project_id)
+        elif total_projects > 0:
+            p_res = await db.execute(
+                select(AeoProject).order_by(desc(AeoProject.updated_at)).limit(1)
+            )
+            target_project = p_res.scalar_one_or_none()
+
+        # Questions
+        q_filter = select(func.count(AeoQuestion.id))
+        if target_project:
+            q_filter = q_filter.where(AeoQuestion.project_id == target_project.id)
+        q_count_res = await db.execute(q_filter)
         questions_tracked = q_count_res.scalar() or 0
 
-        cit_count_res = await db.execute(select(func.count(AeoCitation.id)))
-        total_citations = cit_count_res.scalar() or 0
+        # Citations
+        c_filter = select(func.count(AeoCitation.id))
+        if target_project:
+            c_filter = c_filter.where(AeoCitation.project_id == target_project.id)
+        c_count_res = await db.execute(c_filter)
+        total_citations = c_count_res.scalar() or 0
 
-        # Auto-seed baseline questions if projects exist but have none
-        if total_projects > 0 and questions_tracked == 0:
-            projs_res = await db.execute(select(AeoProject))
-            existing_projs = projs_res.scalars().all()
-            for p in existing_projs:
-                p.aeo_score = p.aeo_score or 78
-                q1 = AeoQuestion(
-                    project_id=p.id,
-                    question_text=f"What are the key capabilities of {p.name}?",
-                    category="Product Overview",
-                    intent=AeoIntent.INFORMATIONAL.value,
-                    visibility_score=80,
-                    visibility_status="visible",
-                )
-                q2 = AeoQuestion(
-                    project_id=p.id,
-                    question_text=f"Top alternatives to {p.name} in 2026",
-                    category="Competitor Analysis",
-                    intent=AeoIntent.COMMERCIAL.value,
-                    visibility_score=75,
-                    visibility_status="visible",
-                )
-                q3 = AeoQuestion(
-                    project_id=p.id,
-                    question_text=f"How does {p.name} perform for enterprise workloads?",
-                    category="Enterprise Solutions",
-                    intent=AeoIntent.COMMERCIAL.value,
-                    visibility_score=85,
-                    visibility_status="visible",
-                )
-                db.add_all([q1, q2, q3])
-            await db.commit()
+        # Answers
+        ans_filter = select(AeoAnswer)
+        if target_project:
+            ans_filter = ans_filter.where(AeoAnswer.project_id == target_project.id)
+        ans_res = await db.execute(ans_filter)
+        all_answers = list(ans_res.scalars().all())
 
-            q_count_res = await db.execute(select(func.count(AeoQuestion.id)))
-            questions_tracked = q_count_res.scalar() or 0
-
-        # Auto-seed baseline citations if projects exist but have none
-        if total_projects > 0 and total_citations == 0:
-            projs_res = await db.execute(select(AeoProject))
-            existing_projs = projs_res.scalars().all()
-            for p in existing_projs:
-                c1 = AeoCitation(
-                    project_id=p.id,
-                    source_url=f"https://{p.domain}/",
-                    domain=p.domain,
-                    engine="chatgpt",
-                    citation_status="cited",
-                    citation_text=f"{p.name} official website and product documentation.",
-                )
-                c2 = AeoCitation(
-                    project_id=p.id,
-                    source_url=f"https://{p.domain}/docs",
-                    domain=p.domain,
-                    engine="perplexity",
-                    citation_status="referenced",
-                    citation_text=f"Developer and integration guides for {p.name}.",
-                )
-                c3 = AeoCitation(
-                    project_id=p.id,
-                    source_url=f"https://{p.domain}/features",
-                    domain=p.domain,
-                    engine="gemini",
-                    citation_status="cited",
-                    citation_text=f"{p.name} core platform architecture and features breakdown.",
-                )
-                db.add_all([c1, c2, c3])
-            await db.commit()
-
-            cit_count_res = await db.execute(select(func.count(AeoCitation.id)))
-            total_citations = cit_count_res.scalar() or 0
-
-        # Calculate average visibility rate across tracked questions
-        avg_vis_res = await db.execute(select(func.avg(AeoQuestion.visibility_score)))
-        raw_avg_vis = avg_vis_res.scalar()
-        answer_visibility_rate = int(round(raw_avg_vis)) if raw_avg_vis is not None else (78 if total_projects > 0 else 0)
-
-        # Calculate AEO score (if projects exist, average or 78)
-        avg_score_res = await db.execute(select(func.avg(AeoProject.aeo_score)))
-        raw_avg_score = avg_score_res.scalar()
-        aeo_score = int(round(raw_avg_score)) if raw_avg_score is not None else (78 if total_projects > 0 else None)
-
-        score_label = (
-            "Good" if aeo_score and aeo_score >= 80 else "Fair" if aeo_score and aeo_score >= 70 else "Needs Improvement" if aeo_score else None
+        brand_mentions_count = sum(1 for a in all_answers if a.brand_mentioned)
+        mention_rate = (
+            int(round((brand_mentions_count / len(all_answers)) * 100))
+            if all_answers
+            else 0
         )
 
-        # Engine monitoring statuses
-        engines: List[AeoEngineStatus] = [
-            AeoEngineStatus(
-                engine_id="chatgpt",
-                name="ChatGPT Search (OpenAI)",
-                is_connected=False,
-                tracked_questions=questions_tracked,
-                visibility_rate=answer_visibility_rate if questions_tracked > 0 else 0,
-                citations_count=total_citations,
-                status_label="Integration Not Connected",
-            ),
-            AeoEngineStatus(
-                engine_id="perplexity",
-                name="Perplexity AI",
-                is_connected=False,
-                tracked_questions=questions_tracked,
-                visibility_rate=answer_visibility_rate if questions_tracked > 0 else 0,
-                citations_count=total_citations,
-                status_label="Integration Not Connected",
-            ),
-            AeoEngineStatus(
-                engine_id="google_ai",
-                name="Google AI Overviews",
-                is_connected=False,
-                tracked_questions=questions_tracked,
-                visibility_rate=answer_visibility_rate if questions_tracked > 0 else 0,
-                citations_count=total_citations,
-                status_label="Integration Not Connected",
-            ),
-            AeoEngineStatus(
-                engine_id="gemini",
-                name="Google Gemini",
-                is_connected=False,
-                tracked_questions=questions_tracked,
-                visibility_rate=answer_visibility_rate if questions_tracked > 0 else 0,
-                citations_count=total_citations,
-                status_label="Integration Not Connected",
-            ),
-            AeoEngineStatus(
-                engine_id="copilot",
-                name="Microsoft Copilot",
-                is_connected=False,
-                tracked_questions=questions_tracked,
-                visibility_rate=answer_visibility_rate if questions_tracked > 0 else 0,
-                citations_count=total_citations,
-                status_label="Integration Not Connected",
-            ),
-        ]
+        # Engine Statuses
+        engine_statuses = AEOProviderRegistry.get_all_engine_statuses()
+        for eng in engine_statuses:
+            eng_id = eng["engine_id"]
+            eng_ans = [a for a in all_answers if a.engine == eng_id]
+            eng["tracked_questions"] = len(eng_ans)
+            eng["visibility_rate"] = (
+                int(round((sum(1 for a in eng_ans if a.brand_mentioned) / len(eng_ans)) * 100))
+                if eng_ans
+                else 0
+            )
 
-        # Recent questions (queried fresh after auto-seeding)
-        q_res = await db.execute(select(AeoQuestion).order_by(desc(AeoQuestion.created_at)).limit(5))
-        recent_questions = [AeoQuestionResponse.model_validate(q) for q in q_res.scalars().all()]
+        # Recent Questions
+        rq_query = select(AeoQuestion).order_by(desc(AeoQuestion.created_at)).limit(5)
+        if target_project:
+            rq_query = rq_query.where(AeoQuestion.project_id == target_project.id)
+        rq_res = await db.execute(rq_query)
+        recent_questions = list(rq_res.scalars().all())
 
-        # Recent citations (queried fresh after auto-seeding)
-        c_res = await db.execute(select(AeoCitation).order_by(desc(AeoCitation.created_at)).limit(5))
-        recent_citations = [AeoCitationResponse.model_validate(c) for c in c_res.scalars().all()]
+        # Recent Citations
+        rc_query = select(AeoCitation).order_by(desc(AeoCitation.created_at)).limit(5)
+        if target_project:
+            rc_query = rc_query.where(AeoCitation.project_id == target_project.id)
+        rc_res = await db.execute(rc_query)
+        recent_citations = list(rc_res.scalars().all())
 
-        return AeoDashboardSummaryResponse(
-            aeo_score=aeo_score,
-            score_label=score_label,
-            answer_visibility_rate=answer_visibility_rate,
-            questions_tracked=questions_tracked,
-            total_citations=total_citations,
-            total_projects=total_projects,
-            score_trend=[],
-            engines=engines,
-            recent_questions=recent_questions,
-            recent_citations=recent_citations,
-        )
+        # Historical Trend
+        trend_points = []
+        if target_project:
+            snap_res = await db.execute(
+                select(AeoVisibilitySnapshot)
+                .where(AeoVisibilitySnapshot.project_id == target_project.id)
+                .order_by(AeoVisibilitySnapshot.created_at.asc())
+            )
+            for s in snap_res.scalars().all():
+                trend_points.append({
+                    "date": s.created_at.strftime("%b %d"),
+                    "score": s.overall_score,
+                })
+
+        return {
+            "aeo_score": target_project.aeo_score if target_project else None,
+            "score_label": target_project.score_label if target_project else None,
+            "answer_visibility_rate": mention_rate,
+            "questions_tracked": questions_tracked,
+            "total_citations": total_citations,
+            "total_projects": total_projects,
+            "active_project_id": target_project.id if target_project else None,
+            "active_project_name": target_project.name if target_project else None,
+            "score_trend": trend_points,
+            "engines": engine_statuses,
+            "recent_questions": recent_questions,
+            "recent_citations": recent_citations,
+        }
