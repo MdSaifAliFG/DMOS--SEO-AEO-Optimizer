@@ -26,7 +26,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { StartAuditModal } from "@/components/scans/StartAuditModal";
 import { Project } from "@/lib/types";
 import { api } from "@/lib/api-client";
-import { formatDate, formatTimeAgo } from "@/lib/utils";
+import { cleanDomain, formatDate, formatTimeAgo } from "@/lib/utils";
 import { useToast } from "@/hooks/useToast";
 
 export default function SeoProjectsPage() {
@@ -72,9 +72,10 @@ export default function SeoProjectsPage() {
 
     setIsSubmitting(true);
     try {
+      const cleaned = cleanDomain(newProjectDomain.trim());
       const created = await api.createProject({
         name: newProjectName.trim(),
-        domain: newProjectDomain.trim(),
+        domain: cleaned,
         settings: {
           crawl_limit: crawlLimit,
           respect_robots: respectRobots,

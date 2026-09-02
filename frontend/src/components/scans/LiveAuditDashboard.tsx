@@ -282,6 +282,35 @@ export function LiveAuditDashboard({
           {/* Live Streaming Logs */}
           <ScanLogsViewer logs={activeScan.logs} isStreaming={true} />
         </div>
+      ) : activeScan.status === "failed" ? (
+        /* Failed Audit View */
+        <div className="space-y-6">
+          <Card className="p-6 border-rose-200 bg-rose-50/50 shadow-xs space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-rose-200 text-rose-800">
+                    Audit Failed
+                  </span>
+                  <span className="text-xs font-mono text-slate-500">{activeScan.target_url}</span>
+                </div>
+                <h3 className="text-sm font-bold text-rose-900">Audit Execution Encountered an Error</h3>
+                <p className="text-xs text-rose-700 leading-relaxed font-mono">
+                  {activeScan.error_message || "The website crawler or analysis engine encountered an unexpected error during execution."}
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Audit Logs */}
+          <div className="space-y-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Execution Telemetry & Error Logs</h4>
+            <ScanLogsViewer logs={activeScan.logs} isStreaming={false} />
+          </div>
+        </div>
       ) : (
         /* Completed Audit Results View */
         <div className="space-y-8">

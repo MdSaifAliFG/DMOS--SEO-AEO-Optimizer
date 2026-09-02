@@ -26,7 +26,7 @@ import { LiveAuditDashboard } from "@/components/scans/LiveAuditDashboard";
 import { StartAuditModal } from "@/components/scans/StartAuditModal";
 import { Project, Scan, ScanResultsResponse } from "@/lib/types";
 import { api } from "@/lib/api-client";
-import { formatDate, formatTimeAgo } from "@/lib/utils";
+import { cleanDomain, formatDate, formatTimeAgo } from "@/lib/utils";
 import { useToast } from "@/hooks/useToast";
 
 export default function SeoProjectDetailPage({
@@ -58,7 +58,10 @@ export default function SeoProjectDetailPage({
       const historyData = await api.getProjectScans(projectId, { limit: 20 });
       setScansHistory(historyData.scans || []);
 
-      const targetScanId = initialScanId || historyData.scans?.[0]?.id;
+      const targetScanId =
+        initialScanId ||
+        historyData.scans?.find((s) => s.status === "completed")?.id ||
+        historyData.scans?.[0]?.id;
       if (targetScanId) {
         const scanObj = await api.getScan(targetScanId);
         setActiveScan(scanObj);
@@ -130,7 +133,7 @@ export default function SeoProjectDetailPage({
               <h2 className="text-lg font-bold text-slate-900 tracking-tight">{project.name}</h2>
             </div>
             <div className="flex items-center gap-3 text-xs text-slate-500 font-mono">
-              <span>https://{project.domain}</span>
+              <span>https://{cleanDomain(project.domain)}</span>
               <span>•</span>
               <span>Created {formatDate(project.created_at)}</span>
               <span>•</span>

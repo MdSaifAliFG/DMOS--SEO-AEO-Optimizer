@@ -207,7 +207,14 @@ export default function SeoPageDetailPage({
         {/* Detected Issues on This Page */}
         {pageDetail.issues && pageDetail.issues.length > 0 && (
           <Card className="p-5 border-slate-200 space-y-4">
-            <h3 className="text-sm font-bold text-slate-900">Page-Level Issues ({pageDetail.issues.length})</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-900">Optimization Opportunities ({pageDetail.issues.length})</h3>
+              <Link href="/seo/actions">
+                <Button size="sm" variant="outline" className="text-xs">
+                  View in Action Center →
+                </Button>
+              </Link>
+            </div>
             <div className="space-y-2.5">
               {pageDetail.issues.map((issue) => (
                 <div
@@ -229,8 +236,13 @@ export default function SeoPageDetailPage({
                     </span>
                   </div>
                   <p className="text-slate-600">{issue.description}</p>
-                  <div className="pt-1 text-[11px] text-blue-700 bg-blue-50/70 p-2 rounded-lg border border-blue-100">
-                    <strong>Recommendation:</strong> {issue.recommendation}
+                  <div className="pt-1 text-[11px] text-blue-700 bg-blue-50/70 p-2 rounded-lg border border-blue-100 flex items-center justify-between">
+                    <span><strong>Recommendation:</strong> {issue.recommendation}</span>
+                    {issue.category === "metadata" && (
+                      <Link href="/seo/optimize/metadata" className="text-blue-600 hover:underline font-semibold ml-2 shrink-0">
+                        Optimize Metadata →
+                      </Link>
+                    )}
                   </div>
                 </div>
               ))}

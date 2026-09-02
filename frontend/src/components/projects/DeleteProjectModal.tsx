@@ -45,23 +45,32 @@ export const DeleteProjectModal: React.FC<DeleteProjectModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title="Delete Website Project"
+      description="This action cannot be undone."
       maxWidth="sm"
     >
-      <div className="space-y-4">
-        <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-          <div className="text-xs text-rose-200 leading-relaxed">
-            Are you sure you want to delete <strong>{project.name}</strong> (<code>{project.domain}</code>)? All scan history and lifecycle logs will be permanently deleted.
+      <div className="space-y-5">
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-900 flex items-start gap-3 shadow-2xs">
+          <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
+            <AlertTriangle className="w-4 h-4" />
+          </div>
+          <div className="space-y-1">
+            <p className="font-semibold text-rose-950">
+              Permanently delete {project.name}?
+            </p>
+            <p className="text-rose-700 text-[11.5px] leading-relaxed">
+              All associated crawl data, page metadata, detected SEO issues, and optimization history for <span className="font-mono font-semibold text-rose-900">{project.domain}</span> will be permanently removed.
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-800">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={onClose}
             disabled={isDeleting}
+            className="text-slate-600 hover:text-slate-900"
           >
             Cancel
           </Button>
@@ -69,11 +78,12 @@ export const DeleteProjectModal: React.FC<DeleteProjectModalProps> = ({
             type="button"
             variant="danger"
             size="sm"
-            isLoading={isDeleting}
             onClick={handleDelete}
+            isLoading={isDeleting}
             leftIcon={<Trash2 className="w-3.5 h-3.5" />}
+            className="bg-rose-600 hover:bg-rose-700 text-white font-bold"
           >
-            Confirm Delete
+            Delete Project
           </Button>
         </div>
       </div>

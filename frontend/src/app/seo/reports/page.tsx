@@ -12,19 +12,23 @@ import {
   Clock,
   ArrowRight,
   Printer,
+  Sparkles,
+  ListTodo,
+  TrendingUp,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ScoreRing } from "@/components/ui/ScoreRing";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Project, Scan } from "@/lib/types";
+import { Project, Scan, SeoOptimizationSummary } from "@/lib/types";
 import { api } from "@/lib/api-client";
 import { formatDate, formatTimeAgo } from "@/lib/utils";
 
 export default function SeoReportsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [scans, setScans] = useState<Scan[]>([]);
+  const [optSummary, setOptSummary] = useState<SeoOptimizationSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -35,12 +39,20 @@ export default function SeoReportsPage() {
         setProjects(projData.projects || []);
 
         if (projData.projects?.length > 0) {
-          const allScans: Scan[] = [];
-          for (const p of projData.projects.slice(0, 10)) {
-            const scData = await api.getProjectScans(p.id, { limit: 5 });
-            if (scData.scans) allScans.push(...scData.scans);
+          const firstProjId = projData.projects[0].id;
+          const [allScans, optData] = await Promise.all([
+            Promise.all(
+              projData.projects.slice(0, 10).map((p) => api.getProjectScans(p.id, { limit: 5 }))
+            ),
+            api.getSeoActionsSummary(firstProjId).catch(() => null),
+          ]);
+
+          const combinedScans: Scan[] = [];
+          for (const scData of allScans) {
+            if (scData.scans) combinedScans.push(...scData.scans);
           }
-          setScans(allScans);
+          setScans(combinedScans);
+          setOptSummary(optData);
         }
       } catch (err) {
         console.error("Failed to load reports:", err);
@@ -103,6 +115,49 @@ export default function SeoReportsPage() {
             </div>
           )}
         </div>
+
+        {/* Phase 4: Executive Optimization Summary */}
+        {optSummary && optSummary.total_actions > 0 && (
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 text-white space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-sm font-bold text-white">Executive Optimization Summary</h3>
+              </div>
+              <Link href="/seo/actions" className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1">
+                <ListTodo className="w-3.5 h-3.5" /> Open Action Center →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                <div className="text-slate-400">Total Actions</div>
+                <div className="text-xl font-bold text-white mt-1">{optSummary.total_actions}</div>
+                <div className="text-[10px] text-slate-500 mt-0.5">{optSummary.fixed_actions} resolved ({optSummary.optimization_progress}%)</div>
+              </div>
+
+              <div className="bg-slate-950 p-3 rounded-lg border border-rose-500/20">
+                <div className="text-rose-400 font-semibold">Critical / High</div>
+                <div className="text-xl font-bold text-rose-400 mt-1">
+                  {optSummary.critical_actions + optSummary.high_priority_actions}
+                </div>
+                <div className="text-[10px] text-slate-500 mt-0.5">Immediate ranking impact</div>
+              </div>
+
+              <div className="bg-slate-950 p-3 rounded-lg border border-purple-500/20">
+                <div className="text-purple-400 font-semibold">Recoverable Impact</div>
+                <div className="text-xl font-bold text-purple-300 mt-1">+{optSummary.estimated_seo_impact} pts</div>
+                <div className="text-[10px] text-slate-500 mt-0.5">Potential score: {optSummary.potential_seo_score}/100</div>
+              </div>
+
+              <div className="bg-slate-950 p-3 rounded-lg border border-emerald-500/20">
+                <div className="text-emerald-400 font-semibold">Current Health</div>
+                <div className="text-xl font-bold text-emerald-400 mt-1">{optSummary.current_seo_score ?? "—"}/100</div>
+                <div className="text-[10px] text-slate-500 mt-0.5">Latest audit score</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Reports Table */}
         <Card className="p-0 border-slate-200 overflow-hidden">

@@ -7,6 +7,9 @@ from app.models.scan import Scan
 from app.schemas.project import ProjectCreate, ProjectResponse, ProjectSummaryScan, ProjectUpdate
 
 
+from app.services.crawler.url_normalizer import get_root_domain
+
+
 class ProjectService:
     @staticmethod
     async def create_project(
@@ -24,10 +27,12 @@ class ProjectService:
         if data.settings:
             settings.update(data.settings)
 
+        clean_domain = get_root_domain(data.domain) or data.domain.strip().lower()
+
         project = Project(
             user_id=user_id,
             name=data.name,
-            domain=data.domain,
+            domain=clean_domain,
             description=data.description,
             settings=settings,
         )
@@ -109,6 +114,9 @@ class ProjectService:
             return None
 
         update_data = data.model_dump(exclude_unset=True)
+        if "domain" in update_data and update_data["domain"]:
+            update_data["domain"] = get_root_domain(update_data["domain"]) or update_data["domain"].strip().lower()
+
         for field, val in update_data.items():
             setattr(project, field, val)
 

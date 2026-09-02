@@ -157,7 +157,10 @@ async def list_seo_projects(
     db: AsyncSession = Depends(get_db),
 ) -> ProjectListResponse:
     projects, total = await ProjectService.get_projects(db, skip=skip, limit=limit, search=search)
-    return ProjectListResponse(projects=projects, total=total)
+    return ProjectListResponse(
+        projects=[ProjectService.map_to_response(p) for p in projects],
+        total=total,
+    )
 
 
 @router.post("/projects", response_model=ProjectResponse, status_code=status.HTTP_201_CREATED)
@@ -166,7 +169,7 @@ async def create_seo_project(
     db: AsyncSession = Depends(get_db),
 ) -> ProjectResponse:
     project = await ProjectService.create_project(db, data)
-    return await ProjectService.map_to_response(db, project)
+    return ProjectService.map_to_response(project)
 
 
 @router.get("/projects/{project_id}", response_model=ProjectResponse)
@@ -177,4 +180,4 @@ async def get_seo_project(
     project = await ProjectService.get_project_by_id(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="SEO Project not found")
-    return await ProjectService.map_to_response(db, project)
+    return ProjectService.map_to_response(project)

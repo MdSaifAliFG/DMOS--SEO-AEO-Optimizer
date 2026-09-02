@@ -401,6 +401,183 @@ export interface AeoDashboardSummary {
   recent_citations: AeoCitation[];
 }
 
+// --- Phase 4 SEO Action Center & Optimization Types ---
+
+export type RecommendationPriority = "critical" | "high" | "medium" | "low";
+export type RecommendationStatus = "open" | "in_progress" | "fixed" | "ignored";
+export type RecommendationEffort = "low" | "medium" | "high";
+
+export interface SeoRecommendation {
+  id: string;
+  project_id: string;
+  scan_id: string;
+  issue_id?: string | null;
+  page_id?: string | null;
+  issue_code: string;
+  title: string;
+  description: string;
+  why_it_matters: string;
+  how_to_fix: string;
+  category: string;
+  priority: RecommendationPriority;
+  priority_score: number;
+  estimated_impact: number;
+  effort: RecommendationEffort;
+  status: RecommendationStatus;
+  notes?: string | null;
+  affected_pages_count: number;
+  affected_urls: string[];
+  current_state?: string | null;
+  recommended_state?: string | null;
+  verification_status: "unverified" | "verified" | "failed";
+  verification_details: Record<string, unknown>;
+  resolved_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SeoRecommendationListResponse {
+  recommendations: SeoRecommendation[];
+  total: number;
+}
+
+export interface SeoRecommendationUpdateInput {
+  status?: RecommendationStatus;
+  notes?: string;
+}
+
+export interface SeoRecommendationBulkUpdateInput {
+  action_ids: string[];
+  status: RecommendationStatus;
+  notes?: string;
+}
+
+export interface VerifyFixResponse {
+  recommendation_id: string;
+  status: "verified" | "not_fixed" | "failed";
+  message: string;
+  is_fixed: boolean;
+  details: Record<string, unknown>;
+}
+
+export interface CategoryProgress {
+  category: string;
+  total_actions: number;
+  fixed_actions: number;
+  progress_percentage: number;
+}
+
+export interface SeoOptimizationSummary {
+  project_id: string;
+  scan_id?: string | null;
+  total_actions: number;
+  critical_actions: number;
+  high_priority_actions: number;
+  medium_priority_actions: number;
+  low_priority_actions: number;
+  in_progress_actions: number;
+  fixed_actions: number;
+  ignored_actions: number;
+  estimated_seo_impact: number;
+  current_seo_score?: number | null;
+  potential_seo_score?: number | null;
+  optimization_progress: number;
+  category_breakdown: CategoryProgress[];
+  top_opportunities: SeoRecommendation[];
+}
+
+export interface OptimizationHistoryItem {
+  id: string;
+  project_id: string;
+  scan_id: string;
+  previous_scan_id?: string | null;
+  previous_score?: number | null;
+  current_score: number;
+  score_change: number;
+  issues_before: number;
+  issues_after: number;
+  issues_resolved: number;
+  new_issues: number;
+  remaining_issues: number;
+  pages_improved: number;
+  pages_declined: number;
+  category_score_changes: Record<string, number>;
+  details: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface OptimizationHistoryListResponse {
+  comparisons: OptimizationHistoryItem[];
+  total: number;
+}
+
+export interface TitleSuggestion {
+  title: string;
+  character_count: number;
+  length_status: "optimal" | "too_short" | "too_long";
+  keyword_presence: boolean;
+  brand_presence: boolean;
+}
+
+export interface TitleOptimizationResponse {
+  current_title?: string | null;
+  suggestions: TitleSuggestion[];
+  provider: string;
+}
+
+export interface DescriptionSuggestion {
+  description: string;
+  character_count: number;
+  length_status: "optimal" | "too_short" | "too_long";
+  keyword_presence: boolean;
+  cta_presence: boolean;
+  readability_score: string;
+}
+
+export interface DescriptionOptimizationResponse {
+  current_description?: string | null;
+  suggestions: DescriptionSuggestion[];
+  provider: string;
+}
+
+export interface ContentRecommendationItem {
+  title: string;
+  description: string;
+  category: string;
+  priority: string;
+  impact: string;
+}
+
+export interface ContentOptimizationResponse {
+  url: string;
+  word_count: number;
+  word_count_status: "thin" | "acceptable" | "optimal";
+  heading_structure: {
+    h1_count: number;
+    h1_samples: string[];
+    h2_count: number;
+    h2_samples: string[];
+  };
+  readability_indicator: string;
+  duplicate_signals: string[];
+  recommendations: ContentRecommendationItem[];
+}
+
+export interface InternalLinkOpportunity {
+  source_url: string;
+  target_url: string;
+  recommended_anchor: string;
+  reason: string;
+  priority: "high" | "medium" | "low";
+}
+
+export interface InternalLinksOptimizationResponse {
+  total_opportunities: number;
+  orphan_pages: string[];
+  low_inbound_pages: Array<{ url: string; inbound_links: number }>;
+  opportunities: InternalLinkOpportunity[];
+}
+
 export interface HealthResponse {
   status: string;
   version: string;

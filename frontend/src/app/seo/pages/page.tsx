@@ -388,7 +388,7 @@ export default function SeoPagesPage() {
                         <div key={idx} className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 space-y-1">
                           <div className="flex items-center gap-2">
                             <span
-                              className={`px-1.5 py-0.2 rounded text-[9px] font-bold uppercase ${
+                              className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
                                 iss.severity === "critical"
                                   ? "bg-rose-50 text-rose-700 border border-rose-200"
                                   : "bg-amber-50 text-amber-700 border border-amber-200"

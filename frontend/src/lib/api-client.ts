@@ -28,6 +28,17 @@ import {
   SEOIssueListResponse,
   SEOPageDetail,
   SEOPageListResponse,
+  SeoRecommendation,
+  SeoRecommendationListResponse,
+  SeoRecommendationUpdateInput,
+  SeoRecommendationBulkUpdateInput,
+  VerifyFixResponse,
+  SeoOptimizationSummary,
+  OptimizationHistoryListResponse,
+  TitleOptimizationResponse,
+  DescriptionOptimizationResponse,
+  ContentOptimizationResponse,
+  InternalLinksOptimizationResponse,
 } from "./types";
 
 class ApiClient {
@@ -346,6 +357,148 @@ class ApiClient {
       body: JSON.stringify(input),
     });
   }
+
+  // --- Phase 4 SEO Action Center & Optimization Methods ---
+
+  async getSeoActions(params?: {
+    project_id?: string;
+    scan_id?: string;
+    status?: string;
+    priority?: string;
+    category?: string;
+    search?: string;
+    skip?: number;
+    limit?: number;
+  }): Promise<SeoRecommendationListResponse> {
+    const query = new URLSearchParams();
+    if (params?.project_id) query.set("project_id", params.project_id);
+    if (params?.scan_id) query.set("scan_id", params.scan_id);
+    if (params?.status) query.set("status", params.status);
+    if (params?.priority) query.set("priority", params.priority);
+    if (params?.category) query.set("category", params.category);
+    if (params?.search) query.set("search", params.search);
+    if (params?.skip !== undefined) query.set("skip", params.skip.toString());
+    if (params?.limit !== undefined) query.set("limit", params.limit.toString());
+
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    return this.request<SeoRecommendationListResponse>(`/seo/actions${qs}`);
+  }
+
+  async getSeoAction(actionId: string): Promise<SeoRecommendation> {
+    return this.request<SeoRecommendation>(`/seo/actions/${actionId}`);
+  }
+
+  async generateSeoActions(params: {
+    scan_id: string;
+    project_id: string;
+  }): Promise<SeoRecommendationListResponse> {
+    const qs = `?scan_id=${params.scan_id}&project_id=${params.project_id}`;
+    return this.request<SeoRecommendationListResponse>(`/seo/actions/generate${qs}`, {
+      method: "POST",
+    });
+  }
+
+  async updateSeoAction(
+    actionId: string,
+    input: SeoRecommendationUpdateInput
+  ): Promise<SeoRecommendation> {
+    return this.request<SeoRecommendation>(`/seo/actions/${actionId}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async verifySeoAction(actionId: string): Promise<VerifyFixResponse> {
+    return this.request<VerifyFixResponse>(`/seo/actions/${actionId}/verify`, {
+      method: "POST",
+    });
+  }
+
+  async ignoreSeoAction(actionId: string): Promise<SeoRecommendation> {
+    return this.request<SeoRecommendation>(`/seo/actions/${actionId}/ignore`, {
+      method: "POST",
+    });
+  }
+
+  async bulkUpdateSeoActions(
+    input: SeoRecommendationBulkUpdateInput
+  ): Promise<{ success: boolean; updated_count: number }> {
+    return this.request<{ success: boolean; updated_count: number }>(
+      "/seo/actions/bulk",
+      {
+        method: "POST",
+        body: JSON.stringify(input),
+      }
+    );
+  }
+
+  async getSeoActionsSummary(projectId: string): Promise<SeoOptimizationSummary> {
+    return this.request<SeoOptimizationSummary>(`/seo/actions/summary/${projectId}`);
+  }
+
+  async getOptimizationHistory(
+    projectId: string,
+    limit?: number
+  ): Promise<OptimizationHistoryListResponse> {
+    const qs = limit ? `?limit=${limit}` : "";
+    return this.request<OptimizationHistoryListResponse>(
+      `/seo/optimization-history/${projectId}${qs}`
+    );
+  }
+
+  async optimizeTitle(input: {
+    current_title?: string;
+    target_url: string;
+    target_keyword?: string;
+    brand_name?: string;
+    page_content_snippet?: string;
+  }): Promise<TitleOptimizationResponse> {
+    return this.request<TitleOptimizationResponse>("/seo/optimize/title", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async optimizeDescription(input: {
+    current_description?: string;
+    target_url: string;
+    target_keyword?: string;
+    brand_name?: string;
+    page_content_snippet?: string;
+  }): Promise<DescriptionOptimizationResponse> {
+    return this.request<DescriptionOptimizationResponse>(
+      "/seo/optimize/description",
+      {
+        method: "POST",
+        body: JSON.stringify(input),
+      }
+    );
+  }
+
+  async optimizeContent(input: {
+    project_id: string;
+    page_id?: string;
+    target_url?: string;
+  }): Promise<ContentOptimizationResponse> {
+    return this.request<ContentOptimizationResponse>("/seo/optimize/content", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async optimizeInternalLinks(input: {
+    project_id: string;
+    scan_id?: string;
+  }): Promise<InternalLinksOptimizationResponse> {
+    return this.request<InternalLinksOptimizationResponse>(
+      "/seo/optimize/internal-links",
+      {
+        method: "POST",
+        body: JSON.stringify(input),
+      }
+    );
+  }
 }
 
 export const api = new ApiClient();
+

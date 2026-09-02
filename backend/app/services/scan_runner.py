@@ -47,7 +47,8 @@ class ScanRunner:
                 logger.info("Scan %s was cancelled prior to worker pickup", scan_id)
                 return
 
-            project_domain = scan.project.domain if scan.project else "example.com"
+            from app.services.crawler.url_normalizer import get_root_domain
+            project_domain = get_root_domain(scan.project.domain) if scan.project and scan.project.domain else "example.com"
             crawl_settings = scan.project.settings if scan.project else {}
             max_depth = crawl_settings.get("crawl_depth", 5)
 
@@ -248,6 +249,20 @@ class ScanRunner:
                         },
                     },
                 )
+
+                # Trigger Phase 4 Recommendation Generation and Optimization History
+                try:
+                    from app.services.seo.recommendations.recommendation_engine import RecommendationEngine
+                    from app.services.seo.recommendations.history_service import OptimizationHistoryService
+
+                    await RecommendationEngine.generate_recommendations_for_scan(
+                        session, scan_id=scan_id, project_id=scan.project_id
+                    )
+                    await OptimizationHistoryService.record_audit_comparison(
+                        session, project_id=scan.project_id, current_scan_id=scan_id
+                    )
+                except Exception as rec_err:
+                    logger.warning("Failed to auto-generate recommendations for scan %s: %s", scan_id, rec_err)
 
             except Exception as e:
                 logger.exception("Uncaught exception in scan runner %s: %s", scan_id, e)
