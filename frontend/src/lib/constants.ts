@@ -107,9 +107,36 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
         icon: "Bot",
       },
       {
+        title: "Action Center",
+        href: "/aeo/actions",
+        icon: "ListTodo",
+        badge: "Actions",
+        badgeVariant: "aeo",
+      },
+      {
         title: "Projects",
         href: "/aeo/projects",
         icon: "Sparkles",
+      },
+      {
+        title: "Content Gaps",
+        href: "/aeo/optimization/content-gaps",
+        icon: "Layers",
+      },
+      {
+        title: "Prompt Gaps",
+        href: "/aeo/optimization/prompts",
+        icon: "Target",
+      },
+      {
+        title: "Citation Gaps",
+        href: "/aeo/optimization/citations",
+        icon: "Share2",
+      },
+      {
+        title: "Entity Health",
+        href: "/aeo/optimization/entities",
+        icon: "Network",
       },
       {
         title: "Questions",
@@ -135,6 +162,21 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
         title: "Visibility",
         href: "/aeo/visibility",
         icon: "Eye",
+      },
+      {
+        title: "Content Studio",
+        href: "/aeo/optimize/content",
+        icon: "FileText",
+      },
+      {
+        title: "Answer Evaluator",
+        href: "/aeo/optimize/answer",
+        icon: "FileCheck",
+      },
+      {
+        title: "Optimization History",
+        href: "/aeo/optimization-history",
+        icon: "History",
       },
       {
         title: "Reports",

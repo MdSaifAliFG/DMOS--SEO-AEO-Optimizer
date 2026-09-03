@@ -114,6 +114,7 @@ class AEOAnalysisRunner:
                         category=gq["category"],
                         intent=gq["intent"],
                         is_tracked=True,
+                        visibility_score=0,
                     )
                     db.add(q_obj)
                     questions.append(q_obj)
@@ -322,32 +323,21 @@ class AEOAnalysisRunner:
             )
             db.add(snapshot)
 
-            # 8. Generate AEO Recommendations
+            # 8. Generate & Deduplicate AEO Recommendations
             analysis.progress = 95
             analysis.current_step = "Generating actionable AEO optimization recommendations"
             recs_data = AEORecommendationEngine.generate_recommendations(
+                project=project,
                 score_breakdown=score_breakdown,
-                brand_name=project.name,
-                domain=project.domain,
-                unmentioned_questions=unmentioned_questions,
-                competitor_stats=comp_stats,
-                total_citations=cit_stats["total_citations"],
-                own_citations=cit_stats["own_citations"],
+                questions=list(project.questions or []),
+                citations=list(project.citations or []),
+                entities=list(project.entities or []),
             )
-            for r in recs_data:
-                rec_obj = AeoRecommendation(
-                    project_id=project.id,
-                    title=r["title"],
-                    category=r["category"],
-                    priority=r["priority"],
-                    opportunity_score=r["opportunity_score"],
-                    reason=r["reason"],
-                    current_state=r["current_state"],
-                    recommended_action=r["recommended_action"],
-                    expected_impact=r["expected_impact"],
-                    status="open",
-                )
-                db.add(rec_obj)
+            await AEORecommendationEngine.sync_recommendations_to_db(
+                db=db,
+                project_id=project.id,
+                generated_recs=recs_data,
+            )
 
             # 9. Update Project & Analysis Completed State
             project.aeo_score = score_breakdown.overall_score

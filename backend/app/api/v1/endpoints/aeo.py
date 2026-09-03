@@ -7,6 +7,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.schemas.aeo import (
+    AeoActionBulkUpdateRequest,
+    AeoActionGenerateRequest,
+    AeoActionSummaryResponse,
+    AeoActionUpdateRequest,
     AeoAnalysisResponse,
     AeoAnalysisTriggerRequest,
     AeoAnswerListResponse,
@@ -14,11 +18,14 @@ from app.schemas.aeo import (
     AeoCitationCreate,
     AeoCitationListResponse,
     AeoCitationResponse,
+    AeoContentOptimizeRequest,
     AeoDashboardSummaryResponse,
+    AeoDirectAnswerOptimizeRequest,
     AeoEntityCreate,
     AeoEntityListResponse,
     AeoEntityResponse,
     AeoProjectCreate,
+    AeoProjectGapRequest,
     AeoProjectListResponse,
     AeoProjectResponse,
     AeoProjectUpdate,
@@ -617,7 +624,325 @@ async def get_aeo_visibility(
         )
 
 
-# --- Recommendations ---
+# ==========================================
+# PHASE 6: AEO ACTIONS & OPTIMIZATION CENTER
+# ==========================================
+
+@router.get(
+    "/actions",
+    response_model=AeoRecommendationListResponse,
+    summary="List filtered and paginated AEO optimization actions",
+)
+async def list_aeo_actions(
+    project_id: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    priority: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+) -> AeoRecommendationListResponse:
+    recs, total = await AeoService.get_actions(
+        db=db,
+        project_id=project_id,
+        status=status,
+        priority=priority,
+        category=category,
+        search=search,
+        skip=skip,
+        limit=limit,
+    )
+    return AeoRecommendationListResponse(
+        recommendations=[AeoRecommendationResponse.model_validate(r) for r in recs],
+        total=total,
+    )
+
+
+@router.get(
+    "/actions/summary/{project_id}",
+    response_model=AeoActionSummaryResponse,
+    summary="Get AEO Action Center KPI metrics and potential score summary",
+)
+async def get_aeo_actions_summary(
+    project_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> AeoActionSummaryResponse:
+    data = await AeoService.get_actions_summary(db, project_id)
+    if not data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project '{project_id}' not found",
+        )
+    return AeoActionSummaryResponse(**data)
+
+
+@router.post(
+    "/actions/generate",
+    response_model=AeoRecommendationListResponse,
+    summary="Generate deterministic, deduplicated AEO recommendations for a project",
+)
+async def generate_aeo_actions(
+    data: AeoActionGenerateRequest,
+    db: AsyncSession = Depends(get_db),
+) -> AeoRecommendationListResponse:
+    recs = await AeoService.generate_actions_for_project(db, data.project_id)
+    return AeoRecommendationListResponse(
+        recommendations=[AeoRecommendationResponse.model_validate(r) for r in recs],
+        total=len(recs),
+    )
+
+
+@router.get(
+    "/actions/{action_id}",
+    response_model=AeoRecommendationResponse,
+    summary="Get full details for an AEO action item",
+)
+async def get_aeo_action_detail(
+    action_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> AeoRecommendationResponse:
+    rec = await AeoService.get_action(db, action_id)
+    if not rec:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"AEO Action '{action_id}' not found",
+        )
+    return AeoRecommendationResponse.model_validate(rec)
+
+
+@router.patch(
+    "/actions/{action_id}",
+    response_model=AeoRecommendationResponse,
+    summary="Update status and notes for an AEO action item",
+)
+async def update_aeo_action(
+    action_id: str,
+    data: AeoActionUpdateRequest,
+    db: AsyncSession = Depends(get_db),
+) -> AeoRecommendationResponse:
+    rec = await AeoService.update_action(
+        db, action_id, status=data.status, notes=data.notes
+    )
+    if not rec:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"AEO Action '{action_id}' not found",
+        )
+    return AeoRecommendationResponse.model_validate(rec)
+
+
+@router.post(
+    "/actions/{action_id}/verify",
+    summary="Verify whether an opportunity is resolved based on latest crawl data",
+)
+async def verify_aeo_action(
+    action_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    rec, is_resolved, message = await AeoService.verify_action(db, action_id)
+    if not rec:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"AEO Action '{action_id}' not found",
+        )
+    return {
+        "action_id": action_id,
+        "is_resolved": is_resolved,
+        "verification_status": rec.verification_status,
+        "status": rec.status,
+        "message": message,
+        "action": AeoRecommendationResponse.model_validate(rec),
+    }
+
+
+@router.post(
+    "/actions/{action_id}/ignore",
+    response_model=AeoRecommendationResponse,
+    summary="Mark an AEO action as ignored/dismissed",
+)
+async def ignore_aeo_action(
+    action_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> AeoRecommendationResponse:
+    rec = await AeoService.update_action(db, action_id, status="ignored")
+    if not rec:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"AEO Action '{action_id}' not found",
+        )
+    return AeoRecommendationResponse.model_validate(rec)
+
+
+@router.post(
+    "/actions/bulk",
+    summary="Bulk update multiple AEO actions",
+)
+async def bulk_update_aeo_actions(
+    data: AeoActionBulkUpdateRequest,
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    updated_count = await AeoService.bulk_update_actions(
+        db, action_ids=data.action_ids, status=data.status
+    )
+    return {
+        "success": True,
+        "updated_count": updated_count,
+        "status": data.status,
+    }
+
+
+@router.get(
+    "/actions/{project_id}/export-csv",
+    summary="Export AEO actions as CSV",
+)
+async def export_aeo_actions_csv(
+    project_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> Response:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project '{project_id}' not found",
+        )
+
+    recs, _ = await AeoService.get_actions(db, project_id=project_id, limit=500)
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "Code",
+        "Recommendation",
+        "Category",
+        "Priority Level",
+        "Priority Score",
+        "Severity",
+        "Estimated Impact (+pts)",
+        "Potential Score",
+        "Status",
+        "Affected Prompts",
+        "Why It Matters",
+        "Recommended Action",
+        "Resolved At",
+        "Created At",
+    ])
+
+    for r in recs:
+        writer.writerow([
+            r.recommendation_code or "N/A",
+            r.title,
+            r.category,
+            r.priority_level or r.priority,
+            r.priority_score,
+            r.severity,
+            r.estimated_impact,
+            r.potential_score or "N/A",
+            r.status,
+            r.affected_prompt_count,
+            r.why_it_matters or "",
+            r.recommended_action or "",
+            r.resolved_at.isoformat() if r.resolved_at else "Unresolved",
+            r.created_at.isoformat() if r.created_at else "",
+        ])
+
+    return Response(
+        content=output.getvalue(),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=aeo_actions_{project.domain}.csv"},
+    )
+
+
+# --- Gap Analysis Endpoints ---
+@router.post(
+    "/gaps/content",
+    summary="Analyze content gaps and generate structured Content Briefs",
+)
+async def get_aeo_content_gaps(
+    data: AeoProjectGapRequest,
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    return await AeoService.get_content_gaps(db, data.project_id)
+
+
+@router.post(
+    "/gaps/prompts",
+    summary="Identify high-value unanswered prompt opportunities",
+)
+async def get_aeo_prompt_gaps(
+    data: AeoProjectGapRequest,
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    return await AeoService.get_prompt_gaps(db, data.project_id)
+
+
+@router.post(
+    "/gaps/citations",
+    summary="Analyze citation gaps and identify top source opportunities",
+)
+async def get_aeo_citation_gaps(
+    data: AeoProjectGapRequest,
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    return await AeoService.get_citation_gaps(db, data.project_id)
+
+
+@router.post(
+    "/gaps/entities",
+    summary="Analyze entity health, knowledge graph gaps, and weak concepts",
+)
+async def get_aeo_entity_gaps(
+    data: AeoProjectGapRequest,
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    return await AeoService.get_entity_gaps(db, data.project_id)
+
+
+# --- Optimization History ---
+@router.get(
+    "/optimization-history/{project_id}",
+    summary="Get audit-to-audit progression and metric deltas",
+)
+async def get_aeo_optimization_history(
+    project_id: str,
+    limit: int = Query(15, ge=1, le=50),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    return await AeoService.get_optimization_history(db, project_id, limit=limit)
+
+
+# --- Interactive Optimizers ---
+@router.post(
+    "/optimize/content",
+    summary="Interactive content optimizer evaluating gaps, headings, and direct answers",
+)
+async def optimize_aeo_content(
+    data: AeoContentOptimizeRequest,
+) -> dict:
+    return await AeoService.optimize_content(
+        target_question=data.target_question,
+        existing_content=data.existing_content,
+        target_keyword=data.target_keyword or "",
+        brand_name=data.brand_name or "",
+        product_service=data.product_service or "",
+    )
+
+
+@router.post(
+    "/optimize/answer",
+    summary="Evaluate content against 9 core direct-answer criteria",
+)
+async def optimize_aeo_direct_answer(
+    data: AeoDirectAnswerOptimizeRequest,
+) -> dict:
+    return await AeoService.optimize_direct_answer(
+        target_question=data.target_question,
+        existing_content=data.existing_content,
+        brand_name=data.brand_name or "",
+    )
+
+
+# --- Legacy Recommendations & Reports ---
 @router.get(
     "/recommendations/{project_id}",
     response_model=AeoRecommendationListResponse,
@@ -671,6 +996,10 @@ async def get_aeo_report(
         "coverage_score": project.coverage_score or (vis_data.get("coverage_score") if isinstance(vis_data, dict) else 0),
     }
 
+    # Summary of action center
+    open_recs = [r for r in recs if r.status in ["open", "in_progress"]]
+    fixed_recs = [r for r in recs if r.status in ["fixed", "implemented"]]
+
     return {
         "project": {
             "id": project.id,
@@ -689,6 +1018,8 @@ async def get_aeo_report(
         "citations_count": len(project.citations) if project.citations else 0,
         "entities_count": len(project.entities) if project.entities else 0,
         "recommendations": [AeoRecommendationResponse.model_validate(r) for r in recs],
+        "open_actions_count": len(open_recs),
+        "fixed_actions_count": len(fixed_recs),
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -711,7 +1042,6 @@ async def export_aeo_csv(
     output = io.StringIO()
     writer = csv.writer(output)
 
-    # Header
     writer.writerow([
         "Question ID",
         "Question Text",
@@ -745,3 +1075,4 @@ async def export_aeo_csv(
         media_type="text/csv",
         headers={"Content-Disposition": f"attachment; filename=aeo_report_{project.domain}.csv"},
     )
+

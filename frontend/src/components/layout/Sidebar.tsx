@@ -27,6 +27,11 @@ import {
   Globe,
   ListTodo,
   History,
+  Layers,
+  Target,
+  Share2,
+  Network,
+  FileCheck,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
@@ -61,6 +66,11 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   FileBarChart: <FileBarChart className="w-4 h-4" />,
   Puzzle: <Puzzle className="w-4 h-4" />,
   Settings: <Settings className="w-4 h-4" />,
+  Layers: <Layers className="w-4 h-4" />,
+  Target: <Target className="w-4 h-4" />,
+  Share2: <Share2 className="w-4 h-4" />,
+  Network: <Network className="w-4 h-4" />,
+  FileCheck: <FileCheck className="w-4 h-4" />,
 };
 
 export const Sidebar: React.FC<{

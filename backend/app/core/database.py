@@ -87,6 +87,22 @@ async def init_db() -> None:
             ("aeo_questions", "best_rank_position", "INTEGER"),
             ("aeo_citations", "citation_type", "VARCHAR(50) DEFAULT 'third_party'"),
             ("aeo_entities", "associated_concepts", "JSON DEFAULT '[]'"),
+            ("aeo_recommendations", "recommendation_code", "VARCHAR(50)"),
+            ("aeo_recommendations", "priority_score", "INTEGER DEFAULT 70"),
+            ("aeo_recommendations", "priority_level", "VARCHAR(50) DEFAULT 'medium'"),
+            ("aeo_recommendations", "severity", "VARCHAR(50) DEFAULT 'medium'"),
+            ("aeo_recommendations", "why_it_matters", "TEXT"),
+            ("aeo_recommendations", "how_to_fix", "TEXT"),
+            ("aeo_recommendations", "estimated_impact", "INTEGER DEFAULT 5"),
+            ("aeo_recommendations", "current_score", "INTEGER"),
+            ("aeo_recommendations", "potential_score", "INTEGER"),
+            ("aeo_recommendations", "affected_prompt_count", "INTEGER DEFAULT 0"),
+            ("aeo_recommendations", "affected_answer_count", "INTEGER DEFAULT 0"),
+            ("aeo_recommendations", "affected_urls", "JSON DEFAULT '[]'"),
+            ("aeo_recommendations", "implementation_steps", "JSON DEFAULT '[]'"),
+            ("aeo_recommendations", "verification_status", "VARCHAR(50) DEFAULT 'unverified'"),
+            ("aeo_recommendations", "notes", "TEXT"),
+            ("aeo_recommendations", "resolved_at", "DATETIME"),
         ]
 
         for table, col, col_type in columns_to_ensure:

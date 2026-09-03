@@ -19,6 +19,9 @@ import {
   Cpu,
   X,
   ExternalLink,
+  ListTodo,
+  Flame,
+  AlertTriangle,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
@@ -26,7 +29,7 @@ import { Button } from "@/components/ui/Button";
 import { ScoreRing } from "@/components/ui/ScoreRing";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { AeoProject, AeoQuestion, AeoEntity, AeoCitation, AeoVisibilityData } from "@/lib/types";
+import { AeoProject, AeoQuestion, AeoEntity, AeoCitation, AeoVisibilityData, AeoRecommendation } from "@/lib/types";
 import { api } from "@/lib/api-client";
 import { formatDate, formatTimeAgo } from "@/lib/utils";
 import { useToast } from "@/hooks/useToast";
@@ -43,8 +46,9 @@ export default function AeoProjectDetailPage({
   const [questions, setQuestions] = useState<AeoQuestion[]>([]);
   const [entities, setEntities] = useState<AeoEntity[]>([]);
   const [citations, setCitations] = useState<AeoCitation[]>([]);
+  const [recommendations, setRecommendations] = useState<AeoRecommendation[]>([]);
   const [visibility, setVisibility] = useState<AeoVisibilityData | null>(null);
-  const [activeTab, setActiveTab] = useState<"questions" | "entities" | "citations">("questions");
+  const [activeTab, setActiveTab] = useState<"questions" | "entities" | "citations" | "optimization">("optimization");
   const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -62,15 +66,17 @@ export default function AeoProjectDetailPage({
       const proj = await api.getAeoProject(projectId);
       setProject(proj);
 
-      const [qData, eData, cData, vData] = await Promise.all([
+      const [qData, eData, cData, rData, vData] = await Promise.all([
         api.getAeoQuestions({ project_id: projectId }),
         api.getAeoEntities({ project_id: projectId }),
         api.getAeoCitations({ project_id: projectId }),
+        api.getAeoActions({ project_id: projectId }).catch(() => ({ recommendations: [], total: 0 })),
         api.getAeoVisibility(projectId).catch(() => null),
       ]);
       setQuestions(qData.questions || []);
       setEntities(eData.entities || []);
       setCitations(cData.citations || []);
+      setRecommendations(rData.recommendations || []);
       setVisibility(vData);
     } catch (err: any) {
       error("Failed to load AEO project details", err.message);
@@ -258,6 +264,17 @@ export default function AeoProjectDetailPage({
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 flex-wrap gap-3">
             <div className="flex items-center gap-3">
               <button
+                onClick={() => setActiveTab("optimization")}
+                className={`text-xs font-bold pb-1 border-b-2 transition-colors flex items-center gap-1.5 ${
+                  activeTab === "optimization"
+                    ? "border-purple-600 text-purple-700"
+                    : "border-transparent text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <ListTodo className="w-3.5 h-3.5" />
+                Optimization Actions ({recommendations.length})
+              </button>
+              <button
                 onClick={() => setActiveTab("questions")}
                 className={`text-xs font-bold pb-1 border-b-2 transition-colors ${
                   activeTab === "questions"
@@ -301,6 +318,74 @@ export default function AeoProjectDetailPage({
               </Button>
             )}
           </div>
+
+          {/* TAB 0: Optimization Actions */}
+          {activeTab === "optimization" && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900">AEO Optimization Actions</h4>
+                  <p className="text-xs text-slate-500">Prioritized tasks to boost AI answer visibility and citations</p>
+                </div>
+                <Link
+                  href="/aeo/actions"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-700 hover:bg-purple-600 text-white rounded-xl text-xs font-bold transition shadow-sm"
+                >
+                  Full Action Center <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+
+              {recommendations.length === 0 ? (
+                <div className="py-12 text-center space-y-2">
+                  <Sparkles className="w-8 h-8 text-purple-400 mx-auto" />
+                  <p className="text-xs text-slate-500">No optimization recommendations recorded yet.</p>
+                  <Button size="sm" variant="outline" onClick={handleRunAnalysis} leftIcon={<Play className="w-3 h-3" />}>
+                    Run Analysis to Discover Actions
+                  </Button>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {recommendations.map((rec) => (
+                    <div key={rec.id} className="py-3.5 flex items-center justify-between gap-4 hover:bg-purple-50/20 px-2 rounded-xl transition">
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                              rec.priority === "critical"
+                                ? "bg-rose-100 text-rose-800"
+                                : rec.priority === "high"
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-purple-100 text-purple-800"
+                            }`}
+                          >
+                            {rec.priority}
+                          </span>
+                          <span className="text-xs font-bold text-slate-900 truncate">{rec.title}</span>
+                          <span className="text-[10px] text-slate-400">• {rec.category}</span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 line-clamp-1">{rec.reason}</p>
+                      </div>
+
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <span className="text-xs font-bold text-purple-700">+{rec.estimated_impact || rec.opportunity_score} pts</span>
+                        <span
+                          className={`px-2 py-0.5 text-[10px] font-semibold rounded-full capitalize ${
+                            rec.status === "fixed" || rec.status === "implemented"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : rec.status === "in_progress"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-purple-50 text-purple-700"
+                          }`}
+                        >
+                          {rec.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* TAB 1: Questions */}
           {activeTab === "questions" && (

@@ -150,7 +150,7 @@ class TestAEOAnalyticsEngines:
         )
         assert len(recs) >= 2
         rec_categories = {r["category"] for r in recs}
-        assert "Brand Presence" in rec_categories or "Citation Building" in rec_categories
+        assert any(c in rec_categories for c in ["Brand Presence", "Brand Visibility", "Citation Building", "Citation Opportunities", "Prompt Coverage"])
 
 
 @pytest.mark.asyncio

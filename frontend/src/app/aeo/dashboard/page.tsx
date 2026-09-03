@@ -22,6 +22,11 @@ import {
   RefreshCw,
   Building2,
   Share2,
+  ListTodo,
+  Flame,
+  Layers,
+  Target,
+  Network,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
@@ -392,6 +397,77 @@ export default function AeoDashboardPage() {
                 )}
               </Card>
             </div>
+
+            {/* Phase 6 Action Center Highlights */}
+            <Card className="p-6 border-slate-200 bg-white space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <ListTodo className="w-5 h-5 text-purple-600" />
+                    <h3 className="text-base font-bold text-slate-900">AEO Action Center & Top Opportunities</h3>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800">
+                      Phase 6
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    Prioritized deterministic actions to improve brand mentions, citations, and direct answers.
+                  </p>
+                </div>
+                <Link
+                  href="/aeo/actions"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-purple-700 hover:bg-purple-600 text-white rounded-xl text-xs font-bold transition shadow-sm self-start sm:self-auto"
+                >
+                  Open Action Center <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+
+              {/* Quick Intelligence Shortcuts */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                <Link
+                  href="/aeo/optimization/content-gaps"
+                  className="p-3 rounded-xl bg-purple-50/50 hover:bg-purple-100/60 border border-purple-100 transition flex items-center gap-2.5 group"
+                >
+                  <Layers className="w-4 h-4 text-purple-600 group-hover:scale-110 transition-transform" />
+                  <div>
+                    <span className="text-xs font-bold text-slate-900 block">Content Gaps</span>
+                    <span className="text-[10px] text-purple-700">Missing Topics</span>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/aeo/optimization/prompts"
+                  className="p-3 rounded-xl bg-indigo-50/50 hover:bg-indigo-100/60 border border-indigo-100 transition flex items-center gap-2.5 group"
+                >
+                  <Target className="w-4 h-4 text-indigo-600 group-hover:scale-110 transition-transform" />
+                  <div>
+                    <span className="text-xs font-bold text-slate-900 block">Prompt Gaps</span>
+                    <span className="text-[10px] text-indigo-700">Uncovered Queries</span>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/aeo/optimization/citations"
+                  className="p-3 rounded-xl bg-violet-50/50 hover:bg-violet-100/60 border border-violet-100 transition flex items-center gap-2.5 group"
+                >
+                  <Share2 className="w-4 h-4 text-violet-600 group-hover:scale-110 transition-transform" />
+                  <div>
+                    <span className="text-xs font-bold text-slate-900 block">Citation Gaps</span>
+                    <span className="text-[10px] text-violet-700">Source Domains</span>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/aeo/optimization/entities"
+                  className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition flex items-center gap-2.5 group"
+                >
+                  <Network className="w-4 h-4 text-slate-700 group-hover:scale-110 transition-transform" />
+                  <div>
+                    <span className="text-xs font-bold text-slate-900 block">Entity Health</span>
+                    <span className="text-[10px] text-slate-600">Knowledge Graph</span>
+                  </div>
+                </Link>
+              </div>
+            </Card>
 
             {/* Bottom Grid: Recent Questions & Citations */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
