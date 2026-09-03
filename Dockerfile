@@ -1,26 +1,59 @@
-FROM python:3.11-slim
+# ==========================================
+# DMOS SEO & AEO Platform — Production Image
+# Multi-stage optimized Python 3.11 container
+# ==========================================
+
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
-# Install system dependencies
+# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy backend requirements and install
+# Install Python dependencies into wheels/cache
 COPY backend/requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# ==========================================
+# Final Runtime Stage
+# ==========================================
+FROM python:3.11-slim AS runner
+
+WORKDIR /app
+
+# Python runtime optimization flags
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app/backend \
+    PORT=8000 \
+    PATH=/home/appuser/.local/bin:$PATH
+
+# Install minimal runtime libraries (curl for healthcheck, libpq for PostgreSQL)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd -m -u 1001 -s /bin/bash appuser
+
+# Copy installed Python packages from builder stage
+COPY --from=builder /root/.local /home/appuser/.local
 
 # Copy backend application source code
-COPY backend/ ./backend/
+COPY --chown=appuser:appuser backend/ ./backend/
+
+# Switch to non-root secure user
+USER appuser
 
 # Expose default HTTP port
 EXPOSE 8000
 
-ENV PORT=8000
-ENV PYTHONPATH=/app/backend
+# Container Healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
-# Launch FastAPI Uvicorn Server
-CMD ["sh", "-c", "uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port ${PORT:-8000}"]
+# Launch FastAPI ASGI server
+CMD ["sh", "-c", "uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port ${PORT:-8000} --workers 2"]

@@ -22,6 +22,14 @@ import {
   AeoRecommendation,
   AeoRecommendationListResponse,
   AeoVisibilityData,
+  AeoActionSummary,
+  AeoContentGapResponse,
+  AeoPromptGapResponse,
+  AeoCitationGapResponse,
+  AeoEntityGapResponse,
+  AeoOptimizationHistoryResponse,
+  AeoContentOptimizationResult,
+  AeoDirectAnswerOptimizationResult,
   ApiError,
   HealthResponse,
   Project,
@@ -458,6 +466,152 @@ class ApiClient {
 
   async getAeoReport(projectId: string): Promise<any> {
     return this.request<any>(`/aeo/reports/${projectId}`);
+  }
+
+  // --- Phase 6 AEO Optimization & Action Center Methods ---
+
+  async getAeoActions(params?: {
+    project_id?: string;
+    status?: string;
+    priority?: string;
+    category?: string;
+    search?: string;
+    skip?: number;
+    limit?: number;
+  }): Promise<AeoRecommendationListResponse> {
+    const query = new URLSearchParams();
+    if (params?.project_id) query.set("project_id", params.project_id);
+    if (params?.status) query.set("status", params.status);
+    if (params?.priority) query.set("priority", params.priority);
+    if (params?.category) query.set("category", params.category);
+    if (params?.search) query.set("search", params.search);
+    if (params?.skip !== undefined) query.set("skip", params.skip.toString());
+    if (params?.limit !== undefined) query.set("limit", params.limit.toString());
+
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    return this.request<AeoRecommendationListResponse>(`/aeo/actions${qs}`);
+  }
+
+  async getAeoAction(actionId: string): Promise<AeoRecommendation> {
+    return this.request<AeoRecommendation>(`/aeo/actions/${actionId}`);
+  }
+
+  async generateAeoActions(projectId: string): Promise<AeoRecommendationListResponse> {
+    return this.request<AeoRecommendationListResponse>("/aeo/actions/generate", {
+      method: "POST",
+      body: JSON.stringify({ project_id: projectId }),
+    });
+  }
+
+  async updateAeoAction(
+    actionId: string,
+    input: { status?: string; notes?: string }
+  ): Promise<AeoRecommendation> {
+    return this.request<AeoRecommendation>(`/aeo/actions/${actionId}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async verifyAeoAction(actionId: string): Promise<{
+    action_id: string;
+    is_resolved: boolean;
+    verification_status: string;
+    status: string;
+    message: string;
+    action: AeoRecommendation;
+  }> {
+    return this.request<{
+      action_id: string;
+      is_resolved: boolean;
+      verification_status: string;
+      status: string;
+      message: string;
+      action: AeoRecommendation;
+    }>(`/aeo/actions/${actionId}/verify`, {
+      method: "POST",
+    });
+  }
+
+  async ignoreAeoAction(actionId: string): Promise<AeoRecommendation> {
+    return this.request<AeoRecommendation>(`/aeo/actions/${actionId}/ignore`, {
+      method: "POST",
+    });
+  }
+
+  async bulkUpdateAeoActions(
+    actionIds: string[],
+    status: string
+  ): Promise<{ success: boolean; updated_count: number; status: string }> {
+    return this.request<{ success: boolean; updated_count: number; status: string }>(
+      "/aeo/actions/bulk",
+      {
+        method: "POST",
+        body: JSON.stringify({ action_ids: actionIds, status }),
+      }
+    );
+  }
+
+  async getAeoActionsSummary(projectId: string): Promise<AeoActionSummary> {
+    return this.request<AeoActionSummary>(`/aeo/actions/summary/${projectId}`);
+  }
+
+  async getAeoContentGaps(projectId: string): Promise<AeoContentGapResponse> {
+    return this.request<AeoContentGapResponse>("/aeo/gaps/content", {
+      method: "POST",
+      body: JSON.stringify({ project_id: projectId }),
+    });
+  }
+
+  async getAeoPromptGaps(projectId: string): Promise<AeoPromptGapResponse> {
+    return this.request<AeoPromptGapResponse>("/aeo/gaps/prompts", {
+      method: "POST",
+      body: JSON.stringify({ project_id: projectId }),
+    });
+  }
+
+  async getAeoCitationGaps(projectId: string): Promise<AeoCitationGapResponse> {
+    return this.request<AeoCitationGapResponse>("/aeo/gaps/citations", {
+      method: "POST",
+      body: JSON.stringify({ project_id: projectId }),
+    });
+  }
+
+  async getAeoEntityGaps(projectId: string): Promise<AeoEntityGapResponse> {
+    return this.request<AeoEntityGapResponse>("/aeo/gaps/entities", {
+      method: "POST",
+      body: JSON.stringify({ project_id: projectId }),
+    });
+  }
+
+  async getAeoOptimizationHistory(projectId: string, limit: number = 15): Promise<AeoOptimizationHistoryResponse> {
+    return this.request<AeoOptimizationHistoryResponse>(
+      `/aeo/optimization-history/${projectId}?limit=${limit}`
+    );
+  }
+
+  async optimizeAeoContent(input: {
+    target_question: string;
+    existing_content: string;
+    target_keyword?: string;
+    brand_name?: string;
+    product_service?: string;
+  }): Promise<AeoContentOptimizationResult> {
+    return this.request<AeoContentOptimizationResult>("/aeo/optimize/content", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async optimizeAeoDirectAnswer(input: {
+    target_question: string;
+    existing_content: string;
+    brand_name?: string;
+  }): Promise<AeoDirectAnswerOptimizationResult> {
+    return this.request<AeoDirectAnswerOptimizationResult>("/aeo/optimize/answer", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
   }
 
   // --- Phase 4 SEO Action Center & Optimization Methods ---

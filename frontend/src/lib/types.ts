@@ -518,21 +518,212 @@ export interface AeoVisibilityData {
 export interface AeoRecommendation {
   id: string;
   project_id: string;
+  recommendation_code?: string | null;
   title: string;
   category: string;
   priority: "critical" | "high" | "medium" | "low";
+  priority_level?: "critical" | "high" | "medium" | "low";
+  priority_score: number;
+  severity: "critical" | "high" | "medium" | "low";
   opportunity_score: number;
   reason: string;
+  why_it_matters?: string | null;
   current_state: string;
   recommended_action: string;
+  how_to_fix?: string | null;
   expected_impact: string;
-  status: "open" | "in_progress" | "implemented" | "dismissed";
+  estimated_impact: number;
+  current_score?: number | null;
+  potential_score?: number | null;
+  affected_prompt_count: number;
+  affected_answer_count: number;
+  affected_urls?: string[];
+  implementation_steps?: string[];
+  verification_status?: "unverified" | "verified" | "failed";
+  status: "open" | "in_progress" | "fixed" | "ignored" | "implemented" | "dismissed";
+  notes?: string | null;
+  resolved_at?: string | null;
   created_at: string;
+  updated_at?: string;
 }
+
+export type AeoAction = AeoRecommendation;
 
 export interface AeoRecommendationListResponse {
   recommendations: AeoRecommendation[];
   total: number;
+}
+
+export interface AeoActionSummary {
+  project_id: string;
+  project_name?: string | null;
+  domain?: string | null;
+  total_actions: number;
+  critical_count: number;
+  high_count: number;
+  medium_count: number;
+  low_count: number;
+  open_count: number;
+  in_progress_count: number;
+  fixed_count: number;
+  ignored_count: number;
+  current_score: number;
+  estimated_impact: number;
+  potential_score: number;
+  category_breakdown: Record<string, { total: number; fixed: number; open: number }>;
+}
+
+export interface AeoContentBrief {
+  target_question: string;
+  recommended_title: string;
+  content_type: string;
+  target_category: string;
+  suggested_word_count: string;
+  recommended_headings: string[];
+  essential_entities: string[];
+  structured_faqs: Array<{ question: string; answer_guideline: string }>;
+  citation_opportunities: string[];
+  internal_link_targets: string[];
+}
+
+export interface AeoContentGapItem {
+  topic: string;
+  prompt: string;
+  category: string;
+  intent: string;
+  competitor_coverage: boolean;
+  competitors_mentioned: string[];
+  brand_coverage: boolean;
+  priority: "critical" | "high" | "medium" | "low";
+  recommended_content_type: string;
+  estimated_impact: number;
+  brief: AeoContentBrief;
+}
+
+export interface AeoContentGapResponse {
+  total_gaps_count: number;
+  missing_topics_count: number;
+  competitor_covered_gaps_count: number;
+  high_priority_gaps_count: number;
+  gaps: AeoContentGapItem[];
+}
+
+export interface AeoPromptOpportunity {
+  question_id: string;
+  prompt: string;
+  category: string;
+  intent: string;
+  brand_mentioned: boolean;
+  competitor_mentions: string[];
+  has_citations: boolean;
+  priority: "critical" | "high" | "medium" | "low";
+  recommended_action: string;
+}
+
+export interface AeoPromptGapResponse {
+  total_tracked: number;
+  covered_prompts_count: number;
+  uncovered_prompts_count: number;
+  coverage_rate: number;
+  intent_breakdown: Record<string, { total: number; covered: number; uncovered: number }>;
+  category_breakdown: Record<string, { total: number; covered: number; uncovered: number }>;
+  opportunities: AeoPromptOpportunity[];
+}
+
+export interface AeoCitationOpportunity {
+  question_id: string;
+  prompt: string;
+  category: string;
+  intent: string;
+  total_citations: number;
+  own_citations_count: number;
+  competitor_sources: string[];
+  cited_domains: string[];
+  priority: "critical" | "high" | "medium" | "low";
+  recommendation: string;
+}
+
+export interface AeoCitationGapResponse {
+  total_citations: number;
+  own_citations_count: number;
+  competitor_citations_count: number;
+  third_party_citations_count: number;
+  own_citation_share: number;
+  top_cited_domains: Array<{ domain: string; count: number; is_own: boolean; is_competitor: boolean; citation_type: string }>;
+  opportunities: AeoCitationOpportunity[];
+}
+
+export interface AeoEntityGapItem {
+  entity: string;
+  type: string;
+  frequency?: number;
+  gap: string;
+  priority: "critical" | "high" | "medium" | "low";
+  recommendation: string;
+}
+
+export interface AeoEntityGapResponse {
+  total_entities_count: number;
+  brand_entities_count: number;
+  product_entities_count: number;
+  service_entities_count: number;
+  industry_entities_count: number;
+  weak_entities_count: number;
+  entities_list: Array<{ id: string; name: string; type: string; mentions: number; visibility_rate: number; concepts: string[] }>;
+  gaps: AeoEntityGapItem[];
+}
+
+export interface AeoOptimizationHistoryComparison {
+  audit_id: string;
+  analysis_id?: string | null;
+  created_at: string;
+  overall_score: number;
+  score_label: string;
+  score_delta: number;
+  mention_score: number;
+  mention_delta: number;
+  citation_score: number;
+  citation_delta: number;
+  coverage_score: number;
+  coverage_delta: number;
+  total_questions: number;
+  questions_mentioned: number;
+  own_citations: number;
+  competitor_citations: number;
+  resolved_actions_count: number;
+  open_actions_count: number;
+}
+
+export interface AeoOptimizationHistoryResponse {
+  project_id: string;
+  project_name: string;
+  domain: string;
+  current_score?: number | null;
+  total_audits: number;
+  comparisons: AeoOptimizationHistoryComparison[];
+}
+
+export interface AeoContentOptimizationResult {
+  target_question: string;
+  brand_name: string;
+  word_count: number;
+  content_quality_score: number;
+  has_direct_answer: boolean;
+  missing_facts: string[];
+  recommended_headings: string[];
+  direct_answer_suggestion: string;
+  citation_opportunities: string[];
+  ai_readability_recommendations: string[];
+}
+
+export interface AeoDirectAnswerOptimizationResult {
+  target_question: string;
+  readiness_score: number;
+  readiness_label: string;
+  passed_criteria_count: number;
+  total_criteria_count: number;
+  checklist: Array<{ dimension: string; status: "pass" | "missing"; guidance: string }>;
+  recommended_next_action: string;
 }
 
 export interface AeoDashboardSummary {
@@ -548,6 +739,25 @@ export interface AeoDashboardSummary {
   engines: AeoEngineStatus[];
   recent_questions: AeoQuestion[];
   recent_citations: AeoCitation[];
+  total_opportunities?: number;
+  critical_opportunities?: number;
+  high_opportunities?: number;
+  open_opportunities?: number;
+  in_progress_opportunities?: number;
+  fixed_opportunities?: number;
+  estimated_potential_gain?: number;
+  potential_score?: number;
+  top_opportunities?: Array<{
+    id: string;
+    title: string;
+    category: string;
+    priority_level: string;
+    priority_score: number;
+    estimated_impact: number;
+    reason: string;
+    status: string;
+  }>;
+  completion_rate?: number;
 }
 
 // --- Phase 4 SEO Action Center & Optimization Types ---

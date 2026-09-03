@@ -256,20 +256,37 @@ class AeoVisibilityResponse(BaseModel):
     snapshots_count: int = 0
 
 
-# --- Recommendations ---
+# --- Recommendations & Actions ---
 class AeoRecommendationResponse(BaseModel):
     id: str
     project_id: str
+    recommendation_code: Optional[str] = None
     title: str
     category: str
     priority: str
-    opportunity_score: int
+    priority_level: Optional[str] = "medium"
+    priority_score: int = 70
+    severity: str = "medium"
+    opportunity_score: int = 70
     reason: str
+    why_it_matters: Optional[str] = None
     current_state: str
     recommended_action: str
+    how_to_fix: Optional[str] = None
     expected_impact: str
-    status: str
+    estimated_impact: int = 5
+    current_score: Optional[int] = None
+    potential_score: Optional[int] = None
+    affected_prompt_count: int = 0
+    affected_answer_count: int = 0
+    affected_urls: List[str] = Field(default_factory=list)
+    implementation_steps: List[str] = Field(default_factory=list)
+    verification_status: str = "unverified"
+    status: str = "open"
+    notes: Optional[str] = None
+    resolved_at: Optional[datetime] = None
     created_at: datetime
+    updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -277,6 +294,59 @@ class AeoRecommendationResponse(BaseModel):
 class AeoRecommendationListResponse(BaseModel):
     recommendations: List[AeoRecommendationResponse]
     total: int
+
+
+class AeoActionUpdateRequest(BaseModel):
+    status: Optional[str] = Field(None, description="open, in_progress, fixed, ignored")
+    notes: Optional[str] = None
+
+
+class AeoActionBulkUpdateRequest(BaseModel):
+    action_ids: List[str] = Field(..., min_length=1)
+    status: str = Field(..., description="open, in_progress, fixed, ignored")
+
+
+class AeoActionGenerateRequest(BaseModel):
+    project_id: str
+    analysis_id: Optional[str] = None
+
+
+class AeoActionSummaryResponse(BaseModel):
+    project_id: str
+    project_name: Optional[str] = None
+    domain: Optional[str] = None
+    total_actions: int = 0
+    critical_count: int = 0
+    high_count: int = 0
+    medium_count: int = 0
+    low_count: int = 0
+    open_count: int = 0
+    in_progress_count: int = 0
+    fixed_count: int = 0
+    ignored_count: int = 0
+    current_score: int = 0
+    estimated_impact: int = 0
+    potential_score: int = 0
+    category_breakdown: Dict[str, Any] = Field(default_factory=dict)
+
+
+# --- Gap & Optimizer Requests ---
+class AeoProjectGapRequest(BaseModel):
+    project_id: str
+
+
+class AeoContentOptimizeRequest(BaseModel):
+    target_question: str = Field(..., min_length=3)
+    existing_content: str = Field(..., min_length=10)
+    target_keyword: Optional[str] = ""
+    brand_name: Optional[str] = ""
+    product_service: Optional[str] = ""
+
+
+class AeoDirectAnswerOptimizeRequest(BaseModel):
+    target_question: str = Field(..., min_length=3)
+    existing_content: str = Field(..., min_length=10)
+    brand_name: Optional[str] = ""
 
 
 # --- Dashboard ---
@@ -302,3 +372,13 @@ class AeoDashboardSummaryResponse(BaseModel):
     engines: List[AeoEngineStatus] = Field(default_factory=list)
     recent_questions: List[AeoQuestionResponse] = Field(default_factory=list)
     recent_citations: List[AeoCitationResponse] = Field(default_factory=list)
+    total_opportunities: int = 0
+    critical_opportunities: int = 0
+    high_opportunities: int = 0
+    open_opportunities: int = 0
+    in_progress_opportunities: int = 0
+    fixed_opportunities: int = 0
+    estimated_potential_gain: int = 0
+    potential_score: int = 0
+    top_opportunities: List[Dict[str, Any]] = Field(default_factory=list)
+    completion_rate: int = 0

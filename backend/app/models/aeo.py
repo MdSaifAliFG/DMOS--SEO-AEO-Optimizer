@@ -578,18 +578,38 @@ class AeoRecommendation(Base, TimestampMixin):
         nullable=False,
         index=True,
     )
+    recommendation_code: Mapped[Optional[str]] = mapped_column(
+        String(50),
+        nullable=True,
+        index=True,
+    )
     title: Mapped[str] = mapped_column(
         String(255),
         nullable=False,
     )
     category: Mapped[str] = mapped_column(
         String(100),
-        default="Content Opportunity",  # Brand Presence, Citation Building, Question Coverage, Entity Knowledge, Competitor Defense
+        default="Content Opportunity",
         nullable=False,
     )
     priority: Mapped[str] = mapped_column(
         String(50),
         default="medium",  # critical, high, medium, low
+        nullable=False,
+    )
+    priority_score: Mapped[int] = mapped_column(
+        Integer,
+        default=70,
+        nullable=False,
+    )
+    priority_level: Mapped[str] = mapped_column(
+        String(50),
+        default="medium",  # critical, high, medium, low
+        nullable=False,
+    )
+    severity: Mapped[str] = mapped_column(
+        String(50),
+        default="medium",
         nullable=False,
     )
     opportunity_score: Mapped[int] = mapped_column(
@@ -601,6 +621,10 @@ class AeoRecommendation(Base, TimestampMixin):
         Text,
         nullable=False,
     )
+    why_it_matters: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True,
+    )
     current_state: Mapped[str] = mapped_column(
         Text,
         nullable=False,
@@ -609,14 +633,64 @@ class AeoRecommendation(Base, TimestampMixin):
         Text,
         nullable=False,
     )
+    how_to_fix: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True,
+    )
     expected_impact: Mapped[str] = mapped_column(
         Text,
         nullable=False,
     )
+    estimated_impact: Mapped[int] = mapped_column(
+        Integer,
+        default=5,
+        nullable=False,
+    )
+    current_score: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+    potential_score: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+    affected_prompt_count: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
+    affected_answer_count: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
+    affected_urls: Mapped[List[str]] = mapped_column(
+        JSON,
+        default=list,
+        nullable=False,
+    )
+    implementation_steps: Mapped[List[str]] = mapped_column(
+        JSON,
+        default=list,
+        nullable=False,
+    )
+    verification_status: Mapped[str] = mapped_column(
+        String(50),
+        default="unverified",  # unverified, verified, failed
+        nullable=False,
+    )
     status: Mapped[str] = mapped_column(
         String(50),
-        default="open",  # open, in_progress, implemented, dismissed
+        default="open",  # open, in_progress, fixed, ignored
         nullable=False,
+    )
+    notes: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True,
+    )
+    resolved_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
     )
 
     # Relationships

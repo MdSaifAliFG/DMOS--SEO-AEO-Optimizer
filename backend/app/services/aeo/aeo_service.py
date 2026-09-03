@@ -28,11 +28,23 @@ from app.schemas.aeo import (
     AeoQuestionCreate,
     AeoQuestionUpdate,
 )
+from app.services.aeo.ai.rule_based_aeo_provider import RuleBasedAEOAIProvider
 from app.services.aeo.analysis_runner import AEOAnalysisRunner
 from app.services.aeo.citation_extractor import CitationExtractorEngine
 from app.services.aeo.competitor_detector import CompetitorDetectorEngine
+from app.services.aeo.optimization.citation_gap_analyzer import CitationGapAnalyzer
+from app.services.aeo.optimization.competitor_gap_analyzer import CompetitorGapAnalyzer
+from app.services.aeo.optimization.content_gap_analyzer import ContentGapAnalyzer
+from app.services.aeo.optimization.entity_gap_analyzer import EntityGapAnalyzer
+from app.services.aeo.optimization.gap_analyzer import AEOGapAnalysisEngine
+from app.services.aeo.optimization.history_service import AEOHistoryService
+from app.services.aeo.optimization.impact_calculator import AEOImpactCalculator
+from app.services.aeo.optimization.priority_calculator import AEOPriorityCalculator
+from app.services.aeo.optimization.prompt_gap_analyzer import PromptGapAnalyzer
+from app.services.aeo.optimization.recommendation_engine import AEORecommendationEngine
 from app.services.aeo.provider_interface import AEOProviderRegistry
 from app.services.aeo.question_generator import QuestionGeneratorEngine
+from app.services.aeo.visibility_scorer import VisibilityScorerEngine
 from app.services.crawler.url_validator import validate_url
 
 logger = logging.getLogger(__name__)
@@ -92,6 +104,7 @@ class AeoService:
                 category=sq["category"],
                 intent=sq["intent"],
                 is_tracked=True,
+                visibility_score=0,
             )
             db.add(q_obj)
 
@@ -246,6 +259,7 @@ class AeoService:
             category=data.category.strip(),
             intent=intent_val,
             is_tracked=data.is_tracked if data.is_tracked is not None else True,
+            visibility_score=0,
         )
         db.add(question)
         await db.commit()
@@ -362,6 +376,7 @@ class AeoService:
                     category=g["category"],
                     intent=g["intent"],
                     is_tracked=True,
+                    visibility_score=0,
                 )
                 db.add(q_obj)
                 created.append(q_obj)
@@ -695,6 +710,41 @@ class AeoService:
                     "score": s.overall_score,
                 })
 
+        # Phase 6 Optimization Opportunities Aggregation
+        recs_query = select(AeoRecommendation)
+        if target_project:
+            recs_query = recs_query.where(AeoRecommendation.project_id == target_project.id)
+        recs_res = await db.execute(recs_query)
+        all_recs = list(recs_res.scalars().all())
+
+        total_opportunities = len(all_recs)
+        critical_opportunities = len([r for r in all_recs if r.priority_level == "critical" or r.severity == "critical"])
+        high_opportunities = len([r for r in all_recs if r.priority_level == "high" or r.priority == "high"])
+        open_opportunities = len([r for r in all_recs if r.status == "open"])
+        in_progress_opportunities = len([r for r in all_recs if r.status == "in_progress"])
+        fixed_opportunities = len([r for r in all_recs if r.status in ["fixed", "implemented"]])
+
+        # Calculate estimated potential gain
+        open_impacts = [r.estimated_impact for r in all_recs if r.status in ["open", "in_progress"]]
+        current_sc = target_project.aeo_score if target_project else 0
+        gain, potential_score = AEOImpactCalculator.calculate_batch_potential(current_sc, open_impacts)
+
+        top_opportunities = [
+            {
+                "id": r.id,
+                "title": r.title,
+                "category": r.category,
+                "priority_level": r.priority_level or r.priority,
+                "priority_score": r.priority_score or r.opportunity_score,
+                "estimated_impact": r.estimated_impact,
+                "reason": r.reason,
+                "status": r.status,
+            }
+            for r in sorted(all_recs, key=lambda x: (x.priority_score or x.opportunity_score or 0), reverse=True)[:5]
+        ]
+
+        completion_rate = int(round((fixed_opportunities / max(1, total_opportunities)) * 100)) if total_opportunities > 0 else 0
+
         return {
             "aeo_score": target_project.aeo_score if target_project else None,
             "score_label": target_project.score_label if target_project else None,
@@ -708,4 +758,360 @@ class AeoService:
             "engines": engine_statuses,
             "recent_questions": recent_questions,
             "recent_citations": recent_citations,
+            # Phase 6 Additions
+            "total_opportunities": total_opportunities,
+            "critical_opportunities": critical_opportunities,
+            "high_opportunities": high_opportunities,
+            "open_opportunities": open_opportunities,
+            "in_progress_opportunities": in_progress_opportunities,
+            "fixed_opportunities": fixed_opportunities,
+            "estimated_potential_gain": gain,
+            "potential_score": potential_score,
+            "top_opportunities": top_opportunities,
+            "completion_rate": completion_rate,
         }
+
+    # ==========================================
+    # PHASE 6: AEO OPTIMIZATION & ACTION CENTER
+    # ==========================================
+
+    @staticmethod
+    async def get_action(db: AsyncSession, action_id: str) -> Optional[AeoRecommendation]:
+        """Fetch full recommendation details by ID."""
+        return await db.get(AeoRecommendation, action_id)
+
+    @staticmethod
+    async def get_actions(
+        db: AsyncSession,
+        project_id: Optional[str] = None,
+        status: Optional[str] = None,
+        priority: Optional[str] = None,
+        category: Optional[str] = None,
+        search: Optional[str] = None,
+        skip: int = 0,
+        limit: int = 50,
+    ) -> tuple[List[AeoRecommendation], int]:
+        """Fetch filtered and paginated AEO optimization actions."""
+        stmt = select(AeoRecommendation)
+        count_stmt = select(func.count(AeoRecommendation.id))
+
+        if project_id:
+            stmt = stmt.where(AeoRecommendation.project_id == project_id)
+            count_stmt = count_stmt.where(AeoRecommendation.project_id == project_id)
+
+        if status and status != "all":
+            stmt = stmt.where(AeoRecommendation.status == status.lower())
+            count_stmt = count_stmt.where(AeoRecommendation.status == status.lower())
+
+        if priority and priority != "all":
+            stmt = stmt.where(
+                (AeoRecommendation.priority_level == priority.lower())
+                | (AeoRecommendation.priority == priority.lower())
+            )
+            count_stmt = count_stmt.where(
+                (AeoRecommendation.priority_level == priority.lower())
+                | (AeoRecommendation.priority == priority.lower())
+            )
+
+        if category and category != "all":
+            stmt = stmt.where(AeoRecommendation.category == category)
+            count_stmt = count_stmt.where(AeoRecommendation.category == category)
+
+        if search:
+            s = f"%{search}%"
+            filter_cond = (
+                AeoRecommendation.title.ilike(s)
+                | AeoRecommendation.reason.ilike(s)
+                | AeoRecommendation.category.ilike(s)
+                | AeoRecommendation.recommendation_code.ilike(s)
+            )
+            stmt = stmt.where(filter_cond)
+            count_stmt = count_stmt.where(filter_cond)
+
+        total_res = await db.execute(count_stmt)
+        total = total_res.scalar() or 0
+
+        stmt = stmt.order_by(desc(AeoRecommendation.priority_score)).offset(skip).limit(limit)
+        res = await db.execute(stmt)
+        return list(res.scalars().all()), total
+
+    @staticmethod
+    async def update_action(
+        db: AsyncSession,
+        action_id: str,
+        status: Optional[str] = None,
+        notes: Optional[str] = None,
+    ) -> Optional[AeoRecommendation]:
+        """Update an action's status and notes."""
+        rec = await db.get(AeoRecommendation, action_id)
+        if not rec:
+            return None
+
+        if status:
+            rec.status = status.lower()
+            if rec.status in ["fixed", "implemented"]:
+                rec.resolved_at = datetime.now(timezone.utc)
+            elif rec.status == "open":
+                rec.resolved_at = None
+
+        if notes is not None:
+            rec.notes = notes
+
+        await db.commit()
+        await db.refresh(rec)
+        return rec
+
+    @staticmethod
+    async def bulk_update_actions(
+        db: AsyncSession,
+        action_ids: List[str],
+        status: str,
+    ) -> int:
+        """Bulk update action statuses (e.g. mark in_progress, fixed, ignored)."""
+        res = await db.execute(
+            select(AeoRecommendation).where(AeoRecommendation.id.in_(action_ids))
+        )
+        recs = list(res.scalars().all())
+        now = datetime.now(timezone.utc)
+
+        for r in recs:
+            r.status = status.lower()
+            if r.status in ["fixed", "implemented"]:
+                r.resolved_at = now
+            elif r.status == "open":
+                r.resolved_at = None
+
+        await db.commit()
+        return len(recs)
+
+    @staticmethod
+    async def verify_action(db: AsyncSession, action_id: str) -> tuple[Optional[AeoRecommendation], bool, str]:
+        """
+        Re-checks whether the underlying opportunity has improved based on latest analysis data.
+        Returns (action, is_resolved, verification_message).
+        """
+        rec = await db.get(AeoRecommendation, action_id)
+        if not rec:
+            return None, False, "Recommendation not found"
+
+        project = await AeoService.get_project(db, rec.project_id)
+        if not project:
+            return rec, False, "Project not found"
+
+        # Deterministic verification based on real metrics
+        code = rec.recommendation_code or ""
+        resolved = False
+        message = ""
+
+        if "PROMPT" in code or "CONTENT" in code:
+            uncovered_cnt = sum(1 for q in (project.questions or []) if not q.brand_mentioned)
+            if uncovered_cnt == 0 or (project.coverage_score or 0) >= 80:
+                resolved = True
+                message = "Verified: Brand coverage across tracked prompts is now 80%+."
+            else:
+                message = f"Unresolved: {uncovered_cnt} prompts remain uncovered in latest analysis."
+
+        elif "CITE" in code:
+            own_cits = sum(1 for c in (project.citations or []) if c.is_own_domain)
+            if own_cits > 0 and (project.citation_score or 0) >= 60:
+                resolved = True
+                message = "Verified: Own domain citations detected with healthy citation score."
+            else:
+                message = f"Unresolved: Only {own_cits} own-domain citations found in latest crawl."
+
+        elif "COMP" in code:
+            brand_rate = project.mention_score or 0
+            if brand_rate >= 60:
+                resolved = True
+                message = "Verified: Brand mention rate now exceeds 60% on comparison queries."
+            else:
+                message = f"Unresolved: Brand mention rate is currently {brand_rate}%."
+
+        elif "ENTITY" in code:
+            brand_ent_cnt = sum(1 for e in (project.entities or []) if e.entity_type == "Brand")
+            if brand_ent_cnt > 0:
+                resolved = True
+                message = "Verified: Brand entity is now established in knowledge graph."
+            else:
+                message = "Unresolved: Brand entity schema still not detected."
+
+        else:
+            if (project.aeo_score or 0) >= (rec.potential_score or 70):
+                resolved = True
+                message = f"Verified: Overall AEO Score reached {project.aeo_score}."
+            else:
+                message = f"Unresolved: Current AEO score is {project.aeo_score} (potential target: {rec.potential_score})."
+
+        rec.verification_status = "verified" if resolved else "failed"
+        if resolved:
+            rec.status = "fixed"
+            rec.resolved_at = datetime.now(timezone.utc)
+
+        await db.commit()
+        await db.refresh(rec)
+        return rec, resolved, message
+
+    @staticmethod
+    async def get_actions_summary(db: AsyncSession, project_id: str) -> Dict[str, Any]:
+        """Computes comprehensive KPI summary for AEO Action Center."""
+        project = await AeoService.get_project(db, project_id)
+        if not project:
+            return {}
+
+        res = await db.execute(
+            select(AeoRecommendation).where(AeoRecommendation.project_id == project_id)
+        )
+        recs = list(res.scalars().all())
+
+        total = len(recs)
+        critical = len([r for r in recs if r.priority_level == "critical" or r.severity == "critical"])
+        high = len([r for r in recs if r.priority_level == "high" or r.priority == "high"])
+        medium = len([r for r in recs if r.priority_level == "medium" or r.priority == "medium"])
+        low = len([r for r in recs if r.priority_level == "low" or r.priority == "low"])
+
+        open_cnt = len([r for r in recs if r.status == "open"])
+        in_progress = len([r for r in recs if r.status == "in_progress"])
+        fixed = len([r for r in recs if r.status in ["fixed", "implemented"]])
+        ignored = len([r for r in recs if r.status in ["ignored", "dismissed"]])
+
+        # Category Progress
+        categories = {}
+        for r in recs:
+            cat = r.category or "General"
+            if cat not in categories:
+                categories[cat] = {"total": 0, "fixed": 0, "open": 0}
+            categories[cat]["total"] += 1
+            if r.status in ["fixed", "implemented"]:
+                categories[cat]["fixed"] += 1
+            else:
+                categories[cat]["open"] += 1
+
+        # Potential Score calculation
+        open_impacts = [r.estimated_impact for r in recs if r.status in ["open", "in_progress"]]
+        curr_sc = project.aeo_score or 0
+        gain, potential_sc = AEOImpactCalculator.calculate_batch_potential(curr_sc, open_impacts)
+
+        return {
+            "project_id": project_id,
+            "project_name": project.name,
+            "domain": project.domain,
+            "total_actions": total,
+            "critical_count": critical,
+            "high_count": high,
+            "medium_count": medium,
+            "low_count": low,
+            "open_count": open_cnt,
+            "in_progress_count": in_progress,
+            "fixed_count": fixed,
+            "ignored_count": ignored,
+            "current_score": curr_sc,
+            "estimated_impact": gain,
+            "potential_score": potential_sc,
+            "category_breakdown": categories,
+        }
+
+    @staticmethod
+    async def generate_actions_for_project(
+        db: AsyncSession, project_id: str
+    ) -> List[AeoRecommendation]:
+        """Manually trigger recommendation generation from latest project data."""
+        project = await AeoService.get_project(db, project_id)
+        if not project:
+            return []
+
+        # Build score breakdown from project
+        from app.services.aeo.visibility_scorer import AeoScoreBreakdown
+        score_breakdown = AeoScoreBreakdown(
+            overall_score=project.aeo_score or 50,
+            score_label=project.score_label or "Moderate",
+            mention_score=project.mention_score or 50,
+            citation_score=project.citation_score or 50,
+            position_score=project.position_score or 50,
+            coverage_score=project.coverage_score or 50,
+            average_position=None,
+            weights={},
+            formula="Weighted",
+        )
+
+        recs_data = AEORecommendationEngine.generate_recommendations(
+            project=project,
+            score_breakdown=score_breakdown,
+            questions=list(project.questions or []),
+            citations=list(project.citations or []),
+            entities=list(project.entities or []),
+        )
+
+        return await AEORecommendationEngine.sync_recommendations_to_db(
+            db=db,
+            project_id=project.id,
+            generated_recs=recs_data,
+        )
+
+    # --- Gap Analysis Integrations ---
+    @staticmethod
+    async def get_content_gaps(db: AsyncSession, project_id: str) -> Dict[str, Any]:
+        project = await AeoService.get_project(db, project_id)
+        if not project:
+            return {}
+        return ContentGapAnalyzer.analyze(project, list(project.questions or []))
+
+    @staticmethod
+    async def get_prompt_gaps(db: AsyncSession, project_id: str) -> Dict[str, Any]:
+        project = await AeoService.get_project(db, project_id)
+        if not project:
+            return {}
+        return PromptGapAnalyzer.analyze(project, list(project.questions or []))
+
+    @staticmethod
+    async def get_citation_gaps(db: AsyncSession, project_id: str) -> Dict[str, Any]:
+        project = await AeoService.get_project(db, project_id)
+        if not project:
+            return {}
+        return CitationGapAnalyzer.analyze(
+            project, list(project.questions or []), list(project.citations or [])
+        )
+
+    @staticmethod
+    async def get_entity_gaps(db: AsyncSession, project_id: str) -> Dict[str, Any]:
+        project = await AeoService.get_project(db, project_id)
+        if not project:
+            return {}
+        return EntityGapAnalyzer.analyze(project, list(project.entities or []))
+
+    @staticmethod
+    async def get_optimization_history(
+        db: AsyncSession, project_id: str, limit: int = 15
+    ) -> Dict[str, Any]:
+        return await AEOHistoryService.get_optimization_history(db, project_id, limit)
+
+    # --- Interactive Optimizers ---
+    @staticmethod
+    async def optimize_content(
+        target_question: str,
+        existing_content: str,
+        target_keyword: str = "",
+        brand_name: str = "",
+        product_service: str = "",
+    ) -> Dict[str, Any]:
+        provider = RuleBasedAEOAIProvider()
+        return await provider.optimize_content(
+            target_question=target_question,
+            existing_content=existing_content,
+            target_keyword=target_keyword,
+            brand_name=brand_name or "Brand",
+            product_service=product_service,
+        )
+
+    @staticmethod
+    async def optimize_direct_answer(
+        target_question: str,
+        existing_content: str,
+        brand_name: str = "",
+    ) -> Dict[str, Any]:
+        provider = RuleBasedAEOAIProvider()
+        return await provider.optimize_direct_answer(
+            target_question=target_question,
+            existing_content=existing_content,
+            brand_name=brand_name or "Brand",
+        )
+

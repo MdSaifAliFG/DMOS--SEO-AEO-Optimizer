@@ -98,7 +98,7 @@ export default function AeoReportsPage() {
                   <th className="py-3 px-4 text-center">Tracked Prompts</th>
                   <th className="py-3 px-4 text-center">Citations</th>
                   <th className="py-3 px-4">Last Analyzed</th>
-                  <th className="py-3 px-5 text-right">Actions</th>
+                  <th className="py-3 px-5 text-right whitespace-nowrap min-w-[320px]">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -127,53 +127,60 @@ export default function AeoReportsPage() {
                 ) : (
                   projects.map((proj) => (
                     <tr key={proj.id} className="hover:bg-purple-50/20 transition-colors">
-                      <td className="py-3.5 px-5 font-bold text-slate-900">
+                      <td className="py-3.5 px-5 font-bold text-slate-900 whitespace-nowrap">
                         {proj.name}
                       </td>
 
-                      <td className="py-3.5 px-4 font-mono text-[11px] text-slate-600">
+                      <td className="py-3.5 px-4 font-mono text-[11px] text-slate-600 whitespace-nowrap">
                         {proj.domain}
                       </td>
 
-                      <td className="py-3.5 px-4 text-center">
+                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
                         <span className="font-bold text-purple-950 px-2.5 py-1 bg-purple-50 rounded-full border border-purple-200">
                           {proj.aeo_score !== null && proj.aeo_score !== undefined ? `${proj.aeo_score}/100` : "Untested"}
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 text-center font-bold text-slate-800">
+                      <td className="py-3.5 px-4 text-center font-bold text-slate-800 whitespace-nowrap">
                         {proj.questions_count}
                       </td>
 
-                      <td className="py-3.5 px-4 text-center font-bold text-purple-700">
+                      <td className="py-3.5 px-4 text-center font-bold text-purple-700 whitespace-nowrap">
                         {proj.citations_count}
                       </td>
 
-                      <td className="py-3.5 px-4 text-slate-400 text-[11px]">
+                      <td className="py-3.5 px-4 text-slate-400 text-[11px] whitespace-nowrap">
                         {proj.last_analyzed_at ? formatTimeAgo(proj.last_analyzed_at) : "Never"}
                       </td>
 
-                      <td className="py-3.5 px-5 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
+                      <td className="py-3.5 px-5 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-2 flex-nowrap">
+                          <button
                             onClick={() => handleExportCsv(proj.id, proj.name)}
-                            leftIcon={<Download className="w-3 h-3" />}
-                            className="text-xs h-7"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-xs transition whitespace-nowrap"
                           >
-                            CSV Export
-                          </Button>
+                            <Download className="w-3.5 h-3.5 text-slate-500" />
+                            Queries CSV
+                          </button>
 
-                          <Button
-                            size="sm"
-                            variant="primary"
-                            onClick={() => handleOpenReportModal(proj)}
-                            leftIcon={<Eye className="w-3 h-3" />}
-                            className="bg-purple-600 hover:bg-purple-500 text-white text-xs h-7"
+                          <button
+                            onClick={() => {
+                              const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+                              window.open(`${backendUrl}/aeo/actions/${proj.id}/export-csv`, "_blank");
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-purple-200 bg-purple-50/70 hover:bg-purple-100 text-purple-800 text-xs font-semibold shadow-xs transition whitespace-nowrap"
                           >
+                            <Download className="w-3.5 h-3.5 text-purple-600" />
+                            Actions CSV
+                          </button>
+
+                          <button
+                            onClick={() => handleOpenReportModal(proj)}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-xs transition whitespace-nowrap"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-white" />
                             View Report
-                          </Button>
+                          </button>
                         </div>
                       </td>
                     </tr>
