@@ -486,10 +486,10 @@ export const GlobalSearch: React.FC = () => {
   }, [selectedIndex]);
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-md">
+    <div ref={containerRef} className="relative w-full">
       {/* Search Input Bar */}
       <div className="relative flex items-center group">
-        <Search className="w-4 h-4 text-slate-400 group-focus-within:text-blue-600 absolute left-3 pointer-events-none transition-colors" />
+        <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 group-focus-within:text-blue-600 absolute left-2.5 sm:left-3 pointer-events-none transition-colors" />
         <input
           ref={inputRef}
           type="text"
@@ -500,13 +500,13 @@ export const GlobalSearch: React.FC = () => {
           }}
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
-          placeholder="Search modules, audits, pages, prompts..."
+          placeholder="Search platform..."
           aria-label="Global platform search"
-          className="w-full pl-9 pr-16 py-1.5 sm:py-2 text-xs text-slate-800 placeholder:text-slate-400 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-slate-200 focus:border-blue-500 rounded-xl transition-all outline-none focus:ring-2 focus:ring-blue-500/15 shadow-2xs"
+          className="w-full pl-8 sm:pl-9 pr-8 sm:pr-16 py-1.5 sm:py-2 text-xs text-slate-800 placeholder:text-slate-400 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-slate-200 focus:border-blue-500 rounded-xl transition-all outline-none focus:ring-2 focus:ring-blue-500/15 shadow-2xs"
         />
 
         {/* Right side controls: Clear (X) or Shortcut badge */}
-        <div className="absolute right-2.5 flex items-center gap-1">
+        <div className="absolute right-2 sm:right-2.5 flex items-center gap-1">
           {query ? (
             <button
               onClick={() => {
@@ -529,7 +529,7 @@ export const GlobalSearch: React.FC = () => {
 
       {/* Dropdown Results Panel */}
       {isOpen && (
-        <div className="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-1">
+        <div className="fixed sm:absolute left-3 right-3 sm:left-0 sm:right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 max-w-lg sm:max-w-none mx-auto">
           {/* Header info */}
           <div className="px-3.5 py-2 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between text-[11px] text-slate-500">
             <span className="font-semibold text-slate-700">

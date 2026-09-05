@@ -158,34 +158,34 @@ export default function MetadataOptimizerPage() {
   return (
     <DashboardShell>
       <div className="space-y-6">
-        {/* Module Banner / Header (Cohesive Sky Blue SEO Identity) */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-sky-950 via-cyan-900 to-slate-900 text-white shadow-md border border-sky-800/40">
+        {/* Module Banner / Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
           <div className="space-y-1">
-            <div className="flex items-center gap-2.5">
-              <div className="p-1.5 rounded-lg bg-sky-500/20 border border-sky-400/30">
-                <Sparkles className="w-5 h-5 text-sky-300" />
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100 text-blue-600">
+                <Sparkles className="w-5 h-5" />
               </div>
-              <h1 className="text-xl font-bold tracking-tight">Metadata Optimizer</h1>
-              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-sky-500/30 text-sky-200 border border-sky-400/20">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Metadata Optimizer</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                 AI & Rule-Based
               </span>
             </div>
-            <p className="text-xs text-sky-200/80 max-w-2xl">
+            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
               Generate high-CTR title tags, compelling meta descriptions, and preview live Google SERP snippets.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap sm:shrink-0">
             {projects.length > 0 && (
-              <div className="flex items-center gap-2 bg-sky-950/80 border border-sky-700/60 rounded-xl px-3 py-1.5">
-                <span className="text-xs font-semibold text-sky-200">Project:</span>
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 shadow-2xs">
+                <span className="text-xs font-semibold text-slate-500">Project:</span>
                 <select
                   value={selectedProjectId}
                   onChange={(e) => setSelectedProjectId(e.target.value)}
-                  className="bg-transparent text-xs font-semibold text-white focus:outline-none cursor-pointer"
+                  className="bg-transparent text-xs font-semibold text-slate-900 focus:outline-none cursor-pointer"
                 >
                   {projects.map((p) => (
-                    <option key={p.id} value={p.id} className="bg-slate-900 text-white">
+                    <option key={p.id} value={p.id} className="bg-white text-slate-900">
                       {p.name}
                     </option>
                   ))}
@@ -195,7 +195,7 @@ export default function MetadataOptimizerPage() {
 
             <Link
               href="/seo/actions"
-              className="px-3 py-1.5 text-xs font-medium bg-sky-900/60 hover:bg-sky-800/60 text-sky-100 rounded-xl border border-sky-700/60 transition flex items-center gap-1.5"
+              className="px-3.5 py-2 text-xs font-semibold bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl border border-slate-200 transition flex items-center gap-1.5 shadow-xs"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Actions
             </Link>
@@ -203,7 +203,7 @@ export default function MetadataOptimizerPage() {
         </div>
 
         {/* Main 2-Column Workspace */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
           {/* Left Column: Inputs & Current Tags (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
             {/* Target Page Selector & Context Input */}

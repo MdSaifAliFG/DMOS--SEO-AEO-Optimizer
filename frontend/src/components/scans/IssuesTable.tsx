@@ -52,7 +52,7 @@ export function IssuesTable({
     <>
       <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-xs">
         {/* Table Toolbar */}
-        <div className="p-4 border-b border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-3.5 sm:p-4 border-b border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
           {/* Search Input */}
           <div className="relative w-full sm:w-80">
             <svg
@@ -78,12 +78,12 @@ export function IssuesTable({
           </div>
 
           {/* Category Filter */}
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
             <span className="text-xs text-slate-500 whitespace-nowrap font-medium">Category:</span>
             <select
               value={selectedCategory || ""}
               onChange={(e) => onCategoryChange(e.target.value ? e.target.value : null)}
-              className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-all shadow-2xs font-medium cursor-pointer"
+              className="flex-1 sm:flex-none px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-all shadow-2xs font-medium cursor-pointer"
             >
               <option value="">All Categories</option>
               <option value="technical">Technical SEO</option>
@@ -96,7 +96,7 @@ export function IssuesTable({
 
         {/* Table Content */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-xs min-w-[640px]">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-semibold text-[11px]">
               <tr>
                 <th className="py-3.5 px-4 w-28">Severity</th>
@@ -175,8 +175,8 @@ export function IssuesTable({
         </div>
 
         {/* Pagination Footer */}
-        <div className="p-4 border-t border-slate-200 bg-slate-50/70 flex items-center justify-between text-xs text-slate-600">
-          <div>
+        <div className="p-3.5 sm:p-4 border-t border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+          <div className="text-center sm:text-left">
             Showing <span className="font-bold text-slate-900">{Math.min(total, (currentPage - 1) * pageSize + 1)}</span> to{" "}
             <span className="font-bold text-slate-900">{Math.min(total, currentPage * pageSize)}</span> of{" "}
             <span className="font-bold text-slate-900">{total}</span> issue{total === 1 ? "" : "s"}

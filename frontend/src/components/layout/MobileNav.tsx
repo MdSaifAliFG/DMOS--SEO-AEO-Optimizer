@@ -87,13 +87,13 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose }) => {
       />
 
       {/* Drawer */}
-      <div className="relative w-72 bg-white border-r border-slate-200 h-full flex flex-col z-10 animate-in slide-in-from-left duration-200 shadow-xl">
+      <div className="relative w-72 sm:w-80 max-w-[85vw] bg-white border-r border-slate-200 h-full flex flex-col z-10 animate-in slide-in-from-left duration-200 shadow-2xl">
         {/* Header */}
         <div className="h-14 px-4 flex items-center justify-between border-b border-slate-200">
           <SeoSensingBrand showTagline={false} showBadge={false} />
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
+            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

@@ -35,17 +35,17 @@ export const LandingNavbar: React.FC = () => {
           : "bg-transparent border-b border-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div className="max-w-7xl 2xl:max-w-[1680px] 3xl:max-w-[1920px] 4k:max-w-[2240px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 h-20 2xl:h-24 flex items-center justify-between">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <SeoSensingLogo size={36} />
-          <span className="text-xl sm:text-2xl font-black tracking-tight text-white font-sans">
+          <SeoSensingLogo size={36} className="2xl:scale-110 3xl:scale-120" />
+          <span className="text-xl sm:text-2xl 2xl:text-3xl font-black tracking-tight text-white font-sans">
             SEO<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Sensing</span>
           </span>
         </Link>
 
         {/* Center Navigation */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+        <nav className="hidden md:flex items-center gap-8 2xl:gap-12 3xl:gap-16 text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-300">
           {navLinks.map((link) => (
             <a
               key={link.label}
@@ -58,15 +58,15 @@ export const LandingNavbar: React.FC = () => {
         </nav>
 
         {/* Right CTAs (Exact match to reference style) */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-3 2xl:gap-4">
           <Link href={isAuthenticated ? "/overview" : "/login"}>
-            <button className="px-5 py-2 rounded-lg border border-white/80 text-white text-xs font-semibold hover:bg-white/10 transition-all duration-150">
+            <button className="px-5 2xl:px-7 py-2 2xl:py-2.5 rounded-lg 2xl:rounded-xl border border-white/80 text-white text-xs 2xl:text-sm font-semibold hover:bg-white/10 transition-all duration-150 cursor-pointer">
               Scan your website
             </button>
           </Link>
 
           <Link href={isAuthenticated ? "/overview" : "/login"}>
-            <button className="px-5 py-2 rounded-lg bg-white text-slate-950 text-xs font-bold hover:bg-slate-100 transition-all duration-150 shadow-md">
+            <button className="px-5 2xl:px-7 py-2 2xl:py-2.5 rounded-lg 2xl:rounded-xl bg-white text-slate-950 text-xs 2xl:text-sm font-bold hover:bg-slate-100 transition-all duration-150 shadow-md cursor-pointer">
               Upgrade
             </button>
           </Link>

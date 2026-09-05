@@ -7,30 +7,26 @@ import { SeoSensingLogo } from "@/components/brand/SeoSensingLogo";
 
 export const LandingFooter: React.FC = () => {
   return (
-    <footer className="bg-[#030712] border-t border-slate-800/80 text-slate-400 text-xs pt-16 pb-12 relative overflow-hidden">
-      {/* Ambient Royal Blue Glow Backlight */}
-      <div className="absolute top-0 left-1/3 w-[500px] h-[300px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-0 right-10 w-[400px] h-[250px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-14">
+    <footer className="bg-black border-t border-white/10 text-slate-400 text-xs 2xl:text-sm pt-16 pb-12 2xl:pt-24 2xl:pb-16 relative overflow-hidden">
+      <div className="max-w-7xl 2xl:max-w-[1680px] 3xl:max-w-[1920px] 4k:max-w-[2240px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 relative z-10 space-y-14 2xl:space-y-20">
 
         {/* Middle Section: Footer Navigation Links */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-10 2xl:gap-16">
           {/* Col 1: Brand Info (2 cols) */}
-          <div className="space-y-4 md:col-span-2">
+          <div className="space-y-4 2xl:space-y-6 md:col-span-2">
             <Link href="/" className="inline-flex items-center gap-2.5 group">
-              <SeoSensingLogo size={36} />
-              <span className="text-xl font-black tracking-tight text-white font-sans">
+              <SeoSensingLogo size={36} className="2xl:scale-110 3xl:scale-120" />
+              <span className="text-xl 2xl:text-2xl 3xl:text-3xl font-black tracking-tight text-white font-sans">
                 SEO<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Sensing</span>
               </span>
             </Link>
 
-            <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
+            <p className="text-slate-400 text-xs 2xl:text-sm 3xl:text-base leading-relaxed max-w-sm 2xl:max-w-md">
               AI Search & SEO Sensing Operating System. Unified intelligence platform engineered for deterministic technical SEO crawling and AI Answer Engine Optimization (AEO).
             </p>
 
             {/* Social Media Links with Authentic Brand Colors */}
-            <div className="flex items-center gap-2.5 pt-1.5">
+            <div className="flex items-center gap-2.5 2xl:gap-3.5 pt-1.5">
               {/* X (formerly Twitter) */}
               <a
                 href="https://twitter.com"
@@ -104,9 +100,9 @@ export const LandingFooter: React.FC = () => {
           </div>
 
           {/* Col 2: SEO Products */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">SEO Engine</h4>
-            <ul className="space-y-2 text-xs">
+          <div className="space-y-3 2xl:space-y-4">
+            <h4 className="text-xs 2xl:text-sm font-bold text-white uppercase tracking-wider">SEO Engine</h4>
+            <ul className="space-y-2 2xl:space-y-3 text-xs 2xl:text-sm">
               <li>
                 <Link href="/seo/dashboard" className="hover:text-blue-400 transition-colors">
                   SEO Dashboard
@@ -136,9 +132,9 @@ export const LandingFooter: React.FC = () => {
           </div>
 
           {/* Col 3: AEO Intelligence */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-purple-400 uppercase tracking-wider">AEO Intelligence</h4>
-            <ul className="space-y-2 text-xs">
+          <div className="space-y-3 2xl:space-y-4">
+            <h4 className="text-xs 2xl:text-sm font-bold text-purple-400 uppercase tracking-wider">AEO Intelligence</h4>
+            <ul className="space-y-2 2xl:space-y-3 text-xs 2xl:text-sm">
               <li>
                 <Link href="/aeo/dashboard" className="hover:text-purple-300 transition-colors">
                   AEO Dashboard
@@ -168,9 +164,9 @@ export const LandingFooter: React.FC = () => {
           </div>
 
           {/* Col 4: Platform & Company */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Company</h4>
-            <ul className="space-y-2 text-xs">
+          <div className="space-y-3 2xl:space-y-4">
+            <h4 className="text-xs 2xl:text-sm font-bold text-white uppercase tracking-wider">Company</h4>
+            <ul className="space-y-2 2xl:space-y-3 text-xs 2xl:text-sm">
               <li>
                 <a href="#hero" className="hover:text-blue-400 transition-colors">
                   About SeoSensing
@@ -201,15 +197,15 @@ export const LandingFooter: React.FC = () => {
         </div>
 
         {/* Bottom Section: Copyright & Badges */}
-        <div className="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="pt-8 2xl:pt-10 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs 2xl:text-sm text-slate-500">
           <p>© 2026 SeoSensing Platform. AI Search & SEO Sensing Operating System. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5 text-slate-400">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
+              <ShieldCheck className="w-4 h-4 2xl:w-5 2xl:h-5 text-emerald-500" />
               <span>SSRF Protected Crawler</span>
             </div>
             <div className="flex items-center gap-1.5 text-slate-400">
-              <Lock className="w-4 h-4 text-blue-400" />
+              <Lock className="w-4 h-4 2xl:w-5 2xl:h-5 text-blue-400" />
               <span>256-bit SSL Encrypted</span>
             </div>
           </div>

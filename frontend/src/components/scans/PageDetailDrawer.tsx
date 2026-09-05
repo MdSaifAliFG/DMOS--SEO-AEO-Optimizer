@@ -60,11 +60,11 @@ export function PageDetailDrawer({
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/50 backdrop-blur-xs animate-fade-in">
       <div
-        className="relative w-full max-w-3xl h-full flex flex-col bg-white border-l border-slate-200 shadow-2xl overflow-hidden"
+        className="relative w-full sm:max-w-xl md:max-w-2xl lg:max-w-3xl h-full flex flex-col bg-white border-l border-slate-200 shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 bg-slate-50/70 flex items-start justify-between gap-4">
+        <div className="p-4 sm:p-6 border-b border-slate-100 bg-slate-50/70 flex items-start justify-between gap-3 sm:gap-4">
           <div className="space-y-1.5 flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               {page && (
@@ -85,13 +85,13 @@ export function PageDetailDrawer({
                 Depth: {page?.crawl_depth ?? 0}
               </span>
             </div>
-            <h3 className="text-sm font-bold text-slate-900 font-mono truncate select-all">
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900 font-mono truncate select-all">
               {page?.url || "Loading page inspection..."}
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-1.5 sm:p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
             aria-label="Close drawer"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -101,7 +101,7 @@ export function PageDetailDrawer({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-1 px-6 border-b border-slate-200 bg-slate-50/50 text-xs">
+        <div className="flex items-center gap-1 px-3 sm:px-6 border-b border-slate-200 bg-slate-50/50 text-xs overflow-x-auto flex-nowrap">
           {[
             { key: "overview", label: "Overview & Meta" },
             { key: "headings", label: `Headings (${(page?.headings?.h1?.length || 0) + (page?.headings?.h2?.length || 0)})` },
@@ -112,7 +112,7 @@ export function PageDetailDrawer({
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as any)}
-              className={`py-3 px-3.5 font-bold border-b-2 transition-colors cursor-pointer ${
+              className={`py-2.5 sm:py-3 px-2.5 sm:px-3.5 font-bold border-b-2 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                 activeTab === tab.key
                   ? "border-blue-600 text-blue-600"
                   : "border-transparent text-slate-500 hover:text-slate-800"
@@ -124,7 +124,7 @@ export function PageDetailDrawer({
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
           {isLoading || !page ? (
             <div className="py-20 text-center text-slate-400">
               <div className="inline-block animate-spin rounded-full h-7 w-7 border-2 border-blue-600 border-t-transparent" />

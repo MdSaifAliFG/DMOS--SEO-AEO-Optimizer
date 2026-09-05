@@ -213,24 +213,24 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
   const headerInfo = getPageHeaderInfo();
 
   return (
-    <header className="h-16 px-4 md:px-8 border-b border-slate-200 bg-white sticky top-0 z-20 flex items-center justify-between gap-3 sm:gap-6 shadow-xs">
-      <div className="flex items-center gap-3 min-w-0 shrink-0">
+    <header className="h-16 2xl:h-20 px-3 sm:px-4 md:px-8 2xl:px-12 border-b border-slate-200 bg-white sticky top-0 z-20 flex items-center justify-between gap-2 sm:gap-6 2xl:gap-8 shadow-xs">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0">
         {/* Mobile menu trigger */}
         <button
           onClick={onOpenMobileNav}
-          className="lg:hidden p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+          className="lg:hidden p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
           aria-label="Open menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         {/* Dynamic Page Title & Subtitle */}
-        <div className="flex flex-col justify-center min-w-0">
-          <h1 className="text-base md:text-lg font-bold text-slate-900 leading-tight truncate">
+        <div className="flex flex-col justify-center min-w-0 max-w-[110px] xs:max-w-[160px] sm:max-w-none">
+          <h1 className="text-sm sm:text-base md:text-lg 2xl:text-xl font-bold text-slate-900 leading-tight truncate">
             {headerInfo.title}
           </h1>
           {headerInfo.subtitle ? (
-            <p className="text-[11px] text-slate-500 hidden sm:block leading-tight truncate mt-0.5">
+            <p className="text-[11px] 2xl:text-xs text-slate-500 hidden md:block leading-tight truncate mt-0.5 max-w-sm lg:max-w-md 2xl:max-w-xl">
               {headerInfo.subtitle}
             </p>
           ) : null}
@@ -238,18 +238,18 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
       </div>
 
       {/* Center Global Search Bar */}
-      <div className="flex-1 max-w-md mx-1 sm:mx-4 min-w-0 flex justify-center">
+      <div className="flex-1 max-w-[160px] xs:max-w-[220px] sm:max-w-sm md:max-w-md lg:max-w-xl 2xl:max-w-2xl 3xl:max-w-3xl mx-1 sm:mx-4 min-w-0 flex justify-center">
         <GlobalSearch />
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-3 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {/* Workable Global Notification Bell */}
         <div className="relative" ref={notificationMenuRef}>
           <button
             onClick={() => setIsNotificationMenuOpen(!isNotificationMenuOpen)}
             title="Notifications"
-            className="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors relative cursor-pointer focus:outline-none"
+            className="p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors relative cursor-pointer focus:outline-none"
             aria-label="Open notifications"
           >
             <Bell className="w-4 h-4" />
@@ -262,7 +262,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
 
           {/* Notifications Dropdown Panel */}
           {isNotificationMenuOpen && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
+            <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-xs sm:w-96 sm:max-w-none bg-white border border-slate-200 rounded-2xl shadow-xl z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
               {/* Dropdown Header */}
               <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
                 <div className="flex items-center gap-2">
@@ -356,7 +356,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
 
           {/* User Menu Dropdown */}
           {isUserMenuOpen && (
-            <div className="absolute right-0 mt-2 w-60 bg-white border border-slate-200 rounded-2xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
+            <div className="absolute right-0 mt-2 w-60 max-w-[calc(100vw-2rem)] bg-white border border-slate-200 rounded-2xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
               <div className="px-3.5 py-2.5 border-b border-slate-100">
                 <p className="text-xs font-bold text-slate-900">{user?.name || "Growth Lead"}</p>
                 <p className="text-[11px] text-slate-500 truncate">{user?.email || "admin@seosensing.internal"}</p>

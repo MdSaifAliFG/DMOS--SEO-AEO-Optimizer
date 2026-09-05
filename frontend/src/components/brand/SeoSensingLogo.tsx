@@ -18,7 +18,7 @@ interface SeoSensingLogoProps {
 export const SeoSensingLogo: React.FC<SeoSensingLogoProps> = ({
   className,
   size = 36,
-  title,
+  title = "SeoSensing",
 }) => {
   const [imgError, setImgError] = useState(false);
 
@@ -30,7 +30,7 @@ export const SeoSensingLogo: React.FC<SeoSensingLogoProps> = ({
         className
       )}
       style={{ width: size, height: size }}
-      title={title || undefined}
+      title={title}
     >
       {!imgError ? (
         <img

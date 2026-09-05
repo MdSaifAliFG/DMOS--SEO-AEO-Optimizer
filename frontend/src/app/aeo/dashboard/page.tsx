@@ -195,31 +195,31 @@ export default function AeoDashboardPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-purple-900/90 via-indigo-900/80 to-slate-900 text-white shadow-md border border-purple-800/40">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
           <div className="space-y-1">
-            <div className="flex items-center gap-2.5">
-              <div className="p-1.5 rounded-lg bg-purple-500/20 border border-purple-400/30">
-                <Bot className="w-5 h-5 text-purple-300" />
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="p-2 rounded-xl bg-purple-50 border border-purple-100 text-purple-600">
+                <Bot className="w-5 h-5" />
               </div>
-              <h1 className="text-xl font-bold tracking-tight">Answer Engine Optimization (AEO)</h1>
-              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-500/30 text-purple-200 border border-purple-400/20">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Answer Engine Optimization (AEO)</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-purple-50 text-purple-700 border border-purple-200">
                 Intelligence Engine
               </span>
             </div>
-            <p className="text-xs text-purple-200/80 max-w-2xl">
+            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
               Monitor brand prominence, knowledge entity presence, and direct citation sources across generative AI answer engines.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 flex-wrap">
+          <div className="flex items-center gap-2.5 flex-wrap sm:shrink-0">
             {projects.length > 0 && (
               <select
                 value={selectedProjectId}
                 onChange={(e) => setSelectedProjectId(e.target.value)}
-                className="text-xs font-medium bg-purple-950/80 border border-purple-700/60 rounded-xl px-3 py-2 text-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                className="text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400 cursor-pointer shadow-2xs"
               >
                 {projects.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-slate-900 text-white">
+                  <option key={p.id} value={p.id} className="bg-white text-slate-900">
                     {p.name} ({p.domain})
                   </option>
                 ))}
@@ -233,7 +233,7 @@ export default function AeoDashboardPage() {
                 onClick={handleRunAnalysis}
                 isLoading={isAnalyzing}
                 leftIcon={<Play className="w-3.5 h-3.5" />}
-                className="bg-purple-600 hover:bg-purple-500 text-white border-0 shadow-sm"
+                className="bg-purple-600 hover:bg-purple-500 text-white border-0 shadow-xs"
               >
                 Run AEO Analysis
               </Button>
@@ -244,7 +244,7 @@ export default function AeoDashboardPage() {
               variant="outline"
               onClick={() => setIsAddProjectOpen(true)}
               leftIcon={<Plus className="w-3.5 h-3.5" />}
-              className="bg-white/10 hover:bg-white/20 text-white border-white/20"
+              className="bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 shadow-xs"
             >
               New Project
             </Button>
@@ -289,7 +289,7 @@ export default function AeoDashboardPage() {
         ) : (
           <>
             {/* Top KPI Metrics */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* AEO Visibility Score */}
               <Card className="p-5 border-slate-200 bg-white relative overflow-hidden flex flex-col justify-between">
                 <div className="flex items-center justify-between">
@@ -344,7 +344,7 @@ export default function AeoDashboardPage() {
             </div>
 
             {/* Middle Section: Engine Breakdown + Historical Trend */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Answer Engine Status */}
               <Card className="p-6 border-slate-200 bg-white space-y-4 lg:col-span-1">
                 <div className="flex items-center justify-between">

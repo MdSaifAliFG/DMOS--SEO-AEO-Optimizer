@@ -57,6 +57,10 @@ const config: Config = {
         xs: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
         card: "0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)",
       },
+      screens: {
+        "3xl": "1920px",
+        "4k": "2560px",
+      },
     },
   },
   plugins: [],

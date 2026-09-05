@@ -86,30 +86,30 @@ export default function SeoReportsPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-sky-950 via-cyan-900 to-slate-900 text-white shadow-md border border-sky-800/40">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
           <div className="space-y-1">
-            <div className="flex items-center gap-2.5">
-              <div className="p-1.5 rounded-lg bg-sky-500/20 border border-sky-400/30">
-                <FileSpreadsheet className="w-5 h-5 text-sky-300" />
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100 text-blue-600">
+                <FileSpreadsheet className="w-5 h-5" />
               </div>
-              <h1 className="text-xl font-bold tracking-tight">SEO Audit Reports ({scans.length})</h1>
-              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-sky-500/30 text-sky-200 border border-sky-400/20">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">SEO Audit Reports ({scans.length})</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                 Audit Archive
               </span>
             </div>
-            <p className="text-xs text-sky-200/80 max-w-2xl">
+            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
               Audit log archive with score breakdowns, technical health diagnostics, and historical records.
             </p>
           </div>
 
           {scans.length > 0 && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Button
                 size="sm"
                 variant="primary"
                 onClick={handleExportCSV}
-                leftIcon={<Download className="w-3.5 h-3.5" />}
-                className="bg-sky-500 hover:bg-sky-400 text-white border-0 shadow-sm"
+                leftIcon={<Download className="w-4 h-4" />}
+                className="shadow-xs"
               >
                 Export All Scans CSV
               </Button>
@@ -119,7 +119,7 @@ export default function SeoReportsPage() {
 
         {/* Phase 4: Executive Optimization Summary */}
         {optSummary && optSummary.total_actions > 0 && (
-          <Card className="p-6 border-slate-200 bg-white shadow-xs rounded-2xl space-y-4">
+          <Card className="p-4 sm:p-6 border-slate-200 bg-white shadow-xs rounded-2xl space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-blue-600" />
@@ -130,7 +130,7 @@ export default function SeoReportsPage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 shadow-2xs">
                 <div className="text-slate-500 font-medium">Total Actions</div>
                 <div className="text-xl font-bold text-slate-900 mt-1">{optSummary.total_actions}</div>
@@ -163,7 +163,7 @@ export default function SeoReportsPage() {
         {/* Reports Table */}
         <Card className="p-0 border-slate-200 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs min-w-[680px]">
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
                 <tr>
                   <th className="py-3 px-4">Audit Target & ID</th>

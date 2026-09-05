@@ -50,9 +50,9 @@ export function PagesTable({
     <>
       <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-xs">
         {/* Toolbar */}
-        <div className="p-4 border-b border-slate-200 bg-slate-50/70 flex flex-col lg:flex-row items-center justify-between gap-4">
+        <div className="p-3.5 sm:p-4 border-b border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
           {/* Search Input */}
-          <div className="relative w-full lg:w-80">
+          <div className="relative w-full sm:w-80">
             <svg
               className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"
               fill="none"
@@ -71,14 +71,14 @@ export function PagesTable({
           </div>
 
           {/* Filters */}
-          <div className="flex items-center gap-3 w-full lg:w-auto flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto flex-wrap justify-between sm:justify-end">
             {/* Status Code Filter */}
             <div className="flex items-center gap-1.5 text-xs text-slate-600">
               <span className="font-medium">Status:</span>
               <select
                 value={statusCodeFilter !== null && statusCodeFilter !== undefined ? statusCodeFilter : ""}
                 onChange={(e) => onStatusCodeFilterChange(e.target.value ? parseInt(e.target.value, 10) : null)}
-                className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-all shadow-2xs cursor-pointer font-medium"
+                className="px-2.5 sm:px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-all shadow-2xs cursor-pointer font-medium"
               >
                 <option value="">All Statuses</option>
                 <option value="200">200 OK</option>
@@ -97,7 +97,7 @@ export function PagesTable({
                 onChange={(e) =>
                   onIndexabilityFilterChange(e.target.value === "" ? null : e.target.value === "true")
                 }
-                className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-all shadow-2xs cursor-pointer font-medium"
+                className="px-2.5 sm:px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-all shadow-2xs cursor-pointer font-medium"
               >
                 <option value="">All Pages</option>
                 <option value="true">Indexable Only</option>
@@ -109,7 +109,7 @@ export function PagesTable({
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-xs min-w-[720px]">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-semibold text-[11px]">
               <tr>
                 <th className="py-3.5 px-4 w-24">Status</th>
@@ -205,8 +205,8 @@ export function PagesTable({
         </div>
 
         {/* Pagination */}
-        <div className="p-4 border-t border-slate-200 bg-slate-50/70 flex items-center justify-between text-xs text-slate-600">
-          <div>
+        <div className="p-3.5 sm:p-4 border-t border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+          <div className="text-center sm:text-left">
             Showing <span className="font-bold text-slate-900">{Math.min(total, (currentPage - 1) * pageSize + 1)}</span> to{" "}
             <span className="font-bold text-slate-900">{Math.min(total, currentPage * pageSize)}</span> of{" "}
             <span className="font-bold text-slate-900">{total}</span> page{total === 1 ? "" : "s"}

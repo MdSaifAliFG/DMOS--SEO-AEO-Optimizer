@@ -124,18 +124,18 @@ export default function SeoProjectDetailPage({
         </div>
 
         {/* Project Header Card */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 flex-wrap">
               <div className="p-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-600">
                 <Globe className="w-5 h-5" />
               </div>
-              <h1 className="text-xl font-bold tracking-tight text-slate-900">{project.name}</h1>
-              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">{project.name}</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                 Active Project
               </span>
             </div>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 font-mono">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-500 font-mono">
               <span className="text-slate-700 font-medium">https://{cleanDomain(project.domain)}</span>
               <span>•</span>
               <span>Created {formatDate(project.created_at)}</span>
@@ -144,12 +144,13 @@ export default function SeoProjectDetailPage({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <Button
               size="sm"
               variant="primary"
               onClick={() => setIsStartAuditOpen(true)}
               leftIcon={<Play className="w-3.5 h-3.5" />}
+              className="w-full sm:w-auto"
             >
               Run Website Audit
             </Button>
@@ -159,7 +160,7 @@ export default function SeoProjectDetailPage({
         {/* Live Audit Execution Dashboard (if a scan is active or loaded) */}
         {activeScan && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <h3 className="text-sm font-bold text-slate-900">
                 {isScanRunning ? "Live Crawler Execution" : "Audit Results Summary"}
               </h3>
@@ -182,7 +183,7 @@ export default function SeoProjectDetailPage({
             onClick={() => setActiveTab("overview")}
             className={`pb-2.5 px-3 font-semibold transition-colors border-b-2 ${
               activeTab === "overview"
-                ? "border-sky-600 text-sky-700"
+                ? "border-blue-600 text-blue-700"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
@@ -193,7 +194,7 @@ export default function SeoProjectDetailPage({
         {/* Audit History Tab */}
         <Card className="p-0 border-slate-200 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs min-w-[620px]">
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
                 <tr>
                   <th className="py-3 px-4">Date & Time</th>

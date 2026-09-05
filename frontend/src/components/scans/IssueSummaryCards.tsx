@@ -68,21 +68,21 @@ export function IssueSummaryCards({
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
       {items.map((item) => {
         const isSelected = selectedSeverity === item.key;
         return (
           <button
             key={item.label}
             onClick={() => onSelectSeverity(isSelected ? null : item.key)}
-            className={`p-3.5 rounded-xl border text-left flex flex-col justify-between transition-all hover:scale-[1.02] cursor-pointer ${
+            className={`p-2.5 sm:p-3.5 rounded-xl border text-left flex flex-col justify-between transition-all hover:scale-[1.02] cursor-pointer min-h-[70px] sm:min-h-[80px] ${
               item.color
             } ${isSelected ? item.activeBorder : "hover:border-slate-300"}`}
           >
-            <span className="text-[11px] font-bold uppercase tracking-wider opacity-80">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider opacity-80 truncate w-full">
               {item.label}
             </span>
-            <span className="text-2xl font-bold font-mono mt-1">
+            <span className="text-xl sm:text-2xl font-bold font-mono mt-1">
               {item.count}
             </span>
           </button>

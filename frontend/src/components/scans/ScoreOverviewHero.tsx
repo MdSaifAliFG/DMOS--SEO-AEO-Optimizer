@@ -143,19 +143,19 @@ export function ScoreOverviewHero({
 
   return (
     <>
-      <div className="rounded-2xl bg-white border border-slate-200 p-6 md:p-8 space-y-8 shadow-xs">
+      <div className="rounded-2xl bg-white border border-slate-200 p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 shadow-xs">
         {/* Top Hero Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           {/* Main Score Hero Badge */}
-          <div className="lg:col-span-5 flex flex-col sm:flex-row items-center gap-6 p-6 rounded-2xl bg-slate-50 border border-slate-200">
-            <div className="relative flex items-center justify-center">
+          <div className="lg:col-span-5 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200">
+            <div className="relative flex items-center justify-center shrink-0">
               {/* Circular Gauge Ring */}
               <div
-                className={`w-32 h-32 rounded-full border-4 flex flex-col items-center justify-center shadow-md ${getScoreColor(
+                className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 flex flex-col items-center justify-center shadow-md transition-all ${getScoreColor(
                   score
                 )}`}
               >
-                <span className="text-4xl font-extrabold tracking-tight font-mono text-slate-900">
+                <span className="text-3xl sm:text-4xl font-extrabold tracking-tight font-mono text-slate-900">
                   {score}
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
@@ -164,7 +164,7 @@ export function ScoreOverviewHero({
               </div>
             </div>
 
-            <div className="space-y-2 text-center sm:text-left flex-1">
+            <div className="space-y-2 text-center sm:text-left flex-1 min-w-0">
               <div className="flex items-center justify-center sm:justify-start gap-2">
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${getScoreColor(
@@ -174,7 +174,7 @@ export function ScoreOverviewHero({
                   {label}
                 </span>
               </div>
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
                 Technical SEO Score
               </h2>
               <p className="text-xs text-slate-500 leading-relaxed">
@@ -183,7 +183,7 @@ export function ScoreOverviewHero({
               </p>
               <button
                 onClick={() => setShowExplanation(true)}
-                className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 underline underline-offset-4 flex items-center gap-1.5 pt-1 cursor-pointer"
+                className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 underline underline-offset-4 flex items-center justify-center sm:justify-start gap-1.5 pt-1 cursor-pointer"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -199,10 +199,10 @@ export function ScoreOverviewHero({
           </div>
 
           {/* Quick Metrics */}
-          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+          <div className="lg:col-span-7 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
               <span className="text-xs font-semibold text-slate-500">Pages Crawled</span>
-              <span className="text-2xl font-bold text-slate-900 font-mono mt-2">
+              <span className="text-xl sm:text-2xl font-bold text-slate-900 font-mono mt-1.5 sm:mt-2">
                 {pagesCrawled}
               </span>
               <span className="text-[11px] font-semibold text-emerald-600 mt-1">
@@ -210,10 +210,10 @@ export function ScoreOverviewHero({
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
               <span className="text-xs font-semibold text-slate-500">Issues Detected</span>
               <span
-                className={`text-2xl font-bold font-mono mt-2 ${
+                className={`text-xl sm:text-2xl font-bold font-mono mt-1.5 sm:mt-2 ${
                   issuesCount > 0 ? "text-amber-600" : "text-emerald-600"
                 }`}
               >
@@ -222,9 +222,9 @@ export function ScoreOverviewHero({
               <span className="text-[11px] text-slate-500 mt-1">Categorized by severity</span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between col-span-2 sm:col-span-1">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between xs:col-span-2 sm:col-span-1">
               <span className="text-xs font-semibold text-slate-500">Crawl Duration</span>
-              <span className="text-2xl font-bold text-slate-900 font-mono mt-2">
+              <span className="text-xl sm:text-2xl font-bold text-slate-900 font-mono mt-1.5 sm:mt-2">
                 {crawlDuration ? `${crawlDuration}s` : "< 1s"}
               </span>
               <span className="text-[11px] text-slate-500 mt-1">High-speed async BFS</span>
@@ -234,7 +234,7 @@ export function ScoreOverviewHero({
 
         {/* Category Breakdown Cards */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Audit Pillar Category Scores
             </h3>
@@ -243,7 +243,7 @@ export function ScoreOverviewHero({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-3 sm:gap-4">
             {categories.map((cat, idx) => (
               <div
                 key={idx}

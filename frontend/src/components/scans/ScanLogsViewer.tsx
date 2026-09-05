@@ -48,9 +48,9 @@ export const ScanLogsViewer: React.FC<ScanLogsViewerProps> = ({
   return (
     <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs font-mono text-xs">
       {/* Header */}
-      <div className="px-4 py-3 bg-slate-50/90 border-b border-slate-200 flex items-center justify-between">
+      <div className="px-3.5 sm:px-4 py-2.5 sm:py-3 bg-slate-50/90 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-slate-700">
-          <Terminal className="w-4 h-4 text-blue-600" />
+          <Terminal className="w-4 h-4 text-blue-600 shrink-0" />
           <span className="font-semibold text-xs font-sans text-slate-800">
             Execution Telemetry & Engine Logs
           </span>
@@ -82,7 +82,7 @@ export const ScanLogsViewer: React.FC<ScanLogsViewerProps> = ({
       </div>
 
       {/* Log Console Output */}
-      <div className="p-4 max-h-96 min-h-48 overflow-y-auto space-y-2 select-text scroll-smooth bg-slate-950 text-slate-200">
+      <div className="p-3 sm:p-4 max-h-72 sm:max-h-96 min-h-36 sm:min-h-48 overflow-y-auto space-y-1.5 select-text scroll-smooth bg-slate-950 text-slate-200 text-[11px] sm:text-xs">
         {logs.length === 0 ? (
           <div className="text-slate-500 italic py-6 text-center">
             Waiting for orchestration pipeline logs...

@@ -81,32 +81,32 @@ export default function SeoContentPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-sky-950 via-cyan-900 to-slate-900 text-white shadow-md border border-sky-800/40">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
           <div className="space-y-1">
-            <div className="flex items-center gap-2.5">
-              <div className="p-1.5 rounded-lg bg-sky-500/20 border border-sky-400/30">
-                <BookOpen className="w-5 h-5 text-sky-300" />
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100 text-blue-600">
+                <BookOpen className="w-5 h-5" />
               </div>
-              <h1 className="text-xl font-bold tracking-tight">Content & Metadata Optimization</h1>
-              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-sky-500/30 text-sky-200 border border-sky-400/20">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Content & Metadata Optimization</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                 Quality Audit
               </span>
             </div>
-            <p className="text-xs text-sky-200/80 max-w-2xl">
+            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
               Audit on-page title tags, meta descriptions, heading hierarchies, and word count distributions.
             </p>
           </div>
 
           {projects.length > 0 && (
-            <div className="flex items-center gap-2 bg-sky-950/80 border border-sky-700/60 rounded-xl px-3 py-1.5">
-              <span className="text-xs font-semibold text-sky-200">Active Website:</span>
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 shrink-0">
+              <span className="text-xs font-semibold text-slate-600">Active Website:</span>
               <select
                 value={selectedProjectId}
                 onChange={(e) => handleProjectChange(e.target.value)}
-                className="bg-transparent text-xs font-semibold text-white focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs font-semibold text-slate-900 focus:outline-none cursor-pointer"
               >
                 {projects.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-slate-900 text-white">
+                  <option key={p.id} value={p.id} className="bg-white text-slate-900">
                     {p.name} ({p.domain})
                   </option>
                 ))}
@@ -116,7 +116,7 @@ export default function SeoContentPage() {
         </div>
 
         {/* Content KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <MetricCard
             title="Metadata Score (25%)"
             value="85 / 100"
@@ -138,20 +138,21 @@ export default function SeoContentPage() {
             value={missingDescriptions}
             subValue="Snippet optimization"
             change={missingDescriptions > 0 ? { value: `${missingDescriptions} missing`, trend: "down" } : undefined}
-            icon={<BookOpen className="w-5 h-5 text-amber-600" />}
+            icon={<AlertTriangle className="w-5 h-5 text-amber-600" />}
             variant="amber"
           />
 
           <MetricCard
-            title="Heading Anomalies (H1)"
-            value={missingH1 + duplicateH1}
-            subValue={`${missingH1} missing, ${duplicateH1} multiple`}
-            icon={<Layers className="w-5 h-5 text-purple-600" />}
+            title="Multiple H1 Headings"
+            value={duplicateH1}
+            subValue="Hierarchy structure"
+            change={duplicateH1 > 0 ? { value: `${duplicateH1} pages`, trend: "down" } : undefined}
+            icon={<Sparkles className="w-5 h-5 text-purple-600" />}
             variant="purple"
           />
         </div>
 
-        {/* Content Table */}
+        {/* Content Pages Table */}
         <Card className="p-0 border-slate-200 overflow-hidden">
           <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
@@ -161,7 +162,7 @@ export default function SeoContentPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs min-w-[680px]">
               <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase">
                 <tr>
                   <th className="py-3 px-4">Page URL</th>

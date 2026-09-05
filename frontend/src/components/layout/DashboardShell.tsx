@@ -31,7 +31,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         <Header onOpenMobileNav={() => setMobileNavOpen(true)} />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-3.5 sm:p-5 md:p-6 lg:p-8 2xl:p-10 3xl:p-12 max-w-[1720px] 2xl:max-w-[1920px] 3xl:max-w-[2200px] 4k:max-w-[2480px] w-full mx-auto transition-all">
           {children}
         </main>
       </div>

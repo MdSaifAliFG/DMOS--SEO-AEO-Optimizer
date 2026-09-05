@@ -69,7 +69,7 @@ export default function LandingPage() {
             "acceptedAnswer": {
               "@type": "Answer",
               "text":
-                "SeoSensing is an all-in-one digital marketing operating system that brings automated technical SEO auditing, crawling, and AI-powered Answer Engine Optimization (AEO) into one unified workspace.",
+                "SeoSensing is an all-in-one AI Search & SEO Sensing Operating System that brings automated technical SEO auditing, crawling, and AI-powered Answer Engine Optimization (AEO) into one unified workspace.",
             },
           },
           {

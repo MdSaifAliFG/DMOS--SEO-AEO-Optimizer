@@ -24,68 +24,68 @@ export const HeroSection: React.FC = () => {
   return (
     <section
       id="hero"
-      className="relative pt-24 pb-14 sm:pt-28 sm:pb-20 lg:py-24 bg-[#030712] text-white overflow-hidden flex items-center"
+      className="relative pt-24 pb-14 sm:pt-28 sm:pb-20 lg:py-24 2xl:py-36 3xl:py-44 bg-[#030712] text-white overflow-hidden flex items-center"
     >
-      {/* Intense Royal Blue Ambient Glow Spots */}
-      <div className="absolute -bottom-10 -left-10 w-[500px] sm:w-[650px] h-[500px] sm:h-[650px] bg-[#1D63FF]/30 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/4 right-0 w-[500px] sm:w-[700px] h-[500px] sm:h-[700px] bg-blue-600/20 rounded-full blur-[160px] pointer-events-none" />
-      <div className="absolute top-10 left-1/4 w-[350px] h-[350px] bg-indigo-500/15 rounded-full blur-[120px] pointer-events-none" />
+      {/* Intense Royal Blue Ambient Glow Spots Scaled for 4K */}
+      <div className="absolute -bottom-10 -left-10 w-[500px] sm:w-[650px] 2xl:w-[950px] 3xl:w-[1200px] h-[500px] sm:h-[650px] 2xl:h-[950px] 3xl:h-[1200px] bg-[#1D63FF]/30 rounded-full blur-[140px] 2xl:blur-[220px] pointer-events-none" />
+      <div className="absolute top-1/4 right-0 w-[500px] sm:w-[700px] 2xl:w-[1000px] 3xl:w-[1300px] h-[500px] sm:h-[700px] 2xl:h-[1000px] 3xl:h-[1300px] bg-blue-600/20 rounded-full blur-[160px] 2xl:blur-[240px] pointer-events-none" />
+      <div className="absolute top-10 left-1/4 w-[350px] 2xl:w-[600px] h-[350px] 2xl:h-[600px] bg-indigo-500/15 rounded-full blur-[120px] 2xl:blur-[180px] pointer-events-none" />
 
       {/* Subtle Dot Matrix Overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:32px_32px] opacity-15 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:32px_32px] 2xl:[background-size:40px_40px] opacity-15 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+      <div className="max-w-7xl 2xl:max-w-[1680px] 3xl:max-w-[1920px] 4k:max-w-[2240px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 relative z-10 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 2xl:gap-14 items-center">
           {/* Left Column: Heading, Subtext, CTAs, Highlights (6 cols) */}
-          <div className="lg:col-span-6 space-y-5 sm:space-y-6 text-left">
+          <div className="lg:col-span-6 space-y-5 sm:space-y-6 2xl:space-y-8 text-left">
             {/* Small Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs font-bold tracking-wide">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Digital Marketing Operating System</span>
+            <div className="inline-flex items-center gap-2 px-3.5 2xl:px-4 py-1 2xl:py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs 2xl:text-sm font-bold tracking-wide">
+              <Sparkles className="w-3.5 h-3.5 2xl:w-4 2xl:h-4" />
+              <span>AI Search & SEO Sensing Operating System</span>
             </div>
 
             {/* Main Bold Heading */}
-            <h1 className="text-3xl sm:text-5xl lg:text-[54px] font-black tracking-tight leading-[1.1] text-white font-sans">
+            <h1 className="text-3xl sm:text-5xl lg:text-[54px] 2xl:text-6xl 3xl:text-7xl 4k:text-[82px] font-black tracking-tight leading-[1.08] text-white font-sans">
               Unleash the power <br />
               of smarter <span className="text-white">SEO & AEO</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-xs sm:text-sm text-slate-300 max-w-lg leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm 2xl:text-base 3xl:text-lg text-slate-300 max-w-lg 2xl:max-w-2xl 3xl:max-w-3xl leading-relaxed font-normal">
               Stop guessing what is holding your website back. SeoSensing crawls, analyzes, and helps you optimize your website for traditional search engines and AI-powered answer engines.
             </p>
 
             {/* Side-by-Side Pill CTA Buttons */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-1">
+            <div className="flex flex-wrap items-center gap-3.5 2xl:gap-5 pt-1">
               <Link href={isAuthenticated ? "/overview" : "/login"}>
-                <button className="px-7 sm:px-8 py-3.5 rounded-full bg-[#1D63FF] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm tracking-wide shadow-xl shadow-blue-600/40 hover:scale-[1.02] active:scale-95 transition-all">
+                <button className="px-7 sm:px-8 2xl:px-10 py-3.5 2xl:py-4.5 rounded-full bg-[#1D63FF] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm 2xl:text-base tracking-wide shadow-xl shadow-blue-600/40 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer">
                   Try free audit
                 </button>
               </Link>
 
               <Link href={isAuthenticated ? "/overview" : "/login"}>
-                <button className="px-7 sm:px-8 py-3.5 rounded-full bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs sm:text-sm tracking-wide shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
+                <button className="px-7 sm:px-8 2xl:px-10 py-3.5 2xl:py-4.5 rounded-full bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs sm:text-sm 2xl:text-base tracking-wide shadow-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer">
                   Scan your website
                 </button>
               </Link>
             </div>
 
             {/* 2 Bottom Stat Highlights tailored to SeoSensing */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-5 border-t border-white/15">
-              <div className="space-y-1">
-                <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 2xl:gap-8 pt-5 2xl:pt-8 border-t border-white/15">
+              <div className="space-y-1 2xl:space-y-2">
+                <h3 className="text-xl sm:text-2xl 2xl:text-3xl font-black text-white tracking-tight font-sans">
                   Deterministic
                 </h3>
-                <p className="text-xs text-slate-400 leading-relaxed max-w-[220px]">
+                <p className="text-xs 2xl:text-sm text-slate-400 leading-relaxed max-w-[220px] 2xl:max-w-[300px]">
                   Real BFS website crawler, status code inspections, and 4-pillar technical SEO scoring.
                 </p>
               </div>
 
-              <div className="space-y-1">
-                <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight font-sans">
+              <div className="space-y-1 2xl:space-y-2">
+                <h3 className="text-xl sm:text-2xl 2xl:text-3xl font-black text-white tracking-tight font-sans">
                   SEO + AEO
                 </h3>
-                <p className="text-xs text-slate-400 leading-relaxed max-w-[220px]">
+                <p className="text-xs 2xl:text-sm text-slate-400 leading-relaxed max-w-[220px] 2xl:max-w-[300px]">
                   Track search crawl health alongside ChatGPT, Perplexity, and Gemini answer engine citations.
                 </p>
               </div>
@@ -94,7 +94,7 @@ export const HeroSection: React.FC = () => {
 
           {/* Right Column: 2-Column Angled Isometric Dashboard Collage (6 cols) */}
           <div className="lg:col-span-6 relative flex justify-center lg:justify-end overflow-visible">
-            <div className="relative w-full max-w-[480px] sm:max-w-[520px] select-none scale-[0.84] sm:scale-95 lg:scale-100 origin-center sm:origin-top-right transform -rotate-[12deg] hover:-rotate-[8deg] transition-transform duration-500">
+            <div className="relative w-full max-w-[480px] sm:max-w-[520px] 2xl:max-w-[640px] 3xl:max-w-[720px] select-none scale-[0.84] sm:scale-95 lg:scale-100 2xl:scale-115 3xl:scale-125 origin-center sm:origin-top-right 2xl:origin-center transform -rotate-[12deg] hover:-rotate-[8deg] transition-transform duration-500">
               <div className="grid grid-cols-2 gap-4 sm:gap-5 items-start">
                 
                 {/* Column 1 (Left Tilted Column) */}

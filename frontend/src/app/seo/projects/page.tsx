@@ -115,18 +115,18 @@ export default function SeoProjectsPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header & Actions Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-sky-950 via-cyan-900 to-slate-900 text-white shadow-md border border-sky-800/40">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
           <div className="space-y-1">
-            <div className="flex items-center gap-2.5">
-              <div className="p-1.5 rounded-lg bg-sky-500/20 border border-sky-400/30">
-                <Globe className="w-5 h-5 text-sky-300" />
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100 text-blue-600">
+                <Globe className="w-5 h-5" />
               </div>
-              <h1 className="text-xl font-bold tracking-tight">SEO Projects ({total})</h1>
-              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-sky-500/30 text-sky-200 border border-sky-400/20">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">SEO Projects ({total})</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                 Crawler Hub
               </span>
             </div>
-            <p className="text-xs text-sky-200/80 max-w-2xl">
+            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
               Manage website crawler domains, automated technical audits, and on-page performance.
             </p>
           </div>
@@ -135,8 +135,8 @@ export default function SeoProjectsPage() {
             size="sm"
             variant="primary"
             onClick={() => setIsAddModalOpen(true)}
-            leftIcon={<Plus className="w-3.5 h-3.5" />}
-            className="bg-sky-500 hover:bg-sky-400 text-white border-0 shadow-sm"
+            leftIcon={<Plus className="w-4 h-4" />}
+            className="shadow-xs shrink-0"
           >
             + Add SEO Project
           </Button>
@@ -153,7 +153,7 @@ export default function SeoProjectsPage() {
         {/* Projects Table */}
         <Card className="p-0 border-slate-200 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs min-w-[680px]">
               <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase">
                 <tr>
                   <th className="py-3 px-4">Project & Domain</th>
@@ -254,9 +254,9 @@ export default function SeoProjectsPage() {
 
         {/* Add Project Modal */}
         {isAddModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in">
             <div
-              className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl p-6 space-y-4"
+              className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
