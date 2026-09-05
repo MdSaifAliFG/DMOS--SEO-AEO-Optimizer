@@ -53,9 +53,6 @@ export const SEOAEOSection: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
           {/* Card 1: SEO Optimization (White Card) */}
           <div className="p-8 sm:p-9 rounded-3xl bg-white text-slate-900 border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.45)] hover:shadow-[0_25px_60px_rgba(29,99,255,0.25)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between space-y-8 relative overflow-hidden group">
-            {/* Top Hover Gradient Accent Bar */}
-            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 opacity-90 group-hover:opacity-100 transition-opacity" />
-
             <div className="space-y-6">
               {/* Header: Icon, Titles & Badge */}
               <div className="flex items-start justify-between gap-4">
@@ -142,9 +139,6 @@ export const SEOAEOSection: React.FC = () => {
 
           {/* Card 2: AEO Optimization (White Card) */}
           <div className="p-8 sm:p-9 rounded-3xl bg-white text-slate-900 border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.45)] hover:shadow-[0_25px_60px_rgba(168,85,247,0.25)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between space-y-8 relative overflow-hidden group">
-            {/* Top Hover Gradient Accent Bar */}
-            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 opacity-90 group-hover:opacity-100 transition-opacity" />
-
             <div className="space-y-6">
               {/* Header: Icon, Titles & Badge */}
               <div className="flex items-start justify-between gap-4">
