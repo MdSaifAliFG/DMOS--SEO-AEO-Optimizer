@@ -68,8 +68,8 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-# Root landing
-@app.get("/", tags=["Root"])
+# Root landing - supports both GET and HEAD for Render/cloud load balancer probes
+@app.api_route("/", methods=["GET", "HEAD"], tags=["Root"])
 async def root():
     return {
         "name": settings.PROJECT_NAME,
@@ -81,7 +81,7 @@ async def root():
 
 
 # Health check endpoint for Docker container healthcheck & Render
-@app.get("/health", tags=["Health"])
+@app.api_route("/health", methods=["GET", "HEAD"], tags=["Health"])
 async def health():
     return {
         "status": "healthy",

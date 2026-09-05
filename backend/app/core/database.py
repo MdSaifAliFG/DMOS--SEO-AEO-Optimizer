@@ -157,11 +157,24 @@ async def init_db() -> None:
             ("aeo_recommendations", "resolved_at", "DATETIME"),
         ]
 
+        # Check existing table columns first to prevent redundant ALTER TABLE statements & exceptions
+        table_columns_cache = {}
         for table, col, col_type in columns_to_ensure:
             try:
+                if table not in table_columns_cache:
+                    if "sqlite" in database_url:
+                        res = await conn.execute(text(f"PRAGMA table_info({table})"))
+                        table_columns_cache[table] = {r[1] for r in res.fetchall()}
+                    else:
+                        table_columns_cache[table] = set()
+
+                if col in table_columns_cache[table]:
+                    continue
+
                 await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
+                table_columns_cache[table].add(col)
             except Exception:
-                # Column already exists or table not ready
+                # Table not created yet or column cannot be added
                 pass
 
     # Sanitize existing project domains if any stored with protocol prefixes

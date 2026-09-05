@@ -10,7 +10,9 @@ from app.schemas.common import HealthResponse
 router = APIRouter()
 
 
-@router.get("/health", response_model=HealthResponse, tags=["Health"])
+@router.api_route(
+    "/health", methods=["GET", "HEAD"], response_model=HealthResponse, tags=["Health"]
+)
 async def health_check(db: AsyncSession = Depends(get_db)) -> HealthResponse:
     """Comprehensive health check endpoint verifying Database and Redis availability."""
     db_status = "unknown"
