@@ -46,17 +46,17 @@ export const ScanLogsViewer: React.FC<ScanLogsViewerProps> = ({
   };
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-surface-950/95 overflow-hidden shadow-2xl font-mono text-xs">
+    <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs font-mono text-xs">
       {/* Header */}
-      <div className="px-4 py-3 bg-surface-900/90 border-b border-slate-800 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-slate-300">
-          <Terminal className="w-4 h-4 text-primary-400" />
-          <span className="font-semibold text-xs font-sans">
+      <div className="px-4 py-3 bg-slate-50/90 border-b border-slate-200 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-slate-700">
+          <Terminal className="w-4 h-4 text-blue-600" />
+          <span className="font-semibold text-xs font-sans text-slate-800">
             Execution Telemetry & Engine Logs
           </span>
           {isStreaming && (
-            <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-sans ml-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+            <span className="flex items-center gap-1 text-[10px] text-emerald-700 font-sans ml-2 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
               LIVE
             </span>
           )}
@@ -65,16 +65,16 @@ export const ScanLogsViewer: React.FC<ScanLogsViewerProps> = ({
         <button
           onClick={handleCopyLogs}
           disabled={logs.length === 0}
-          className="flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-white px-2.5 py-1 rounded-lg hover:bg-white/5 transition-colors disabled:opacity-40 font-sans"
+          className="flex items-center gap-1.5 text-[11px] text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors disabled:opacity-40 font-sans shadow-2xs font-medium cursor-pointer"
         >
           {copied ? (
             <>
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
               <span>Copied</span>
             </>
           ) : (
             <>
-              <Copy className="w-3.5 h-3.5" />
+              <Copy className="w-3.5 h-3.5 text-slate-500" />
               <span>Copy Logs</span>
             </>
           )}
@@ -82,7 +82,7 @@ export const ScanLogsViewer: React.FC<ScanLogsViewerProps> = ({
       </div>
 
       {/* Log Console Output */}
-      <div className="p-4 max-h-96 min-h-48 overflow-y-auto space-y-2 select-text scroll-smooth">
+      <div className="p-4 max-h-96 min-h-48 overflow-y-auto space-y-2 select-text scroll-smooth bg-slate-950 text-slate-200">
         {logs.length === 0 ? (
           <div className="text-slate-500 italic py-6 text-center">
             Waiting for orchestration pipeline logs...

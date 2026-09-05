@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { SEOPage } from "@/lib/types";
 import { PageDetailDrawer } from "./PageDetailDrawer";
+import { SEOPage } from "@/lib/types";
 
 interface PagesTableProps {
   scanId: string;
@@ -16,7 +16,7 @@ interface PagesTableProps {
   statusCodeFilter?: number | null;
   onStatusCodeFilterChange: (code: number | null) => void;
   indexabilityFilter?: boolean | null;
-  onIndexabilityFilterChange: (val: boolean | null) => void;
+  onIndexabilityFilterChange: (indexable: boolean | null) => void;
   isLoading?: boolean;
 }
 
@@ -33,28 +33,28 @@ export function PagesTable({
   onStatusCodeFilterChange,
   indexabilityFilter,
   onIndexabilityFilterChange,
-  isLoading,
+  isLoading = false,
 }: PagesTableProps) {
-  const [inspectPageId, setInspectPageId] = useState<string | null>(null);
+  const [selectedPage, setSelectedPage] = useState<SEOPage | null>(null);
 
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const totalPages = Math.ceil(total / pageSize) || 1;
 
-  const getStatusBadge = (code: number) => {
-    if (code >= 200 && code < 300) return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-    if (code >= 300 && code < 400) return "bg-blue-500/10 text-blue-400 border-blue-500/20";
-    if (code >= 400 && code < 500) return "bg-orange-500/10 text-orange-400 border-orange-500/20";
-    return "bg-rose-500/10 text-rose-400 border-rose-500/20";
+  const getStatusCodeBadge = (code: number) => {
+    if (code >= 200 && code < 300) return "bg-emerald-50 text-emerald-700 border-emerald-200";
+    if (code >= 300 && code < 400) return "bg-blue-50 text-blue-700 border-blue-200";
+    if (code >= 400 && code < 500) return "bg-orange-50 text-orange-700 border-orange-200";
+    return "bg-rose-50 text-rose-700 border-rose-200";
   };
 
   return (
     <>
-      <div className="rounded-2xl bg-zinc-950 border border-zinc-800 overflow-hidden shadow-xl">
+      <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-xs">
         {/* Toolbar */}
-        <div className="p-4 border-b border-zinc-800 bg-zinc-900/40 flex flex-col lg:flex-row items-center justify-between gap-4">
+        <div className="p-4 border-b border-slate-200 bg-slate-50/70 flex flex-col lg:flex-row items-center justify-between gap-4">
           {/* Search Input */}
           <div className="relative w-full lg:w-80">
             <svg
-              className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2"
+              className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -66,19 +66,19 @@ export function PagesTable({
               placeholder="Search crawled URLs or titles..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-white placeholder-zinc-400 focus:outline-none focus:border-emerald-500 transition-colors"
+              className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-all shadow-2xs"
             />
           </div>
 
           {/* Filters */}
           <div className="flex items-center gap-3 w-full lg:w-auto flex-wrap">
             {/* Status Code Filter */}
-            <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-              <span>Status:</span>
+            <div className="flex items-center gap-1.5 text-xs text-slate-600">
+              <span className="font-medium">Status:</span>
               <select
                 value={statusCodeFilter !== null && statusCodeFilter !== undefined ? statusCodeFilter : ""}
                 onChange={(e) => onStatusCodeFilterChange(e.target.value ? parseInt(e.target.value, 10) : null)}
-                className="px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-200 focus:outline-none focus:border-emerald-500 transition-colors"
+                className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-all shadow-2xs cursor-pointer font-medium"
               >
                 <option value="">All Statuses</option>
                 <option value="200">200 OK</option>
@@ -90,14 +90,14 @@ export function PagesTable({
             </div>
 
             {/* Indexability Filter */}
-            <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-              <span>Indexable:</span>
+            <div className="flex items-center gap-1.5 text-xs text-slate-600">
+              <span className="font-medium">Indexable:</span>
               <select
                 value={indexabilityFilter !== null && indexabilityFilter !== undefined ? String(indexabilityFilter) : ""}
                 onChange={(e) =>
                   onIndexabilityFilterChange(e.target.value === "" ? null : e.target.value === "true")
                 }
-                className="px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-200 focus:outline-none focus:border-emerald-500 transition-colors"
+                className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-all shadow-2xs cursor-pointer font-medium"
               >
                 <option value="">All Pages</option>
                 <option value="true">Indexable Only</option>
@@ -110,7 +110,7 @@ export function PagesTable({
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-zinc-900/60 border-b border-zinc-800 text-zinc-400 uppercase font-semibold">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-semibold text-[11px]">
               <tr>
                 <th className="py-3.5 px-4 w-24">Status</th>
                 <th className="py-3.5 px-4">Webpage URL & Title</th>
@@ -121,70 +121,80 @@ export function PagesTable({
                 <th className="py-3.5 px-4 text-right w-24">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
+            <tbody className="divide-y divide-slate-100 text-slate-700">
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-zinc-400">
-                    <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-emerald-500 border-t-transparent" />
+                  <td colSpan={7} className="py-12 text-center text-slate-400">
+                    <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent" />
                     <p className="mt-2 text-xs">Loading crawled pages...</p>
                   </td>
                 </tr>
               ) : pages.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-zinc-400">
-                    <p className="text-sm font-medium text-white">No pages found</p>
-                    <p className="text-xs text-zinc-400 mt-0.5">No crawled pages matched your search or filters.</p>
+                  <td colSpan={7} className="py-12 text-center text-slate-400">
+                    <p className="text-xs font-semibold text-slate-700">No crawled pages found</p>
+                    <p className="text-[11px] text-slate-400 mt-1">Try resetting search filters or check status filters.</p>
                   </td>
                 </tr>
               ) : (
-                pages.map((p) => (
+                pages.map((page) => (
                   <tr
-                    key={p.id}
-                    onClick={() => setInspectPageId(p.id)}
-                    className="hover:bg-zinc-900/40 cursor-pointer transition-colors"
+                    key={page.id}
+                    onClick={() => setSelectedPage(page)}
+                    className="hover:bg-slate-50/80 transition-colors cursor-pointer"
                   >
-                    <td className="py-3.5 px-4 font-mono">
-                      <span className={`px-2 py-0.5 rounded text-[11px] font-bold border ${getStatusBadge(p.status_code)}`}>
-                        {p.status_code}
+                    <td className="py-3.5 px-4">
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded font-mono font-bold text-[10px] border ${getStatusCodeBadge(
+                          page.status_code
+                        )}`}
+                      >
+                        {page.status_code}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 max-w-md">
-                      <div className="font-mono text-emerald-400/90 truncate">{p.url}</div>
-                      <div className="text-[11px] text-zinc-300 font-medium truncate mt-0.5">
-                        {p.title || <span className="italic text-zinc-400">(no title tag)</span>}
+                      <div className="font-mono text-emerald-700 font-medium text-xs truncate">
+                        {page.url}
+                      </div>
+                      <div className="text-slate-500 text-[11px] truncate mt-0.5">
+                        {page.title || <span className="italic text-slate-400">No title found</span>}
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 text-center font-mono text-zinc-400">
-                      {p.crawl_depth}
+                    <td className="py-3.5 px-4 text-center font-mono text-slate-600">
+                      {page.crawl_depth ?? 0}
                     </td>
-                    <td className="py-3.5 px-4 text-right font-mono text-zinc-300">
-                      {p.word_count}
+                    <td className="py-3.5 px-4 text-right font-mono text-slate-600">
+                      {page.word_count?.toLocaleString() || 0}
                     </td>
-                    <td className="py-3.5 px-4 text-center font-mono">
-                      {p.is_indexable ? (
-                        <span className="text-[11px] font-semibold text-emerald-400">Yes</span>
-                      ) : (
-                        <span className="text-[11px] font-semibold text-rose-400">No</span>
-                      )}
+                    <td className="py-3.5 px-4 text-center">
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          page.is_indexable
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : "bg-rose-50 text-rose-700 border-rose-200"
+                        }`}
+                      >
+                        {page.is_indexable ? "Indexable" : "Noindex"}
+                      </span>
                     </td>
-                    <td className="py-3.5 px-4 text-center font-mono">
-                      {p.issues_count > 0 ? (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                          {p.issues_count}
+                    <td className="py-3.5 px-4 text-center">
+                      {(page.issues_count ?? 0) > 0 ? (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                          {page.issues_count}
                         </span>
                       ) : (
-                        <span className="text-emerald-400 text-xs">✓ 0</span>
+                        <span className="text-slate-400 text-xs">—</span>
                       )}
                     </td>
                     <td className="py-3.5 px-4 text-right">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setInspectPageId(p.id);
+                          setSelectedPage(page);
                         }}
-                        className="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors font-medium text-[11px]"
+                        className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-300 transition-colors font-semibold text-[11px] shadow-2xs cursor-pointer"
                       >
-                        Inspect
+                        Details
                       </button>
                     </td>
                   </tr>
@@ -194,29 +204,29 @@ export function PagesTable({
           </table>
         </div>
 
-        {/* Pagination Footer */}
-        <div className="p-4 border-t border-zinc-800 bg-zinc-900/40 flex items-center justify-between text-xs text-zinc-400">
+        {/* Pagination */}
+        <div className="p-4 border-t border-slate-200 bg-slate-50/70 flex items-center justify-between text-xs text-slate-600">
           <div>
-            Showing <span className="font-semibold text-white">{Math.min(total, (currentPage - 1) * pageSize + 1)}</span> to{" "}
-            <span className="font-semibold text-white">{Math.min(total, currentPage * pageSize)}</span> of{" "}
-            <span className="font-semibold text-white">{total}</span> page{total === 1 ? "" : "s"}
+            Showing <span className="font-bold text-slate-900">{Math.min(total, (currentPage - 1) * pageSize + 1)}</span> to{" "}
+            <span className="font-bold text-slate-900">{Math.min(total, currentPage * pageSize)}</span> of{" "}
+            <span className="font-bold text-slate-900">{total}</span> page{total === 1 ? "" : "s"}
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => onPageChange(currentPage - 1)}
               disabled={currentPage <= 1}
-              className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-800 transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 shadow-2xs transition-colors font-medium cursor-pointer"
             >
               Previous
             </button>
-            <span className="px-2 font-mono">
+            <span className="px-2 font-mono font-semibold text-slate-700">
               {currentPage} / {totalPages}
             </span>
             <button
               onClick={() => onPageChange(currentPage + 1)}
               disabled={currentPage >= totalPages}
-              className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-800 transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 shadow-2xs transition-colors font-medium cursor-pointer"
             >
               Next
             </button>
@@ -224,11 +234,13 @@ export function PagesTable({
         </div>
       </div>
 
-      {/* Page Audit Drawer */}
+      {/* Drawer */}
       <PageDetailDrawer
+        isOpen={Boolean(selectedPage)}
+        onClose={() => setSelectedPage(null)}
         scanId={scanId}
-        pageId={inspectPageId}
-        onClose={() => setInspectPageId(null)}
+        page={selectedPage}
+        pageUrl={selectedPage?.url}
       />
     </>
   );

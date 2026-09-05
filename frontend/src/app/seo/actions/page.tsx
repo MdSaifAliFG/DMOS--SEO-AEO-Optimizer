@@ -637,20 +637,20 @@ export default function SeoActionsPage() {
           <div className="w-full max-w-2xl bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto border-l border-slate-200">
             {/* Drawer Header */}
             <div>
-              <div className="p-6 bg-slate-900 text-white flex items-start justify-between gap-4">
+              <div className="p-6 bg-white border-b border-slate-200 flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     {getPriorityBadge(selectedAction.priority)}
-                    <span className="text-[11px] text-sky-300 font-mono font-bold bg-sky-950/80 px-2 py-0.5 rounded border border-sky-800/60">
+                    <span className="text-[11px] text-blue-700 font-mono font-bold bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                       {selectedAction.issue_code}
                     </span>
-                    <span className="text-xs text-slate-400 font-medium capitalize">• {selectedAction.category}</span>
+                    <span className="text-xs text-slate-500 font-medium capitalize">• {selectedAction.category}</span>
                   </div>
-                  <h2 className="text-xl font-black text-white tracking-tight">{selectedAction.title}</h2>
+                  <h2 className="text-xl font-bold text-slate-900 tracking-tight">{selectedAction.title}</h2>
                 </div>
                 <button
                   onClick={handleCloseDrawer}
-                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition"
+                  className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>

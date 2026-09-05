@@ -1,4 +1,5 @@
 from typing import Optional
+from urllib.parse import unquote
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
@@ -105,7 +106,7 @@ async def get_scan_pages(
 
 
 @router.get(
-    "/{scan_id}/pages/{page_id}",
+    "/{scan_id}/pages/{page_id:path}",
     response_model=SeoPageDetailResponse,
     summary="Get single page audit breakdown (headings, images, links, issues)",
 )
@@ -115,11 +116,12 @@ async def get_page_detail(
     db: AsyncSession = Depends(get_db),
 ) -> SeoPageDetailResponse:
     """Retrieve detailed metadata, headings, images, links, and detected issues for a single page."""
-    page = await ScanService.get_page_detail(db, scan_id=scan_id, page_id=page_id)
+    decoded_id = unquote(page_id)
+    page = await ScanService.get_page_detail(db, scan_id=scan_id, page_id=decoded_id)
     if not page:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Page with ID '{page_id}' not found for scan '{scan_id}'",
+            detail=f"Page with ID or URL '{decoded_id}' not found for scan '{scan_id}'",
         )
     return page
 

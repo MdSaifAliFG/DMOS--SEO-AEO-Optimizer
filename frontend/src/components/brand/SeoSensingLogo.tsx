@@ -7,6 +7,7 @@ interface SeoSensingLogoProps {
   className?: string;
   size?: number;
   variant?: "gradient" | "monochrome" | "white";
+  title?: string;
 }
 
 /**
@@ -17,17 +18,19 @@ interface SeoSensingLogoProps {
 export const SeoSensingLogo: React.FC<SeoSensingLogoProps> = ({
   className,
   size = 36,
+  title,
 }) => {
   const [imgError, setImgError] = useState(false);
 
   return (
     <div
+      suppressHydrationWarning
       className={cn(
         "relative shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform duration-200",
         className
       )}
       style={{ width: size, height: size }}
-      title="SeoSensing"
+      title={title || undefined}
     >
       {!imgError ? (
         <img
@@ -60,59 +63,42 @@ interface SeoSensingBrandProps {
 }
 
 /**
- * SeoSensing Brand Lockup (Freestanding Logo + Styled Typography + Enterprise Badge)
+ * SeoSensing Brand Lockup (Freestanding Logo + Clean Styled Typography)
  */
 export const SeoSensingBrand: React.FC<SeoSensingBrandProps> = ({
   className,
   isCollapsed = false,
   theme = "light",
-  showTagline = true,
-  showBadge = true,
 }) => {
   const isDark = theme === "dark";
 
   return (
-    <div className={cn("flex items-center gap-2.5 min-w-0 group select-none", className)}>
+    <div
+      suppressHydrationWarning
+      className={cn("flex items-center gap-2.5 min-w-0 group select-none", className)}
+    >
       <SeoSensingLogo size={36} />
 
       {!isCollapsed && (
-        <div className="flex flex-col min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span
-              className={cn(
-                "font-black text-base tracking-tight leading-none flex items-center",
-                isDark ? "text-white" : "text-slate-900"
-              )}
-            >
-              SEO
-              <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent ml-0.5">
-                Sensing
-              </span>
-            </span>
-            {showBadge && (
-              <span
-                className={cn(
-                  "text-[10px] px-1.5 py-0.2 rounded font-bold border",
-                  isDark
-                    ? "bg-purple-900/60 text-purple-200 border-purple-700/50"
-                    : "bg-blue-50 text-blue-700 border-blue-200"
-                )}
-              >
-                Enterprise
-              </span>
-            )}
-          </div>
-          {showTagline && (
-            <span
-              className={cn(
-                "text-[10px] font-medium truncate mt-0.5",
-                isDark ? "text-slate-400" : "text-slate-500"
-              )}
-            >
-              AI Search & Optimization OS
-            </span>
+        <span
+          suppressHydrationWarning
+          className={cn(
+            "font-black text-lg tracking-tight leading-none whitespace-nowrap font-sans select-none",
+            isDark ? "text-white" : "text-slate-950"
           )}
-        </div>
+        >
+          SEO
+          <span
+            className={cn(
+              "bg-gradient-to-r bg-clip-text text-transparent",
+              isDark
+                ? "from-blue-400 via-indigo-300 to-purple-400"
+                : "from-blue-600 via-indigo-600 to-purple-600"
+            )}
+          >
+            Sensing
+          </span>
+        </span>
       )}
     </div>
   );

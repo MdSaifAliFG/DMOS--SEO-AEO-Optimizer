@@ -119,45 +119,45 @@ export default function SeoReportsPage() {
 
         {/* Phase 4: Executive Optimization Summary */}
         {optSummary && optSummary.total_actions > 0 && (
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 text-white space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <Card className="p-6 border-slate-200 bg-white shadow-xs rounded-2xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-sky-400" />
-                <h3 className="text-sm font-bold text-white">Executive Optimization Summary</h3>
+                <Sparkles className="w-4 h-4 text-blue-600" />
+                <h3 className="text-sm font-bold text-slate-900">Executive Optimization Summary</h3>
               </div>
-              <Link href="/seo/actions" className="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1">
+              <Link href="/seo/actions" className="text-xs text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1">
                 <ListTodo className="w-3.5 h-3.5" /> Open Action Center →
               </Link>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                <div className="text-slate-400">Total Actions</div>
-                <div className="text-xl font-bold text-white mt-1">{optSummary.total_actions}</div>
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                <div className="text-slate-500 font-medium">Total Actions</div>
+                <div className="text-xl font-bold text-slate-900 mt-1">{optSummary.total_actions}</div>
                 <div className="text-[10px] text-slate-500 mt-0.5">{optSummary.fixed_actions} resolved ({optSummary.optimization_progress}%)</div>
               </div>
 
-              <div className="bg-slate-950 p-3 rounded-lg border border-rose-500/20">
-                <div className="text-rose-400 font-semibold">Critical / High</div>
-                <div className="text-xl font-bold text-rose-400 mt-1">
+              <div className="bg-rose-50/60 p-3.5 rounded-xl border border-rose-200 shadow-2xs">
+                <div className="text-rose-700 font-semibold">Critical / High</div>
+                <div className="text-xl font-bold text-rose-700 mt-1">
                   {optSummary.critical_actions + optSummary.high_priority_actions}
                 </div>
-                <div className="text-[10px] text-slate-500 mt-0.5">Immediate ranking impact</div>
+                <div className="text-[10px] text-rose-600/80 mt-0.5">Immediate ranking impact</div>
               </div>
 
-              <div className="bg-slate-950 p-3 rounded-lg border border-sky-500/20">
-                <div className="text-sky-400 font-semibold">Recoverable Impact</div>
-                <div className="text-xl font-bold text-sky-300 mt-1">+{optSummary.estimated_seo_impact} pts</div>
-                <div className="text-[10px] text-slate-500 mt-0.5">Potential score: {optSummary.potential_seo_score}/100</div>
+              <div className="bg-blue-50/60 p-3.5 rounded-xl border border-blue-200 shadow-2xs">
+                <div className="text-blue-700 font-semibold">Recoverable Impact</div>
+                <div className="text-xl font-bold text-blue-700 mt-1">+{optSummary.estimated_seo_impact} pts</div>
+                <div className="text-[10px] text-blue-600/80 mt-0.5">Potential score: {optSummary.potential_seo_score}/100</div>
               </div>
 
-              <div className="bg-slate-950 p-3 rounded-lg border border-emerald-500/20">
-                <div className="text-emerald-400 font-semibold">Current Health</div>
-                <div className="text-xl font-bold text-emerald-400 mt-1">{optSummary.current_seo_score ?? "—"}/100</div>
-                <div className="text-[10px] text-slate-500 mt-0.5">Latest audit score</div>
+              <div className="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-200 shadow-2xs">
+                <div className="text-emerald-700 font-semibold">Current Health</div>
+                <div className="text-xl font-bold text-emerald-700 mt-1">{optSummary.current_seo_score ?? "—"}/100</div>
+                <div className="text-[10px] text-emerald-600/80 mt-0.5">Latest audit score</div>
               </div>
             </div>
-          </div>
+          </Card>
         )}
 
         {/* Reports Table */}

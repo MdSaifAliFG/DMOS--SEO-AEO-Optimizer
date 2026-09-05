@@ -47,7 +47,7 @@ import {
 import { NAVIGATION_CONFIG, NavItem } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
-import { SeoSensingBrand } from "@/components/brand/SeoSensingLogo";
+import { SeoSensingBrand, SeoSensingLogo } from "@/components/brand/SeoSensingLogo";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   LayoutDashboard: <LayoutDashboard className="w-4 h-4" />,
@@ -124,19 +124,56 @@ export const Sidebar: React.FC<{
       )}
     >
       {/* Brand Header */}
-      <div className="h-16 px-4 flex items-center justify-between border-b border-slate-200 bg-white shrink-0">
-        <Link href="/overview" className="flex items-center min-w-0">
-          <SeoSensingBrand isCollapsed={isCollapsed} />
-        </Link>
-
-        {onToggleCollapse && (
-          <button
+      <div
+        suppressHydrationWarning
+        className={cn(
+          "h-16 border-b border-slate-200 bg-white shrink-0 relative flex items-center transition-all",
+          isCollapsed ? "justify-center px-2 group/header" : "justify-between px-4"
+        )}
+      >
+        {isCollapsed ? (
+          /* Collapsed State: Centered logo with hover-to-expand button */
+          <div
             onClick={onToggleCollapse}
-            title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-            className="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors hidden lg:block"
+            title="Expand Sidebar"
+            className="relative flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer group/logo hover:bg-slate-50 transition-colors"
           >
-            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-          </button>
+            {/* Freestanding Logo */}
+            <SeoSensingLogo size={36} className="transition-opacity duration-200 group-hover/header:opacity-30" />
+
+            {/* Expand Chevron that pops up on hover */}
+            {onToggleCollapse && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleCollapse();
+                }}
+                title="Expand Sidebar"
+                className="absolute inset-0 m-auto w-8 h-8 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center opacity-0 group-hover/header:opacity-100 transition-all duration-200 shadow-md cursor-pointer hover:scale-105"
+              >
+                <ChevronRight className="w-4 h-4 text-white" />
+              </button>
+            )}
+          </div>
+        ) : (
+          /* Expanded State: Logo + Wordmark on Left, Collapse button on Right */
+          <>
+            <Link href="/overview" className="flex items-center min-w-0">
+              <SeoSensingBrand isCollapsed={false} showTagline={false} showBadge={false} />
+            </Link>
+
+            {onToggleCollapse && (
+              <button
+                type="button"
+                onClick={onToggleCollapse}
+                title="Collapse Sidebar"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors hidden lg:flex items-center justify-center cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            )}
+          </>
         )}
       </div>
 
@@ -193,14 +230,14 @@ export const Sidebar: React.FC<{
                     const activeStyles = isAeoGroup
                       ? "bg-purple-50 text-purple-700 font-semibold border border-purple-200 shadow-xs"
                       : isSeoGroup
-                      ? "bg-sky-50 text-sky-700 font-semibold border border-sky-200/90 shadow-xs"
-                      : "bg-slate-100 text-slate-900 font-semibold border border-slate-200 shadow-xs";
+                        ? "bg-sky-50 text-sky-700 font-semibold border border-sky-200/90 shadow-xs"
+                        : "bg-slate-100 text-slate-900 font-semibold border border-slate-200 shadow-xs";
 
                     const hoverStyles = isAeoGroup
                       ? "text-slate-600 hover:text-purple-700 hover:bg-purple-50/50"
                       : isSeoGroup
-                      ? "text-slate-600 hover:text-sky-700 hover:bg-sky-50/60"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50";
+                        ? "text-slate-600 hover:text-sky-700 hover:bg-sky-50/60"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50";
 
                     return (
                       <Link
@@ -244,79 +281,23 @@ export const Sidebar: React.FC<{
         })}
       </div>
 
-      {/* User Info & Logout Button */}
-      <div className="p-3 border-t border-slate-200 bg-white shrink-0">
-        {!isCollapsed ? (
-          <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-slate-50 border border-slate-200 shadow-xs">
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
-                {user ? user.name.slice(0, 2).toUpperCase() : "AU"}
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-xs font-bold text-slate-900 truncate">
-                  {user?.name || "Enterprise Admin"}
-                </span>
-                <span className="text-[10px] text-slate-500 truncate">
-                  {user?.email || "admin@seosensing.internal"}
-                </span>
-              </div>
-            </div>
-            <button
-              onClick={() => {
-                logout();
-                window.location.href = "/login";
-              }}
-              title="Log Out of SeoSensing"
-              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => {
-              logout();
-              window.location.href = "/login";
-            }}
-            title="Log Out of SeoSensing"
-            className="w-full flex justify-center py-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
-        )}
-      </div>
-
-      {/* Footer System Status */}
-      <div className="p-2.5 border-t border-slate-200 bg-slate-50/70 shrink-0">
-        {!isCollapsed ? (
-          <div className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 shadow-xs">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="relative flex h-2 w-2 shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <div className="flex flex-col min-w-0">
-                <span className="text-[11px] font-semibold text-slate-800 truncate">
-                  SeoSensing Engine
-                </span>
-                <span className="text-[10px] text-emerald-600 font-medium">Online & Healthy</span>
-              </div>
-            </div>
-            <a
-              href="http://localhost:8000/api/v1/docs"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Open FastAPI Swagger API Docs"
-              className="text-slate-400 hover:text-blue-600 transition-colors p-1"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
-        ) : (
-          <div className="flex justify-center py-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" title="System Online" />
-          </div>
-        )}
+      {/* Compact Logout Button */}
+      <div suppressHydrationWarning className="p-2 border-t border-slate-200 bg-white shrink-0">
+        <button
+          type="button"
+          onClick={() => {
+            logout();
+            window.location.href = "/login";
+          }}
+          title="Log Out of SeoSensing"
+          className={cn(
+            "w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium cursor-pointer",
+            isCollapsed ? "justify-center py-2 px-0" : "justify-start"
+          )}
+        >
+          <LogOut className="w-4 h-4 shrink-0" />
+          {!isCollapsed && <span>Logout</span>}
+        </button>
       </div>
     </aside>
   );

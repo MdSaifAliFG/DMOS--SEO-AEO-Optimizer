@@ -27,43 +27,43 @@ export function IssueSummaryCards({
       key: null,
       label: "All Issues",
       count: totalIssues,
-      color: "text-zinc-200 bg-zinc-900 border-zinc-800",
-      activeBorder: "ring-2 ring-zinc-400 bg-zinc-800",
+      color: "text-slate-800 bg-white border-slate-200 shadow-2xs",
+      activeBorder: "ring-2 ring-blue-600 bg-blue-50/80 text-blue-800 border-blue-300",
     },
     {
       key: "critical",
       label: "Critical",
       count: severityCounts.critical || 0,
-      color: "text-rose-400 bg-rose-500/10 border-rose-500/20",
-      activeBorder: "ring-2 ring-rose-500 bg-rose-500/20",
+      color: "text-rose-700 bg-rose-50/80 border-rose-200",
+      activeBorder: "ring-2 ring-rose-500 bg-rose-100/70 border-rose-300",
     },
     {
       key: "high",
       label: "High",
       count: severityCounts.high || 0,
-      color: "text-orange-400 bg-orange-500/10 border-orange-500/20",
-      activeBorder: "ring-2 ring-orange-500 bg-orange-500/20",
+      color: "text-orange-700 bg-orange-50/80 border-orange-200",
+      activeBorder: "ring-2 ring-orange-500 bg-orange-100/70 border-orange-300",
     },
     {
       key: "medium",
       label: "Medium",
       count: severityCounts.medium || 0,
-      color: "text-amber-400 bg-amber-500/10 border-amber-500/20",
-      activeBorder: "ring-2 ring-amber-500 bg-amber-500/20",
+      color: "text-amber-700 bg-amber-50/80 border-amber-200",
+      activeBorder: "ring-2 ring-amber-500 bg-amber-100/70 border-amber-300",
     },
     {
       key: "low",
       label: "Low",
       count: severityCounts.low || 0,
-      color: "text-blue-400 bg-blue-500/10 border-blue-500/20",
-      activeBorder: "ring-2 ring-blue-500 bg-blue-500/20",
+      color: "text-blue-700 bg-blue-50/80 border-blue-200",
+      activeBorder: "ring-2 ring-blue-500 bg-blue-100/70 border-blue-300",
     },
     {
       key: "info",
       label: "Info",
       count: severityCounts.info || 0,
-      color: "text-zinc-400 bg-zinc-800/40 border-zinc-700/50",
-      activeBorder: "ring-2 ring-zinc-500 bg-zinc-800",
+      color: "text-slate-600 bg-slate-50 border-slate-200",
+      activeBorder: "ring-2 ring-slate-500 bg-slate-100 border-slate-300",
     },
   ];
 
@@ -75,11 +75,11 @@ export function IssueSummaryCards({
           <button
             key={item.label}
             onClick={() => onSelectSeverity(isSelected ? null : item.key)}
-            className={`p-3.5 rounded-xl border text-left flex flex-col justify-between transition-all hover:scale-[1.02] ${
+            className={`p-3.5 rounded-xl border text-left flex flex-col justify-between transition-all hover:scale-[1.02] cursor-pointer ${
               item.color
-            } ${isSelected ? item.activeBorder : "opacity-90 hover:opacity-100"}`}
+            } ${isSelected ? item.activeBorder : "hover:border-slate-300"}`}
           >
-            <span className="text-[11px] font-semibold uppercase tracking-wider opacity-80">
+            <span className="text-[11px] font-bold uppercase tracking-wider opacity-80">
               {item.label}
             </span>
             <span className="text-2xl font-bold font-mono mt-1">

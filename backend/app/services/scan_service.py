@@ -2,7 +2,7 @@ import asyncio
 from datetime import datetime, timezone
 import logging
 from typing import Any, Dict, List, Optional
-from sqlalchemy import desc, func, select
+from sqlalchemy import desc, func, select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from app.models.project import Project
@@ -297,7 +297,10 @@ class ScanService:
         """Fetch single page detailed audit including images, links, and issues."""
         query = (
             select(SeoPage)
-            .where(SeoPage.id == page_id, SeoPage.scan_id == scan_id)
+            .where(
+                or_(SeoPage.id == page_id, SeoPage.url == page_id),
+                SeoPage.scan_id == scan_id,
+            )
             .options(
                 selectinload(SeoPage.images),
                 selectinload(SeoPage.links),

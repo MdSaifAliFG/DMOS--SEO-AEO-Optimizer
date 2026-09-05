@@ -297,16 +297,16 @@ export default function ProjectAuditCockpitPage() {
                 Project Overview
               </Button>
             </Link>
-            <div className="h-4 w-px bg-zinc-800" />
+            <div className="h-4 w-px bg-slate-200" />
             <div>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2.5">
+              <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2.5">
                 <span>Technical SEO & Crawler Cockpit</span>
-                <span className="text-xs px-2.5 py-0.5 rounded-full font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="text-xs px-2.5 py-0.5 rounded-full font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
                   Phase 2 Engine
                 </span>
               </h1>
-              <p className="text-xs text-zinc-400 mt-0.5">
-                Target: <span className="font-mono text-zinc-200">{project.domain}</span>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Target: <span className="font-mono text-slate-800 font-semibold">{project.domain}</span>
               </p>
             </div>
           </div>
@@ -337,10 +337,10 @@ export default function ProjectAuditCockpitPage() {
 
         {/* Empty State */}
         {!activeScan ? (
-          <Card className="p-12 text-center border-dashed border-zinc-800">
-            <Activity className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-zinc-200">No Audits Executed Yet</h3>
-            <p className="text-xs text-zinc-400 max-w-md mx-auto mt-1 mb-6">
+          <Card className="p-12 text-center border-dashed border-slate-200 bg-white shadow-xs">
+            <Activity className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+            <h3 className="text-lg font-bold text-slate-900">No Audits Executed Yet</h3>
+            <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-6">
               Launch the website crawler to inspect internal pages, evaluate technical SEO rules, discover broken links, and generate deterministic category scores.
             </p>
             <Button
@@ -356,23 +356,23 @@ export default function ProjectAuditCockpitPage() {
           /* Live In-Flight Crawler Cockpit */
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-              <Card className="p-6 border-zinc-800 space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-4">
+              <Card className="p-6 border-slate-200 bg-white space-y-6 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                   <div className="space-y-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <ScanStatusBadge status={activeScan.status} size="md" />
-                      <span className="text-xs text-zinc-400 capitalize">
+                      <span className="text-xs text-slate-500 capitalize">
                         ({activeScan.scan_type.replace("_", " ")})
                       </span>
                     </div>
-                    <div className="text-sm font-mono text-white truncate" title={activeScan.target_url}>
+                    <div className="text-sm font-mono text-slate-900 truncate" title={activeScan.target_url}>
                       {activeScan.target_url}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 text-xs text-zinc-400 shrink-0">
+                  <div className="flex items-center gap-4 text-xs text-slate-500 shrink-0">
                     <div className="flex flex-col items-start sm:items-end">
-                      <span className="text-[10px] uppercase font-bold text-zinc-500">Initiated</span>
+                      <span className="text-[10px] uppercase font-bold text-slate-400">Initiated</span>
                       <span>{formatDate(activeScan.created_at)}</span>
                     </div>
                   </div>
@@ -387,27 +387,27 @@ export default function ProjectAuditCockpitPage() {
 
               {/* In-Flight Live Crawl Counters */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
-                  <span className="text-[11px] font-semibold uppercase text-zinc-400">Pages Discovered</span>
-                  <div className="text-2xl font-bold text-white font-mono mt-1">
+                <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                  <span className="text-[11px] font-semibold uppercase text-slate-500">Pages Discovered</span>
+                  <div className="text-2xl font-bold text-slate-900 font-mono mt-1">
                     {activeScan.pages_discovered}
                   </div>
                 </div>
-                <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
-                  <span className="text-[11px] font-semibold uppercase text-zinc-400">Pages Crawled</span>
-                  <div className="text-2xl font-bold text-emerald-400 font-mono mt-1">
+                <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                  <span className="text-[11px] font-semibold uppercase text-slate-500">Pages Crawled</span>
+                  <div className="text-2xl font-bold text-emerald-600 font-mono mt-1">
                     {activeScan.pages_crawled}
                   </div>
                 </div>
-                <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
-                  <span className="text-[11px] font-semibold uppercase text-zinc-400">Failed / Errors</span>
-                  <div className={`text-2xl font-bold font-mono mt-1 ${activeScan.pages_failed > 0 ? "text-rose-400" : "text-zinc-400"}`}>
+                <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                  <span className="text-[11px] font-semibold uppercase text-slate-500">Failed / Errors</span>
+                  <div className={`text-2xl font-bold font-mono mt-1 ${activeScan.pages_failed > 0 ? "text-rose-600" : "text-slate-700"}`}>
                     {activeScan.pages_failed}
                   </div>
                 </div>
-                <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
-                  <span className="text-[11px] font-semibold uppercase text-zinc-400">Issues Found</span>
-                  <div className="text-2xl font-bold text-amber-400 font-mono mt-1">
+                <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                  <span className="text-[11px] font-semibold uppercase text-slate-500">Issues Found</span>
+                  <div className="text-2xl font-bold text-amber-600 font-mono mt-1">
                     {activeScan.issues_count}
                   </div>
                 </div>
@@ -419,7 +419,7 @@ export default function ProjectAuditCockpitPage() {
 
             {/* Right Column: Scan History */}
             <div className="space-y-4">
-              <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider">
+              <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                 Audit History ({scansList.length})
               </h3>
               <div className="space-y-2.5 max-h-[700px] overflow-y-auto pr-1">
@@ -431,16 +431,16 @@ export default function ProjectAuditCockpitPage() {
                       onClick={() => handleSelectScan(s)}
                       className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
                         isSelected
-                          ? "bg-emerald-500/10 border-emerald-500/50 shadow-md"
-                          : "bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900"
+                          ? "bg-blue-50/80 border-blue-300 ring-1 ring-blue-400 shadow-xs"
+                          : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/80 shadow-2xs"
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2 mb-1.5">
                         <ScanStatusBadge status={s.status} size="sm" />
-                        <span className="text-[10px] font-mono text-zinc-400">{s.progress}%</span>
+                        <span className="text-[10px] font-mono text-slate-500">{s.progress}%</span>
                       </div>
-                      <div className="text-xs font-semibold text-zinc-200 truncate">{s.target_url}</div>
-                      <div className="flex items-center justify-between text-[10px] text-zinc-400 mt-2">
+                      <div className="text-xs font-semibold text-slate-800 truncate">{s.target_url}</div>
+                      <div className="flex items-center justify-between text-[10px] text-slate-500 mt-2">
                         <span className="capitalize">{s.scan_type.replace("_", " ")}</span>
                         <span>{formatTimeAgo(s.created_at)}</span>
                       </div>
@@ -469,7 +469,7 @@ export default function ProjectAuditCockpitPage() {
 
             {/* Severity Pill Filter Cards */}
             <div className="space-y-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Filter Detected Issues by Severity
               </h3>
               <IssueSummaryCards
@@ -494,19 +494,19 @@ export default function ProjectAuditCockpitPage() {
             {/* Audit Cockpit Tabs */}
             <div className="space-y-6">
               {/* Tab Selector */}
-              <div className="flex items-center justify-between border-b border-zinc-800 pb-px">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-px">
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setActiveTab("issues")}
                     className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
                       activeTab === "issues"
-                        ? "border-emerald-500 text-white"
-                        : "border-transparent text-zinc-400 hover:text-zinc-200"
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-slate-500 hover:text-slate-800"
                     }`}
                   >
-                    <AlertTriangle className="w-4 h-4 text-amber-400" />
+                    <AlertTriangle className="w-4 h-4 text-amber-500" />
                     <span>Technical SEO Issues</span>
-                    <span className="px-2 py-0.5 rounded-full text-xs font-mono bg-zinc-800 text-zinc-300">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-mono bg-slate-100 text-slate-700">
                       {issuesTotal || scanResults?.issues_count || 0}
                     </span>
                   </button>
@@ -515,13 +515,13 @@ export default function ProjectAuditCockpitPage() {
                     onClick={() => setActiveTab("pages")}
                     className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
                       activeTab === "pages"
-                        ? "border-emerald-500 text-white"
-                        : "border-transparent text-zinc-400 hover:text-zinc-200"
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-slate-500 hover:text-slate-800"
                     }`}
                   >
-                    <FileText className="w-4 h-4 text-blue-400" />
+                    <FileText className="w-4 h-4 text-blue-500" />
                     <span>Crawled Webpages</span>
-                    <span className="px-2 py-0.5 rounded-full text-xs font-mono bg-zinc-800 text-zinc-300">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-mono bg-slate-100 text-slate-700">
                       {pagesTotal || scanResults?.pages_crawled || 0}
                     </span>
                   </button>
@@ -530,17 +530,17 @@ export default function ProjectAuditCockpitPage() {
                     onClick={() => setActiveTab("telemetry")}
                     className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
                       activeTab === "telemetry"
-                        ? "border-emerald-500 text-white"
-                        : "border-transparent text-zinc-400 hover:text-zinc-200"
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-slate-500 hover:text-slate-800"
                     }`}
                   >
-                    <Terminal className="w-4 h-4 text-purple-400" />
+                    <Terminal className="w-4 h-4 text-purple-500" />
                     <span>Crawler Logs & Diagnostics</span>
                   </button>
                 </div>
 
-                <div className="text-xs text-zinc-400 hidden sm:block">
-                  Crawl Date: <span className="text-zinc-200">{formatDate(activeScan.created_at)}</span>
+                <div className="text-xs text-slate-500 hidden sm:block">
+                  Crawl Date: <span className="text-slate-800 font-semibold">{formatDate(activeScan.created_at)}</span>
                 </div>
               </div>
 
@@ -598,27 +598,27 @@ export default function ProjectAuditCockpitPage() {
               {activeTab === "telemetry" && (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
-                      <span className="text-xs text-zinc-400 font-semibold uppercase">robots.txt Status</span>
-                      <div className="text-sm font-mono text-zinc-200 mt-2">
+                    <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                      <span className="text-xs text-slate-500 font-semibold uppercase">robots.txt Status</span>
+                      <div className="text-sm font-mono text-slate-800 mt-2 font-medium">
                         {scanResults?.meta_data?.robots
                           ? `Found (${(scanResults.meta_data.robots as any).status_code || 200})`
                           : "Verified"}
                       </div>
                     </div>
 
-                    <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
-                      <span className="text-xs text-zinc-400 font-semibold uppercase">XML Sitemap</span>
-                      <div className="text-sm font-mono text-zinc-200 mt-2">
+                    <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                      <span className="text-xs text-slate-500 font-semibold uppercase">XML Sitemap</span>
+                      <div className="text-sm font-mono text-slate-800 mt-2 font-medium">
                         {scanResults?.meta_data?.sitemaps
                           ? `${(scanResults.meta_data.sitemaps as any).urls_count || 0} URLs Extracted`
                           : "Discovered"}
                       </div>
                     </div>
 
-                    <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
-                      <span className="text-xs text-zinc-400 font-semibold uppercase">Crawl Duration</span>
-                      <div className="text-sm font-mono text-zinc-200 mt-2">
+                    <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                      <span className="text-xs text-slate-500 font-semibold uppercase">Crawl Duration</span>
+                      <div className="text-sm font-mono text-slate-800 mt-2 font-medium">
                         {scanResults?.crawl_duration ? `${scanResults.crawl_duration}s` : "Recorded"}
                       </div>
                     </div>

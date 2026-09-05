@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/ToastProvider";
+import { NotificationProvider } from "@/lib/notifications";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -29,7 +30,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${jakarta.variable} scroll-smooth`}>
       <body className="bg-background text-foreground min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white">
-        <ToastProvider>{children}</ToastProvider>
+        <NotificationProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </NotificationProvider>
       </body>
     </html>
   );

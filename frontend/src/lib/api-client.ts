@@ -242,7 +242,11 @@ class ApiClient {
   }
 
   async getScanPageDetail(scanId: string, pageId: string): Promise<SEOPageDetail> {
-    return this.request<SEOPageDetail>(`/scans/${scanId}/pages/${pageId}`);
+    return this.request<SEOPageDetail>(`/scans/${scanId}/pages/${encodeURIComponent(pageId)}`);
+  }
+
+  async getPageDetails(scanId: string, pageIdOrUrl: string): Promise<SEOPageDetail> {
+    return this.getScanPageDetail(scanId, pageIdOrUrl);
   }
 
   async getScanIssues(

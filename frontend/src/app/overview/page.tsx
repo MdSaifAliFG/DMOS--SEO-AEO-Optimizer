@@ -6,12 +6,7 @@ import {
   Globe,
   Bot,
   ArrowRight,
-  ShieldCheck,
-  Activity,
-  Layers,
   Sparkles,
-  FileText,
-  AlertTriangle,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
@@ -23,10 +18,14 @@ export default function OverviewPage() {
       <div className="space-y-8">
         {/* Hub Banner */}
         <div className="p-8 rounded-2xl bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 border border-slate-800 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
-          <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold border border-blue-500/30">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>AI Search & SEO Sensing Operating System</span>
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/25 backdrop-blur-md shadow-xs shadow-blue-500/10 transition-all hover:border-blue-400/40">
+              <span className="flex items-center justify-center w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 shrink-0">
+                <Sparkles className="w-2.5 h-2.5" />
+              </span>
+              <span className="text-xs font-semibold tracking-wide text-blue-200">
+                AI Search &amp; SEO Sensing Operating System
+              </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               SEO<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Sensing</span> Intelligence Hub
