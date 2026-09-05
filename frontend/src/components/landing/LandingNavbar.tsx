@@ -22,7 +22,7 @@ export const LandingNavbar: React.FC = () => {
   const navLinks = [
     { label: "Home", href: "#hero" },
     { label: "About us", href: "#path-to-success" },
-    { label: "Services", href: "#what-else" },
+    { label: "Services", href: "#services" },
     { label: "Pricing", href: "#pricing" },
     { label: "FAQ's", href: "#faq" },
   ];

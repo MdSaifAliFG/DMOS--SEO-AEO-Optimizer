@@ -172,7 +172,7 @@ export const LandingFooter: React.FC = () => {
                 </a>
               </li>
               <li>
-                <a href="#what-else" className="hover:text-blue-400 transition-colors">
+                <a href="#services" className="hover:text-blue-400 transition-colors">
                   Features & Services
                 </a>
               </li>
