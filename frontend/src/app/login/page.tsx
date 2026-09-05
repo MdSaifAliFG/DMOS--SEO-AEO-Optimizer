@@ -16,11 +16,12 @@ import {
   EyeOff,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { SeoSensingBrand } from "@/components/brand/SeoSensingLogo";
 
 export default function LoginPage() {
   const { login } = useAuth();
 
-  const [email, setEmail] = useState("admin@dmos.internal");
+  const [email, setEmail] = useState("admin@seosensing.internal");
   const [password, setPassword] = useState("••••••••");
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<"admin" | "seo" | "aeo">("admin");
@@ -29,11 +30,11 @@ export default function LoginPage() {
   const handleRoleSelect = (role: "admin" | "seo" | "aeo") => {
     setSelectedRole(role);
     if (role === "admin") {
-      setEmail("admin@dmos.internal");
+      setEmail("admin@seosensing.internal");
     } else if (role === "seo") {
-      setEmail("seo.lead@dmos.internal");
+      setEmail("seo.lead@seosensing.internal");
     } else {
-      setEmail("aeo.strategist@dmos.internal");
+      setEmail("aeo.strategist@seosensing.internal");
     }
   };
 
@@ -53,7 +54,7 @@ export default function LoginPage() {
   const handleDemoAccess = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    login("demo@dmos.internal", "Enterprise Demo User");
+    login("demo@seosensing.internal", "Enterprise Demo User");
     window.location.href = "/overview";
   };
 
@@ -92,13 +93,7 @@ export default function LoginPage() {
       {/* Top Brand Header Link */}
       <div className="relative z-10 w-full max-w-5xl flex items-center justify-between shrink-0">
         <Link href="/" className="inline-flex items-center gap-2 group">
-          <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30 group-hover:scale-105 transition-transform">
-            <Globe className="w-4 h-4" />
-          </div>
-          <div className="flex items-center tracking-tight">
-            <span className="font-extrabold text-base text-white">DMOS</span>
-            <span className="font-extrabold text-base text-blue-500">WEBSCAN</span>
-          </div>
+          <SeoSensingBrand theme="dark" showTagline={false} showBadge={false} />
         </Link>
 
         <Link
@@ -120,7 +115,7 @@ export default function LoginPage() {
               <span>Enterprise Single Sign-On</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-              Sign in to DMOS
+              Sign in to SeoSensing
             </h1>
             <p className="text-[11px] text-slate-400">
               Deterministic SEO crawling & AI Answer Engine Optimization.
@@ -243,7 +238,7 @@ export default function LoginPage() {
 
       {/* Bottom Trust & Security Badges - Fixed to Front View */}
       <div className="relative z-10 w-full max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-slate-500 pt-2 border-t border-slate-900 shrink-0">
-        <p>© 2026 DMOS Platform. All rights reserved.</p>
+        <p>© 2026 SeoSensing Platform. All rights reserved.</p>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 text-slate-400">
             <ShieldCheck className="w-3 h-3 text-emerald-400" />

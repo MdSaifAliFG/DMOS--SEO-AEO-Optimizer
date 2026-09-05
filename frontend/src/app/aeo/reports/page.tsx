@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   Building2,
   X,
+  Brain,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
@@ -173,6 +174,26 @@ export default function AeoReportsPage() {
                             <Download className="w-3.5 h-3.5 text-purple-600" />
                             Actions CSV
                           </button>
+
+                          <button
+                            onClick={() => {
+                              const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+                              window.open(`${backendUrl}/aeo/trends/${proj.id}?range=all`, "_blank");
+                              success("Telemetry Export", `Exporting monitoring timeline for ${proj.name}`);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-800 text-xs font-semibold shadow-xs transition whitespace-nowrap"
+                          >
+                            <Download className="w-3.5 h-3.5 text-indigo-600" />
+                            Telemetry JSON
+                          </button>
+
+                          <Link
+                            href="/aeo/intelligence"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-semibold shadow-xs transition whitespace-nowrap"
+                          >
+                            <Brain className="w-3.5 h-3.5 text-purple-600" />
+                            Intelligence
+                          </Link>
 
                           <button
                             onClick={() => handleOpenReportModal(proj)}

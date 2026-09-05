@@ -245,7 +245,7 @@ async def test_seo_optimizers_endpoints(client: AsyncClient):
             "current_title": "Home",
             "target_url": "https://example.com/products/marketing-os",
             "target_keyword": "Digital Marketing OS",
-            "brand_name": "DMOS",
+            "brand_name": "SeoSensing",
         },
     )
     assert title_res.status_code == 200
@@ -262,7 +262,7 @@ async def test_seo_optimizers_endpoints(client: AsyncClient):
             "current_description": "We sell software.",
             "target_url": "https://example.com/products/marketing-os",
             "target_keyword": "Digital Marketing OS",
-            "brand_name": "DMOS",
+            "brand_name": "SeoSensing",
         },
     )
     assert desc_res.status_code == 200

@@ -73,9 +73,9 @@ class RuleBasedSEOAIProvider(SEOAIProvider):
             domain = parsed.netloc or parsed.path
             domain_clean = domain.split(":")[0].replace("www.", "")
             name = domain_clean.split(".")[0]
-            return name.capitalize() if name else "DMOS"
+            return name.capitalize() if name else "SeoSensing"
         except Exception:
-            return "DMOS"
+            return "SeoSensing"
 
     async def generate_titles(
         self,

@@ -22,7 +22,7 @@ async def test_full_end_to_end_phase1_flow(client: AsyncClient):
         "description": "B2B SaaS product landing and documentation",
         "settings": {
             "crawl_depth": 3,
-            "user_agent": "DMOS-Bot/1.0",
+            "user_agent": "SeoSensing-Bot/1.0",
         },
     }
     create_proj_res = await client.post("/api/v1/projects", json=project_payload)

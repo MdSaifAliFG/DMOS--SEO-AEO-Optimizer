@@ -230,7 +230,7 @@ RECOMMENDATION_RULE_CATALOG: Dict[str, Dict[str, Any]] = {
         "title": "Add descriptive alt attributes to image tags",
         "description": "Images on the page are missing the 'alt' text attribute.",
         "why_it_matters": "Alt text enables visual search indexing (Google Images), improves accessibility for visually impaired users, and reinforces keyword context.",
-        "how_to_fix": "Add descriptive, concise alt attributes (e.g. alt=\"DMOS SEO audit dashboard overview\") to all informational images.",
+        "how_to_fix": "Add descriptive, concise alt attributes (e.g. alt=\"SeoSensing SEO audit dashboard overview\") to all informational images.",
         "category": "content",
         "effort": RecommendationEffort.LOW.value,
         "base_priority": RecommendationPriority.MEDIUM.value,

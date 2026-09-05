@@ -66,7 +66,7 @@ export default function DashboardPage() {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Badge variant="primary" size="sm" dot>
-                  DMOS Engine v1.0
+                  SeoSensing Engine v1.0
                 </Badge>
                 <Badge variant="emerald" size="sm">
                   Phase 1 Operational

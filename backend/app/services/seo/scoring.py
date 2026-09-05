@@ -22,7 +22,7 @@ CATEGORY_WEIGHTS: Dict[str, float] = {
 
 
 def get_score_label(score: int) -> str:
-    """Classifies numerical SEO score into DMOS rating tier."""
+    """Classifies numerical SEO score into SeoSensing rating tier."""
     if score >= 90:
         return "Excellent"
     if score >= 80:

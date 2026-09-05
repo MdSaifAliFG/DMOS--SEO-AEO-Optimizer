@@ -87,7 +87,7 @@ export const AEOPreviewSection: React.FC = () => {
             </h2>
 
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              People increasingly discover solutions through conversational AI models. DMOS is built from the ground up to help you monitor, understand, and optimize your presence across generative answer engines.
+              People increasingly discover solutions through conversational AI models. SeoSensing is built from the ground up to help you monitor, understand, and optimize your presence across generative answer engines.
             </p>
 
             <div className="space-y-3 text-xs text-slate-700 font-medium pt-2">

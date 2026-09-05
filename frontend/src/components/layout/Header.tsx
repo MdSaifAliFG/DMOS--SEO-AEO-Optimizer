@@ -186,8 +186,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
     }
 
     return {
-      title: "DMOS Platform",
-      subtitle: "Digital Marketing Operating System",
+      title: "SeoSensing Platform",
+      subtitle: "AI Search & SEO Optimization Operating System",
     };
   };
 
@@ -262,7 +262,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
             <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-1">
               <div className="px-3.5 py-2.5 border-b border-slate-100">
                 <p className="text-xs font-bold text-slate-900">{user?.name || "Growth Lead"}</p>
-                <p className="text-[11px] text-slate-500 truncate">{user?.email || "admin@dmos.internal"}</p>
+                <p className="text-[11px] text-slate-500 truncate">{user?.email || "admin@seosensing.internal"}</p>
                 <span className="inline-block mt-1 text-[10px] px-1.5 py-0.2 rounded font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                   {user?.role || "Enterprise Admin"}
                 </span>
@@ -293,7 +293,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
                   className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-rose-600 hover:bg-rose-50 transition-colors font-medium text-left"
                 >
                   <LogOut className="w-3.5 h-3.5 text-rose-500" />
-                  <span>Log Out of DMOS</span>
+                  <span>Log Out of SeoSensing</span>
                 </button>
               </div>
             </div>

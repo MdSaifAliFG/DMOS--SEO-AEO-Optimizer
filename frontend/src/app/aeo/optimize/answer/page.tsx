@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { DashboardShell } from "@/components/layout/DashboardShell";
 import { api } from "@/lib/api-client";
 import { AeoDirectAnswerOptimizationResult } from "@/lib/types";
 import {
@@ -18,13 +19,13 @@ import {
 
 function AeoDirectAnswerOptimizerContent() {
   const searchParams = useSearchParams();
-  const initialQuestion = searchParams?.get("question") || "What is the pricing model for DMOS?";
+  const initialQuestion = searchParams?.get("question") || "What is the pricing model for SeoSensing?";
 
   const [targetQuestion, setTargetQuestion] = useState<string>(initialQuestion);
   const [existingContent, setExistingContent] = useState<string>(
-    "DMOS is an all-in-one SEO & AEO platform with pricing starting at $49/month for small businesses and $199/month for agencies with enterprise SOC 2 compliance."
+    "SeoSensing is an all-in-one SEO & AEO platform with pricing starting at $49/month for small businesses and $199/month for agencies with enterprise SOC 2 compliance."
   );
-  const [brandName, setBrandName] = useState<string>("DMOS");
+  const [brandName, setBrandName] = useState<string>("SeoSensing");
 
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<AeoDirectAnswerOptimizationResult | null>(null);
@@ -59,25 +60,27 @@ function AeoDirectAnswerOptimizerContent() {
   }, [initialQuestion]);
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-20">
-      {/* Banner */}
-      <div className="bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 border-b border-purple-900/40 text-white pt-8 pb-10 px-6 sm:px-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-2 text-purple-400 text-xs font-bold uppercase tracking-widest mb-2">
-            <FileCheck className="w-4 h-4" />
-            Answer Readiness
+    <DashboardShell>
+      <div className="space-y-6">
+        {/* Banner */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 text-white shadow-md border border-purple-800/40">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-purple-500/20 border border-purple-400/30">
+                <FileCheck className="w-5 h-5 text-purple-300" />
+              </div>
+              <h1 className="text-xl font-bold tracking-tight">Direct Answer 9-Dimension Evaluator</h1>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-500/30 text-purple-200 border border-purple-400/20">
+                Answer Readiness
+              </span>
+            </div>
+            <p className="text-xs text-purple-200/80 max-w-2xl">
+              Audit your answer passages against the 9 key dimensions that AI answer engines evaluate when choosing snippets to cite.
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
-            Direct Answer 9-Dimension Evaluator
-          </h1>
-          <p className="text-purple-200/80 text-sm sm:text-base mt-1 max-w-2xl">
-            Audit your answer passages against the 9 key dimensions that AI answer engines evaluate when choosing snippets to cite.
-          </p>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 -mt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Input Column */}
           <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
             <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
@@ -94,7 +97,7 @@ function AeoDirectAnswerOptimizerContent() {
                   type="text"
                   value={targetQuestion}
                   onChange={(e) => setTargetQuestion(e.target.value)}
-                  placeholder="e.g. How does DMOS optimize for ChatGPT?"
+                  placeholder="e.g. How does SeoSensing optimize for ChatGPT?"
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-purple-400"
                   required
                 />
@@ -120,7 +123,7 @@ function AeoDirectAnswerOptimizerContent() {
                   type="text"
                   value={brandName}
                   onChange={(e) => setBrandName(e.target.value)}
-                  placeholder="e.g. DMOS"
+                  placeholder="e.g. SeoSensing"
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
                 />
               </div>
@@ -250,7 +253,7 @@ function AeoDirectAnswerOptimizerContent() {
           </div>
         </div>
       </div>
-    </div>
+    </DashboardShell>
   );
 }
 
@@ -258,12 +261,14 @@ export default function AeoDirectAnswerOptimizerPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-400">
-          <div className="text-center">
-            <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-            <p className="text-xs font-semibold">Loading evaluator...</p>
+        <DashboardShell>
+          <div className="h-64 flex items-center justify-center text-slate-400">
+            <div className="text-center">
+              <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+              <p className="text-xs font-semibold">Loading evaluator...</p>
+            </div>
           </div>
-        </div>
+        </DashboardShell>
       }
     >
       <AeoDirectAnswerOptimizerContent />

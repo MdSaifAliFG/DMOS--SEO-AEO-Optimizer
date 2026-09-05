@@ -13,7 +13,15 @@ export interface NavItem {
 
 export interface NavGroup {
   groupName: string;
-  groupKey: "overview" | "seo" | "aeo" | "system";
+  groupKey:
+    | "overview"
+    | "seo"
+    | "aeo"
+    | "aeo_optimization"
+    | "aeo_intelligence"
+    | "aeo_monitoring"
+    | "system"
+    | string;
   items: NavItem[];
 }
 
@@ -98,7 +106,7 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
     ],
   },
   {
-    groupName: "AEO Optimization",
+    groupName: "AEO Core",
     groupKey: "aeo",
     items: [
       {
@@ -107,16 +115,52 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
         icon: "Bot",
       },
       {
+        title: "Projects",
+        href: "/aeo/projects",
+        icon: "Sparkles",
+      },
+      {
+        title: "Questions",
+        href: "/aeo/questions",
+        icon: "HelpCircle",
+      },
+      {
+        title: "Answer Engine",
+        href: "/aeo/answer-engine",
+        icon: "Cpu",
+      },
+      {
+        title: "Entities",
+        href: "/aeo/entities",
+        icon: "Boxes",
+      },
+      {
+        title: "Citations",
+        href: "/aeo/citations",
+        icon: "Quote",
+      },
+      {
+        title: "Visibility",
+        href: "/aeo/visibility",
+        icon: "Eye",
+      },
+      {
+        title: "Reports",
+        href: "/aeo/reports",
+        icon: "FileBarChart",
+      },
+    ],
+  },
+  {
+    groupName: "AEO Optimization",
+    groupKey: "aeo_optimization",
+    items: [
+      {
         title: "Action Center",
         href: "/aeo/actions",
         icon: "ListTodo",
         badge: "Actions",
         badgeVariant: "aeo",
-      },
-      {
-        title: "Projects",
-        href: "/aeo/projects",
-        icon: "Sparkles",
       },
       {
         title: "Content Gaps",
@@ -139,31 +183,6 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
         icon: "Network",
       },
       {
-        title: "Questions",
-        href: "/aeo/questions",
-        icon: "HelpCircle",
-      },
-      {
-        title: "Entities",
-        href: "/aeo/entities",
-        icon: "Boxes",
-      },
-      {
-        title: "Answer Engine",
-        href: "/aeo/answer-engine",
-        icon: "Cpu",
-      },
-      {
-        title: "Citations",
-        href: "/aeo/citations",
-        icon: "Quote",
-      },
-      {
-        title: "Visibility",
-        href: "/aeo/visibility",
-        icon: "Eye",
-      },
-      {
         title: "Content Studio",
         href: "/aeo/optimize/content",
         icon: "FileText",
@@ -178,10 +197,64 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
         href: "/aeo/optimization-history",
         icon: "History",
       },
+    ],
+  },
+  {
+    groupName: "AEO Intelligence",
+    groupKey: "aeo_intelligence",
+    items: [
       {
-        title: "Reports",
-        href: "/aeo/reports",
-        icon: "FileBarChart",
+        title: "Executive Intelligence",
+        href: "/aeo/intelligence",
+        icon: "Brain",
+        badge: "Exec",
+        badgeVariant: "aeo",
+      },
+      {
+        title: "AI Engines",
+        href: "/aeo/engines",
+        icon: "Cpu",
+      },
+      {
+        title: "Competitors",
+        href: "/aeo/competitors",
+        icon: "Users",
+      },
+      {
+        title: "Change Center",
+        href: "/aeo/changes",
+        icon: "ArrowLeftRight",
+      },
+      {
+        title: "Alerts",
+        href: "/aeo/alerts",
+        icon: "Bell",
+      },
+    ],
+  },
+  {
+    groupName: "AEO Monitoring",
+    groupKey: "aeo_monitoring",
+    items: [
+      {
+        title: "Prompt Monitoring",
+        href: "/aeo/monitoring/prompts",
+        icon: "Target",
+      },
+      {
+        title: "Citation Monitoring",
+        href: "/aeo/monitoring/citations",
+        icon: "Share2",
+      },
+      {
+        title: "Entity Monitoring",
+        href: "/aeo/monitoring/entities",
+        icon: "Network",
+      },
+      {
+        title: "Monitoring Settings",
+        href: "/aeo/settings/monitoring",
+        icon: "Sliders",
       },
     ],
   },

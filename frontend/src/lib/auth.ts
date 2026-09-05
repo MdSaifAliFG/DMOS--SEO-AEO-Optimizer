@@ -9,12 +9,12 @@ export interface UserSession {
   role: string;
 }
 
-const AUTH_STORAGE_KEY = "dmos_auth_session";
+const AUTH_STORAGE_KEY = "seosensing_auth_session";
 
 export function getStoredUser(): UserSession | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY) || localStorage.getItem("dmos_auth_session");
     if (!raw) return null;
     return JSON.parse(raw);
   } catch {
@@ -30,6 +30,7 @@ export function setStoredUser(user: UserSession): void {
 export function clearStoredUser(): void {
   if (typeof window === "undefined") return;
   localStorage.removeItem(AUTH_STORAGE_KEY);
+  localStorage.removeItem("dmos_auth_session");
 }
 
 export function useAuth() {
@@ -41,7 +42,7 @@ export function useAuth() {
     setIsLoading(false);
   }, []);
 
-  const login = (email: string = "admin@dmos.internal", name: string = "Enterprise Admin") => {
+  const login = (email: string = "admin@seosensing.internal", name: string = "Enterprise Admin") => {
     const session: UserSession = {
       id: "usr_demo_123",
       email,

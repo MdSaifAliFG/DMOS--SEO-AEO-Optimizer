@@ -22,6 +22,12 @@ import {
   ListTodo,
   Flame,
   AlertTriangle,
+  Activity,
+  Bell,
+  GitCommit,
+  Shield,
+  Brain,
+  Clock,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
@@ -29,7 +35,18 @@ import { Button } from "@/components/ui/Button";
 import { ScoreRing } from "@/components/ui/ScoreRing";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { AeoProject, AeoQuestion, AeoEntity, AeoCitation, AeoVisibilityData, AeoRecommendation } from "@/lib/types";
+import {
+  AeoProject,
+  AeoQuestion,
+  AeoEntity,
+  AeoCitation,
+  AeoVisibilityData,
+  AeoRecommendation,
+  AeoMonitoringSchedule,
+  AeoExecutiveIntelligence,
+  AeoAlert,
+  AeoChangeEvent,
+} from "@/lib/types";
 import { api } from "@/lib/api-client";
 import { formatDate, formatTimeAgo } from "@/lib/utils";
 import { useToast } from "@/hooks/useToast";
@@ -48,7 +65,11 @@ export default function AeoProjectDetailPage({
   const [citations, setCitations] = useState<AeoCitation[]>([]);
   const [recommendations, setRecommendations] = useState<AeoRecommendation[]>([]);
   const [visibility, setVisibility] = useState<AeoVisibilityData | null>(null);
-  const [activeTab, setActiveTab] = useState<"questions" | "entities" | "citations" | "optimization">("optimization");
+  const [monitoringSchedule, setMonitoringSchedule] = useState<AeoMonitoringSchedule | null>(null);
+  const [executiveIntel, setExecutiveIntel] = useState<AeoExecutiveIntelligence | null>(null);
+  const [projectAlerts, setProjectAlerts] = useState<AeoAlert[]>([]);
+  const [projectChanges, setProjectChanges] = useState<AeoChangeEvent[]>([]);
+  const [activeTab, setActiveTab] = useState<"optimization" | "monitoring" | "questions" | "entities" | "citations">("optimization");
   const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -66,18 +87,26 @@ export default function AeoProjectDetailPage({
       const proj = await api.getAeoProject(projectId);
       setProject(proj);
 
-      const [qData, eData, cData, rData, vData] = await Promise.all([
+      const [qData, eData, cData, rData, vData, schedData, intelData, alertsData, changesData] = await Promise.all([
         api.getAeoQuestions({ project_id: projectId }),
         api.getAeoEntities({ project_id: projectId }),
         api.getAeoCitations({ project_id: projectId }),
         api.getAeoActions({ project_id: projectId }).catch(() => ({ recommendations: [], total: 0 })),
         api.getAeoVisibility(projectId).catch(() => null),
+        api.getAeoMonitoringSchedule(projectId).catch(() => null),
+        api.getAeoExecutiveIntelligence(projectId).catch(() => null),
+        api.getAeoAlerts(projectId, { limit: 5 }).catch(() => []),
+        api.getAeoChanges(projectId, { limit: 5 }).catch(() => []),
       ]);
       setQuestions(qData.questions || []);
       setEntities(eData.entities || []);
       setCitations(cData.citations || []);
       setRecommendations(rData.recommendations || []);
       setVisibility(vData);
+      setMonitoringSchedule(schedData);
+      setExecutiveIntel(intelData);
+      setProjectAlerts(alertsData || []);
+      setProjectChanges(changesData || []);
     } catch (err: any) {
       error("Failed to load AEO project details", err.message);
     } finally {
@@ -304,6 +333,17 @@ export default function AeoProjectDetailPage({
               >
                 Extracted Citations ({citations.length})
               </button>
+              <button
+                onClick={() => setActiveTab("monitoring")}
+                className={`text-xs font-bold pb-1 border-b-2 transition-colors flex items-center gap-1.5 ${
+                  activeTab === "monitoring"
+                    ? "border-purple-600 text-purple-700"
+                    : "border-transparent text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <Activity className="w-3.5 h-3.5" />
+                Continuous Monitoring
+              </button>
             </div>
 
             {activeTab === "questions" && (
@@ -453,7 +493,7 @@ export default function AeoProjectDetailPage({
             </div>
           )}
 
-          {/* TAB 3: Citations */}
+          {/* TAB 4: Citations */}
           {activeTab === "citations" && (
             <div className="space-y-3">
               {citations.length === 0 ? (
@@ -480,6 +520,179 @@ export default function AeoProjectDetailPage({
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* TAB 5: Continuous Monitoring */}
+          {activeTab === "monitoring" && (
+            <div className="space-y-6">
+              {/* Monitoring Status & Schedule Overview */}
+              <div className="p-5 rounded-xl bg-purple-50/50 border border-purple-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-purple-950">Monitoring Engine Schedule</h3>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        monitoringSchedule?.enabled
+                          ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                          : "bg-slate-200 text-slate-700"
+                      }`}
+                    >
+                      {monitoringSchedule?.enabled ? "Active" : "Disabled"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600">
+                    Frequency: <strong className="capitalize">{monitoringSchedule?.frequency || "Weekly"}</strong> • Next run:{" "}
+                    {monitoringSchedule?.next_run_at
+                      ? new Date(monitoringSchedule.next_run_at).toLocaleDateString()
+                      : "Upon next trigger"}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link href="/aeo/settings/monitoring">
+                    <Button size="sm" variant="outline" className="border-purple-200 text-purple-700 text-xs">
+                      Configure Schedule
+                    </Button>
+                  </Link>
+                  <Button
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        await api.runAeoMonitoringCycle(projectId, true);
+                        success("Monitoring cycle executed successfully");
+                        loadData();
+                      } catch (e: any) {
+                        error(e.message || "Failed to run monitoring cycle");
+                      }
+                    }}
+                    className="bg-purple-600 hover:bg-purple-500 text-white text-xs"
+                  >
+                    Run Cycle Now
+                  </Button>
+                </div>
+              </div>
+
+              {/* Quick Telemetry Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="p-4 rounded-xl border border-slate-200 bg-white">
+                  <span className="text-xs font-medium text-slate-500">Monitoring Health</span>
+                  <p className="text-2xl font-black text-purple-950 mt-1">
+                    {executiveIntel ? `${executiveIntel.monitoring_health_score}/100` : "--"}
+                  </p>
+                  <span className={`text-[11px] font-semibold mt-1 inline-block ${
+                    executiveIntel?.monitoring_health_status === "Healthy"
+                      ? "text-emerald-600"
+                      : executiveIntel?.monitoring_health_status === "Critical Risk"
+                      ? "text-rose-600"
+                      : "text-amber-600"
+                  }`}>
+                    {executiveIntel?.monitoring_health_status || "Pending"}
+                  </span>
+                </div>
+
+                <div className="p-4 rounded-xl border border-slate-200 bg-white">
+                  <span className="text-xs font-medium text-slate-500">Brand Share of Voice</span>
+                  <p className="text-2xl font-black text-purple-950 mt-1">
+                    {executiveIntel ? `${executiveIntel.competitive_position.brand_share_of_voice.toFixed(1)}%` : "--"}
+                  </p>
+                  <Link href="/aeo/competitors" className="text-[11px] text-purple-600 hover:underline mt-1 block">
+                    View Competitor Breakdown &rarr;
+                  </Link>
+                </div>
+
+                <div className="p-4 rounded-xl border border-slate-200 bg-white">
+                  <span className="text-xs font-medium text-slate-500">Data Freshness</span>
+                  <p className="text-2xl font-black text-purple-950 mt-1">
+                    {executiveIntel?.data_freshness || "No Data"}
+                  </p>
+                  <span className="text-[11px] text-slate-400 mt-1 block">
+                    {executiveIntel?.last_analyzed_at ? formatTimeAgo(executiveIntel.last_analyzed_at) : "Never analyzed"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Recent Active Alerts */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <Bell className="w-3.5 h-3.5 text-amber-500" />
+                    Active Alerts ({projectAlerts.length})
+                  </h4>
+                  <Link href="/aeo/alerts" className="text-xs text-purple-600 hover:underline">
+                    View All Alerts
+                  </Link>
+                </div>
+
+                {projectAlerts.length === 0 ? (
+                  <p className="text-xs text-slate-400 py-4 text-center border border-dashed rounded-lg bg-slate-50">
+                    No active threat alerts for this project.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {projectAlerts.map((alt) => (
+                      <div
+                        key={alt.id}
+                        className="p-3 rounded-lg border border-slate-100 bg-slate-50/50 flex items-center justify-between gap-3 text-xs"
+                      >
+                        <div>
+                          <span className="font-semibold text-slate-800">{alt.title}</span>
+                          <p className="text-[11px] text-slate-500 mt-0.5">{alt.description}</p>
+                        </div>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                          alt.severity === "critical"
+                            ? "bg-rose-100 text-rose-800"
+                            : alt.severity === "high"
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-blue-100 text-blue-800"
+                        }`}>
+                          {alt.severity}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Recent Change Events */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <GitCommit className="w-3.5 h-3.5 text-purple-500" />
+                    Recent Changes ({projectChanges.length})
+                  </h4>
+                  <Link href="/aeo/changes" className="text-xs text-purple-600 hover:underline">
+                    View Change Center
+                  </Link>
+                </div>
+
+                {projectChanges.length === 0 ? (
+                  <p className="text-xs text-slate-400 py-4 text-center border border-dashed rounded-lg bg-slate-50">
+                    No change events recorded yet.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {projectChanges.map((chg) => (
+                      <div
+                        key={chg.id}
+                        className="p-3 rounded-lg border border-slate-100 bg-slate-50/50 flex items-center justify-between gap-3 text-xs"
+                      >
+                        <div>
+                          <span className="font-semibold text-slate-800">{chg.description}</span>
+                          <span className="text-[10px] text-slate-400 block mt-0.5">
+                            {new Date(chg.created_at).toLocaleString()}
+                          </span>
+                        </div>
+                        {chg.delta !== null && chg.delta !== undefined && (
+                          <span className={`font-bold ${chg.delta > 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                            {chg.delta > 0 ? `+${chg.delta}` : chg.delta}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </Card>

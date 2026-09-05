@@ -37,8 +37,24 @@ from app.schemas.aeo import (
     AeoRecommendationListResponse,
     AeoRecommendationResponse,
     AeoVisibilityResponse,
+    AeoMonitoringScheduleResponse,
+    AeoMonitoringScheduleUpdateRequest,
+    AeoTrendResponse,
+    AeoEngineComparisonResponse,
+    AeoCompetitorIntelligenceResponse,
+    AeoChangeEventResponse,
+    AeoAlertResponse,
+    AeoAlertUpdateInput,
+    AeoExecutiveIntelligenceResponse,
+    AeoPromptMovementItem,
+    AeoCitationMovementItem,
+    AeoEntityMovementItem,
 )
 from app.services.aeo.aeo_service import AeoService
+from app.services.aeo.monitoring.schedule_service import AEOScheduleService
+from app.services.aeo.monitoring.trend_engine import AEOTrendEngine
+from app.services.aeo.monitoring.alert_engine import AEOAlertEngine
+from app.services.aeo.intelligence.intelligence_engine import AEOIntelligenceEngine
 
 router = APIRouter(prefix="/aeo", tags=["AEO Optimization"])
 
@@ -1075,4 +1091,380 @@ async def export_aeo_csv(
         media_type="text/csv",
         headers={"Content-Disposition": f"attachment; filename=aeo_report_{project.domain}.csv"},
     )
+
+
+# ==============================================================================
+# PHASE 7: AEO INTELLIGENCE, MONITORING & COMPETITIVE ANALYTICS ENDPOINTS
+# ==============================================================================
+
+# --- Monitoring Schedule ---
+@router.get(
+    "/monitoring/{project_id}",
+    response_model=AeoMonitoringScheduleResponse,
+    summary="Get monitoring schedule configuration for an AEO project",
+)
+async def get_aeo_monitoring_schedule(
+    project_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> AeoMonitoringScheduleResponse:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+    schedule = await AEOScheduleService.get_or_create_schedule(db, project_id)
+    return AeoMonitoringScheduleResponse(
+        id=schedule.id,
+        project_id=schedule.project_id,
+        frequency=schedule.frequency,
+        enabled=schedule.enabled,
+        selected_engines=schedule.selected_engines or [],
+        alert_thresholds=schedule.alert_thresholds or {},
+        last_run_at=schedule.last_run_at,
+        next_run_at=schedule.next_run_at,
+        last_status=schedule.last_status,
+        last_error=schedule.last_error,
+    )
+
+
+@router.post(
+    "/monitoring/{project_id}/run",
+    response_model=AeoAnalysisResponse,
+    summary="Manually trigger a monitoring analysis cycle",
+)
+async def run_aeo_monitoring_cycle(
+    project_id: str,
+    allow_test_mode: bool = Query(False),
+    db: AsyncSession = Depends(get_db),
+) -> AeoAnalysisResponse:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+
+    # Reuse existing Phase 5 analysis trigger which now calls AEOMonitoringEngine on completion
+    analysis = await AeoService.trigger_analysis(
+        db=db,
+        project_id=project_id,
+        engines=["chatgpt", "gemini", "perplexity"],
+        allow_test_mode=allow_test_mode,
+    )
+    return AeoAnalysisResponse(
+        id=analysis.id,
+        project_id=analysis.project_id,
+        status=analysis.status,
+        progress=analysis.progress,
+        current_step=analysis.current_step,
+        engines_analyzed=analysis.engines_analyzed or [],
+        questions_analyzed_count=analysis.questions_analyzed_count,
+        answers_collected_count=analysis.answers_collected_count,
+        mentions_found_count=analysis.mentions_found_count,
+        citations_found_count=analysis.citations_found_count,
+        overall_score=analysis.overall_score,
+        summary_data=analysis.summary_data or {},
+        error_message=analysis.error_message,
+        started_at=analysis.started_at,
+        completed_at=analysis.completed_at,
+        created_at=analysis.created_at,
+    )
+
+
+@router.patch(
+    "/monitoring/{project_id}",
+    response_model=AeoMonitoringScheduleResponse,
+    summary="Update monitoring schedule settings and alert thresholds",
+)
+async def update_aeo_monitoring_schedule(
+    project_id: str,
+    input_data: AeoMonitoringScheduleUpdateRequest,
+    db: AsyncSession = Depends(get_db),
+) -> AeoMonitoringScheduleResponse:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+
+    try:
+        schedule = await AEOScheduleService.update_schedule(
+            db=db,
+            project_id=project_id,
+            frequency=input_data.frequency,
+            enabled=input_data.enabled,
+            selected_engines=input_data.selected_engines,
+            alert_thresholds=input_data.alert_thresholds,
+        )
+    except ValueError as val_err:
+        raise HTTPException(status_code=400, detail=str(val_err))
+
+    return AeoMonitoringScheduleResponse(
+        id=schedule.id,
+        project_id=schedule.project_id,
+        frequency=schedule.frequency,
+        enabled=schedule.enabled,
+        selected_engines=schedule.selected_engines or [],
+        alert_thresholds=schedule.alert_thresholds or {},
+        last_run_at=schedule.last_run_at,
+        next_run_at=schedule.next_run_at,
+        last_status=schedule.last_status,
+        last_error=schedule.last_error,
+    )
+
+
+# --- Trends ---
+@router.get(
+    "/trends/{project_id}",
+    response_model=AeoTrendResponse,
+    summary="Get historical visibility trends over time (7d, 30d, 90d, all)",
+)
+async def get_aeo_trends(
+    project_id: str,
+    range: str = Query("30d", pattern="^(7d|30d|90d|all)$"),
+    db: AsyncSession = Depends(get_db),
+) -> AeoTrendResponse:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+
+    data = await AEOTrendEngine.get_project_trends(db, project_id, time_range=range)
+    return AeoTrendResponse(**data)
+
+
+# --- AI Engine Comparison ---
+@router.get(
+    "/engines/{project_id}",
+    response_model=AeoEngineComparisonResponse,
+    summary="Compare AI answer engines side-by-side (ChatGPT, Gemini, Perplexity)",
+)
+async def get_aeo_engine_comparison(
+    project_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> AeoEngineComparisonResponse:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+
+    data = await AEOIntelligenceEngine.get_engine_comparison(db, project_id)
+    return AeoEngineComparisonResponse(**data)
+
+
+# --- Competitor Intelligence ---
+@router.get(
+    "/competitors/{project_id}",
+    response_model=AeoCompetitorIntelligenceResponse,
+    summary="Get competitor analytics and AI Answer Share of Voice",
+)
+async def get_aeo_competitors(
+    project_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> AeoCompetitorIntelligenceResponse:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+
+    data = await AEOIntelligenceEngine.get_competitor_intelligence(db, project_id)
+    return AeoCompetitorIntelligenceResponse(**data)
+
+
+# --- Change Center ---
+@router.get(
+    "/changes/{project_id}",
+    response_model=List[AeoChangeEventResponse],
+    summary="List detected AEO change events with severity and type filtering",
+)
+async def list_aeo_changes(
+    project_id: str,
+    severity: Optional[str] = Query(None),
+    event_type: Optional[str] = Query(None),
+    limit: int = Query(50, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+) -> List[AeoChangeEventResponse]:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+
+    from sqlalchemy import select, desc
+    from app.models.aeo_monitoring import AeoChangeEvent
+
+    query = select(AeoChangeEvent).where(AeoChangeEvent.project_id == project_id)
+    if severity and severity != "all":
+        query = query.where(AeoChangeEvent.severity == severity)
+    if event_type and event_type != "all":
+        query = query.where(AeoChangeEvent.event_type == event_type)
+    query = query.order_by(desc(AeoChangeEvent.created_at)).limit(limit)
+
+    res = await db.execute(query)
+    events = res.scalars().all()
+    return [
+        AeoChangeEventResponse(
+            id=e.id,
+            project_id=e.project_id,
+            analysis_id=e.analysis_id,
+            event_type=e.event_type,
+            severity=e.severity,
+            provider=e.provider,
+            description=e.description,
+            previous_value=e.previous_value,
+            current_value=e.current_value,
+            delta=e.delta,
+            percentage_delta=e.percentage_delta,
+            related_prompt_id=e.related_prompt_id,
+            related_competitor=e.related_competitor,
+            created_at=e.created_at,
+        )
+        for e in events
+    ]
+
+
+# --- Alert Center ---
+@router.get(
+    "/alerts/{project_id}",
+    response_model=List[AeoAlertResponse],
+    summary="List AEO monitoring alerts with status and severity filters",
+)
+async def list_aeo_alerts(
+    project_id: str,
+    status: Optional[str] = Query(None),
+    severity: Optional[str] = Query(None),
+    limit: int = Query(50, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+) -> List[AeoAlertResponse]:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+
+    alerts = await AEOAlertEngine.get_alerts_for_project(
+        db=db,
+        project_id=project_id,
+        status=status,
+        severity=severity,
+        limit=limit,
+    )
+    return [
+        AeoAlertResponse(
+            id=a.id,
+            project_id=a.project_id,
+            change_event_id=a.change_event_id,
+            type=a.type,
+            severity=a.severity,
+            title=a.title,
+            description=a.description,
+            status=a.status,
+            provider=a.provider,
+            created_at=a.created_at,
+            acknowledged_at=a.acknowledged_at,
+            resolved_at=a.resolved_at,
+        )
+        for a in alerts
+    ]
+
+
+@router.patch(
+    "/alerts/{alert_id}",
+    response_model=AeoAlertResponse,
+    summary="Update alert status (acknowledge or resolve)",
+)
+async def update_aeo_alert(
+    alert_id: str,
+    input_data: AeoAlertUpdateInput,
+    db: AsyncSession = Depends(get_db),
+) -> AeoAlertResponse:
+    if input_data.status == "acknowledged":
+        alert = await AEOAlertEngine.acknowledge_alert(db, alert_id)
+    elif input_data.status == "resolved":
+        alert = await AEOAlertEngine.resolve_alert(db, alert_id)
+    else:
+        from app.models.aeo_monitoring import AeoAlert
+        alert = await db.get(AeoAlert, alert_id)
+        if alert:
+            alert.status = input_data.status
+            await db.commit()
+            await db.refresh(alert)
+
+    if not alert:
+        raise HTTPException(status_code=404, detail="AEO Alert not found")
+
+    return AeoAlertResponse(
+        id=alert.id,
+        project_id=alert.project_id,
+        change_event_id=alert.change_event_id,
+        type=alert.type,
+        severity=alert.severity,
+        title=alert.title,
+        description=alert.description,
+        status=alert.status,
+        provider=alert.provider,
+        created_at=alert.created_at,
+        acknowledged_at=alert.acknowledged_at,
+        resolved_at=alert.resolved_at,
+    )
+
+
+# --- Executive Intelligence ---
+@router.get(
+    "/intelligence/{project_id}",
+    response_model=AeoExecutiveIntelligenceResponse,
+    summary="Get executive dashboard intelligence, health score, and narrative summary",
+)
+async def get_aeo_executive_intelligence(
+    project_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> AeoExecutiveIntelligenceResponse:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+
+    data = await AEOIntelligenceEngine.get_executive_intelligence(db, project_id)
+    return AeoExecutiveIntelligenceResponse(**data)
+
+
+# --- Prompt Movement Monitoring ---
+@router.get(
+    "/monitoring/{project_id}/prompts",
+    response_model=List[AeoPromptMovementItem],
+    summary="Track prompt visibility and rank movements between analyses",
+)
+async def get_aeo_prompt_movements(
+    project_id: str,
+    movement: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db),
+) -> List[AeoPromptMovementItem]:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+
+    data = await AEOIntelligenceEngine.get_prompt_movements(db, project_id, movement_filter=movement)
+    return [AeoPromptMovementItem(**item) for item in data]
+
+
+# --- Citation Movement Monitoring ---
+@router.get(
+    "/monitoring/{project_id}/citations",
+    response_model=List[AeoCitationMovementItem],
+    summary="Track cited domain movements and authority sources",
+)
+async def get_aeo_citation_movements(
+    project_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> List[AeoCitationMovementItem]:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+
+    data = await AEOIntelligenceEngine.get_citation_movements(db, project_id)
+    return [AeoCitationMovementItem(**item) for item in data]
+
+
+# --- Entity Movement Monitoring ---
+@router.get(
+    "/monitoring/{project_id}/entities",
+    response_model=List[AeoEntityMovementItem],
+    summary="Track knowledge graph entities visibility frequency",
+)
+async def get_aeo_entity_movements(
+    project_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> List[AeoEntityMovementItem]:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+
+    data = await AEOIntelligenceEngine.get_entity_movements(db, project_id)
+    return [AeoEntityMovementItem(**item) for item in data]
+
 

@@ -9,9 +9,9 @@ export const FAQSection: React.FC = () => {
 
   const faqs = [
     {
-      question: "What is DMOS WebScan?",
+      question: "What is SeoSensing?",
       answer:
-        "DMOS WebScan is an all-in-one digital marketing operating system that brings automated technical SEO auditing, crawling, and AI-powered Answer Engine Optimization (AEO) into one unified workspace.",
+        "SeoSensing is an all-in-one digital marketing operating system that brings automated technical SEO auditing, crawling, and AI-powered Answer Engine Optimization (AEO) into one unified workspace.",
     },
     {
       question: "What is SEO optimization?",
@@ -26,17 +26,17 @@ export const FAQSection: React.FC = () => {
     {
       question: "Can I audit my website?",
       answer:
-        "Yes. DMOS provides automated BFS website crawling and deep technical SEO analysis through its SEO module, diagnosing indexability, status codes, HTML tags, and internal link structure.",
+        "Yes. SeoSensing provides automated BFS website crawling and deep technical SEO analysis through its SEO module, diagnosing indexability, status codes, HTML tags, and internal link structure.",
     },
     {
-      question: "Does DMOS support AEO?",
+      question: "Does SeoSensing support AEO?",
       answer:
-        "DMOS includes a dedicated AEO module designed for answer-engine visibility, knowledge graph entity tracking, buyer prompt analysis, and source citation extraction.",
+        "SeoSensing includes a dedicated AEO module designed for answer-engine visibility, knowledge graph entity tracking, buyer prompt analysis, and source citation extraction.",
     },
     {
       question: "Do I need technical SEO knowledge?",
       answer:
-        "No. DMOS is designed to turn complex server responses and crawl data into understandable issues, clear severity categorizations, and concrete fix recommendations.",
+        "No. SeoSensing is designed to turn complex server responses and crawl data into understandable issues, clear severity categorizations, and concrete fix recommendations.",
     },
     {
       question: "Is there a free plan?",

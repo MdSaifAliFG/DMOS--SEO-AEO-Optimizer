@@ -366,6 +366,21 @@ class AEOAnalysisRunner:
                 "citation_stats": cit_stats,
                 "competitor_stats": comp_stats,
             }
+            # 10. Phase 7: Continuous Monitoring Post-Processing (Snapshots, Change Detection, Alerts)
+            try:
+                from app.services.aeo.monitoring.monitoring_engine import AEOMonitoringEngine
+                await AEOMonitoringEngine.process_analysis_completion(
+                    db=db,
+                    project=project,
+                    analysis=analysis,
+                    answers=collected_answers,
+                    citations=all_raw_citations,
+                    questions=active_questions,
+                    detected_positions=detected_positions,
+                )
+            except Exception as mon_err:
+                logger.warning(f"[AEO Runner] Non-fatal error during monitoring post-processing: {mon_err}")
+
             cls._add_log(analysis, "SUCCESS", "Completion", f"AEO Analysis completed with Overall Score {score_breakdown.overall_score}/100 ({score_breakdown.score_label}).")
             await db.commit()
 

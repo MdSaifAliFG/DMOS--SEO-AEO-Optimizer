@@ -32,6 +32,11 @@ import {
   Share2,
   Network,
   FileCheck,
+  Brain,
+  Users,
+  ArrowLeftRight,
+  Bell,
+  Sliders,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
@@ -42,6 +47,7 @@ import {
 import { NAVIGATION_CONFIG, NavItem } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
+import { SeoSensingBrand } from "@/components/brand/SeoSensingLogo";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   LayoutDashboard: <LayoutDashboard className="w-4 h-4" />,
@@ -71,6 +77,11 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   Share2: <Share2 className="w-4 h-4" />,
   Network: <Network className="w-4 h-4" />,
   FileCheck: <FileCheck className="w-4 h-4" />,
+  Brain: <Brain className="w-4 h-4" />,
+  Users: <Users className="w-4 h-4" />,
+  ArrowLeftRight: <ArrowLeftRight className="w-4 h-4" />,
+  Bell: <Bell className="w-4 h-4" />,
+  Sliders: <Sliders className="w-4 h-4" />,
 };
 
 export const Sidebar: React.FC<{
@@ -114,23 +125,8 @@ export const Sidebar: React.FC<{
     >
       {/* Brand Header */}
       <div className="h-16 px-4 flex items-center justify-between border-b border-slate-200 bg-white shrink-0">
-        <Link href="/overview" className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs shrink-0">
-            <Globe className="w-4 h-4" />
-          </div>
-          {!isCollapsed && (
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-sm tracking-tight text-slate-900">DMOS</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                  Enterprise
-                </span>
-              </div>
-              <span className="text-[10px] text-slate-500 font-medium truncate">
-                Digital Marketing OS
-              </span>
-            </div>
-          )}
+        <Link href="/overview" className="flex items-center min-w-0">
+          <SeoSensingBrand isCollapsed={isCollapsed} />
         </Link>
 
         {onToggleCollapse && (
@@ -261,7 +257,7 @@ export const Sidebar: React.FC<{
                   {user?.name || "Enterprise Admin"}
                 </span>
                 <span className="text-[10px] text-slate-500 truncate">
-                  {user?.email || "admin@dmos.internal"}
+                  {user?.email || "admin@seosensing.internal"}
                 </span>
               </div>
             </div>
@@ -270,7 +266,7 @@ export const Sidebar: React.FC<{
                 logout();
                 window.location.href = "/login";
               }}
-              title="Log Out of DMOS"
+              title="Log Out of SeoSensing"
               className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0"
             >
               <LogOut className="w-4 h-4" />
@@ -282,7 +278,7 @@ export const Sidebar: React.FC<{
               logout();
               window.location.href = "/login";
             }}
-            title="Log Out of DMOS"
+            title="Log Out of SeoSensing"
             className="w-full flex justify-center py-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
           >
             <LogOut className="w-4 h-4" />
@@ -301,7 +297,7 @@ export const Sidebar: React.FC<{
               </span>
               <div className="flex flex-col min-w-0">
                 <span className="text-[11px] font-semibold text-slate-800 truncate">
-                  DMOS Engine
+                  SeoSensing Engine
                 </span>
                 <span className="text-[10px] text-emerald-600 font-medium">Online & Healthy</span>
               </div>
