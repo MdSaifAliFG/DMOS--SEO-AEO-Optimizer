@@ -39,11 +39,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && useradd -m -u 1001 -s /bin/bash appuser
 
-# Copy installed Python packages from builder stage
-COPY --from=builder /root/.local /home/appuser/.local
+# Copy installed Python packages from builder stage with correct ownership
+COPY --from=builder --chown=appuser:appuser /root/.local /home/appuser/.local
 
 # Copy backend application source code
 COPY --chown=appuser:appuser backend/ ./backend/
+
+# Create data directory and ensure appuser has write permissions across /app and /home/appuser
+RUN mkdir -p /app/data && chown -R appuser:appuser /app /home/appuser
 
 # Switch to non-root secure user
 USER appuser

@@ -1,3 +1,6 @@
+import logging
+import os
+import tempfile
 from typing import AsyncGenerator
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
@@ -8,20 +11,69 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import DeclarativeBase
 from app.core.config import settings
 
+logger = logging.getLogger("seosensing.database")
 
-# Normalize database URL for async drivers
-def get_async_db_url(url: str) -> str:
-    # If postgresql:// or postgres:// is passed without driver, use postgresql+psycopg://
+
+# Normalize database URL for async drivers and ensure storage availability
+def resolve_and_ensure_db_url(raw_url: str) -> str:
+    """Normalize database URL for async drivers and ensure storage availability."""
+    url = raw_url
     if url.startswith("postgresql://"):
-        return url.replace("postgresql://", "postgresql+psycopg://", 1)
-    if url.startswith("postgres://"):
-        return url.replace("postgres://", "postgresql+psycopg://", 1)
-    if url.startswith("sqlite:///") and not url.startswith("sqlite+aiosqlite:///"):
-        return url.replace("sqlite:///", "sqlite+aiosqlite:///", 1)
+        url = url.replace("postgresql://", "postgresql+psycopg://", 1)
+    elif url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql+psycopg://", 1)
+    elif url.startswith("sqlite:///") and not url.startswith("sqlite+aiosqlite:///"):
+        url = url.replace("sqlite:///", "sqlite+aiosqlite:///", 1)
+
+    # SQLite directory verification & fallback for containerized environments
+    if "sqlite" in url:
+        prefix = "sqlite+aiosqlite:///"
+        if url.startswith(prefix):
+            path_part = url[len(prefix):]
+            if path_part not in (":memory:", "") and "?mode=memory" not in path_part:
+                query_str = ""
+                if "?" in path_part:
+                    path_part, query_str = path_part.split("?", 1)
+                    query_str = f"?{query_str}"
+
+                abs_path = os.path.abspath(path_part)
+                target_dir = os.path.dirname(abs_path)
+
+                can_write = False
+                try:
+                    os.makedirs(target_dir, exist_ok=True)
+                    test_file = os.path.join(target_dir, f".write_test_{os.getpid()}")
+                    with open(test_file, "w") as f:
+                        f.write("ok")
+                    if os.path.exists(test_file):
+                        os.remove(test_file)
+                    can_write = True
+                except Exception as exc:
+                    logger.warning(
+                        "SQLite directory '%s' is not writable: %s. Using temp fallback.",
+                        target_dir,
+                        exc,
+                    )
+                    can_write = False
+
+                if can_write:
+                    clean_path = abs_path.replace("\\", "/")
+                    return f"{prefix}{clean_path}{query_str}"
+                else:
+                    fallback_dir = tempfile.gettempdir()
+                    fallback_db = os.path.join(
+                        fallback_dir, os.path.basename(abs_path) or "seosensing.db"
+                    )
+                    logger.warning(
+                        "Falling back to writable SQLite location at: %s", fallback_db
+                    )
+                    clean_fallback = fallback_db.replace("\\", "/")
+                    return f"{prefix}{clean_fallback}{query_str}"
+
     return url
 
 
-database_url = get_async_db_url(settings.DATABASE_URL)
+database_url = resolve_and_ensure_db_url(settings.DATABASE_URL)
 
 # SQLite-specific connect args if using SQLite
 connect_args = {}

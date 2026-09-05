@@ -80,5 +80,15 @@ async def root():
     }
 
 
+# Health check endpoint for Docker container healthcheck & Render
+@app.get("/health", tags=["Health"])
+async def health():
+    return {
+        "status": "healthy",
+        "service": "seosensing-api",
+        "version": settings.VERSION,
+    }
+
+
 # Include API v1 router
 app.include_router(api_router, prefix=settings.API_V1_STR)
