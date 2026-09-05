@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, ArrowRight } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { SeoSensingLogo } from "@/components/brand/SeoSensingLogo";
 
 export const LandingNavbar: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -36,9 +37,10 @@ export const LandingNavbar: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-1 group">
-          <span className="text-xl sm:text-2xl font-black tracking-wider text-white uppercase font-sans">
-            DMOS<span className="text-blue-500">WEBSCAN</span>
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <SeoSensingLogo size={36} />
+          <span className="text-xl sm:text-2xl font-black tracking-tight text-white font-sans">
+            SEO<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Sensing</span>
           </span>
         </Link>
 

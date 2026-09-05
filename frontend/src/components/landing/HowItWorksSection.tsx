@@ -22,7 +22,7 @@ export const HowItWorksSection: React.FC = () => {
       number: "02",
       title: "Analyze & Crawl",
       description:
-        "DMOS crawls internal pages via BFS, discovers sitemaps, inspects HTML tags, and tests AEO engine visibility.",
+        "SeoSensing crawls internal pages via BFS, discovers sitemaps, inspects HTML tags, and tests AEO engine visibility.",
       tag: "Deterministic Rules",
       color: "bg-purple-600 text-white",
     },

@@ -30,6 +30,16 @@ import {
   AeoOptimizationHistoryResponse,
   AeoContentOptimizationResult,
   AeoDirectAnswerOptimizationResult,
+  AeoMonitoringSchedule,
+  AeoTrendResponse,
+  AeoEngineComparisonResponse,
+  AeoCompetitorIntelligenceResponse,
+  AeoChangeEvent,
+  AeoAlert,
+  AeoExecutiveIntelligence,
+  AeoPromptMovementItem,
+  AeoCitationMovementItem,
+  AeoEntityMovementItem,
   ApiError,
   HealthResponse,
   Project,
@@ -111,7 +121,7 @@ class ApiClient {
         throw err;
       }
       throw {
-        message: (err as Error)?.message || "Failed to connect to DMOS Backend API. Ensure backend is running.",
+        message: (err as Error)?.message || "Failed to connect to SeoSensing Backend API. Ensure backend is running.",
         status: 500,
       } as ApiError;
     }
@@ -612,6 +622,93 @@ class ApiClient {
       method: "POST",
       body: JSON.stringify(input),
     });
+  }
+
+  // --- Phase 7 AEO Monitoring & Intelligence Client Methods ---
+
+  async getAeoMonitoringSchedule(projectId: string): Promise<AeoMonitoringSchedule> {
+    return this.request<AeoMonitoringSchedule>(`/aeo/monitoring/${projectId}`);
+  }
+
+  async runAeoMonitoringCycle(projectId: string, allowTestMode: boolean = false): Promise<AeoAnalysis> {
+    return this.request<AeoAnalysis>(`/aeo/monitoring/${projectId}/run?allow_test_mode=${allowTestMode}`, {
+      method: "POST",
+    });
+  }
+
+  async updateAeoMonitoringSchedule(
+    projectId: string,
+    input: Partial<{
+      frequency: string;
+      enabled: boolean;
+      selected_engines: string[];
+      alert_thresholds: Record<string, number>;
+    }>
+  ): Promise<AeoMonitoringSchedule> {
+    return this.request<AeoMonitoringSchedule>(`/aeo/monitoring/${projectId}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async getAeoTrends(projectId: string, range: "7d" | "30d" | "90d" | "all" = "30d"): Promise<AeoTrendResponse> {
+    return this.request<AeoTrendResponse>(`/aeo/trends/${projectId}?range=${range}`);
+  }
+
+  async getAeoEngineComparison(projectId: string): Promise<AeoEngineComparisonResponse> {
+    return this.request<AeoEngineComparisonResponse>(`/aeo/engines/${projectId}`);
+  }
+
+  async getAeoCompetitorIntelligence(projectId: string): Promise<AeoCompetitorIntelligenceResponse> {
+    return this.request<AeoCompetitorIntelligenceResponse>(`/aeo/competitors/${projectId}`);
+  }
+
+  async getAeoChanges(
+    projectId: string,
+    params?: { severity?: string; event_type?: string; limit?: number }
+  ): Promise<AeoChangeEvent[]> {
+    const query = new URLSearchParams();
+    if (params?.severity && params.severity !== "all") query.set("severity", params.severity);
+    if (params?.event_type && params.event_type !== "all") query.set("event_type", params.event_type);
+    if (params?.limit) query.set("limit", params.limit.toString());
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    return this.request<AeoChangeEvent[]>(`/aeo/changes/${projectId}${qs}`);
+  }
+
+  async getAeoAlerts(
+    projectId: string,
+    params?: { status?: string; severity?: string; limit?: number }
+  ): Promise<AeoAlert[]> {
+    const query = new URLSearchParams();
+    if (params?.status && params.status !== "all") query.set("status", params.status);
+    if (params?.severity && params.severity !== "all") query.set("severity", params.severity);
+    if (params?.limit) query.set("limit", params.limit.toString());
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    return this.request<AeoAlert[]>(`/aeo/alerts/${projectId}${qs}`);
+  }
+
+  async updateAeoAlert(alertId: string, status: "acknowledged" | "resolved" | "new"): Promise<AeoAlert> {
+    return this.request<AeoAlert>(`/aeo/alerts/${alertId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async getAeoExecutiveIntelligence(projectId: string): Promise<AeoExecutiveIntelligence> {
+    return this.request<AeoExecutiveIntelligence>(`/aeo/intelligence/${projectId}`);
+  }
+
+  async getAeoPromptMovements(projectId: string, movement?: string): Promise<AeoPromptMovementItem[]> {
+    const qs = movement && movement !== "all" ? `?movement=${movement}` : "";
+    return this.request<AeoPromptMovementItem[]>(`/aeo/monitoring/${projectId}/prompts${qs}`);
+  }
+
+  async getAeoCitationMovements(projectId: string): Promise<AeoCitationMovementItem[]> {
+    return this.request<AeoCitationMovementItem[]>(`/aeo/monitoring/${projectId}/citations`);
+  }
+
+  async getAeoEntityMovements(projectId: string): Promise<AeoEntityMovementItem[]> {
+    return this.request<AeoEntityMovementItem[]>(`/aeo/monitoring/${projectId}/entities`);
   }
 
   // --- Phase 4 SEO Action Center & Optimization Methods ---

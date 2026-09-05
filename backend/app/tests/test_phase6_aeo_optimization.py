@@ -84,9 +84,9 @@ async def test_rule_based_optimizer():
     # Content optimization
     res_content = await provider.optimize_content(
         target_question="What is the best SEO tool for agencies?",
-        existing_content="DMOS is an automated platform providing search engine optimization tools for marketing teams.",
+        existing_content="SeoSensing is an automated platform providing search engine optimization tools for marketing teams.",
         target_keyword="AEO software",
-        brand_name="DMOS",
+        brand_name="SeoSensing",
         product_service="AEO platform",
     )
     assert res_content["content_quality_score"] > 0
@@ -95,9 +95,9 @@ async def test_rule_based_optimizer():
 
     # Direct answer evaluation (9 dimensions)
     res_answer = await provider.optimize_direct_answer(
-        target_question="How much does DMOS cost?",
-        existing_content="DMOS is a software platform with pricing starting at $49/month with enterprise security and SOC 2 compliance for marketing teams.",
-        brand_name="DMOS",
+        target_question="How much does SeoSensing cost?",
+        existing_content="SeoSensing is a software platform with pricing starting at $49/month with enterprise security and SOC 2 compliance for marketing teams.",
+        brand_name="SeoSensing",
     )
     assert res_answer["total_criteria_count"] == 9
     assert res_answer["passed_criteria_count"] >= 3

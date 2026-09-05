@@ -51,7 +51,7 @@ export const PathToSuccessSection: React.FC = () => {
                 </div>
               </div>
               <span className="font-semibold text-slate-700">
-                <strong className="text-orange-600">+1500 users</strong> across USA choose DMOS
+                <strong className="text-orange-600">+1500 users</strong> across USA choose SeoSensing
               </span>
             </div>
           </div>

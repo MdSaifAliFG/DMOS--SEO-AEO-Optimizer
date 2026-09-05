@@ -11,9 +11,14 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "DMOS WebScan — SEO & AEO Optimization Platform",
+  title: "SeoSensing — SEO & AEO Optimization Platform",
   description:
     "Next-generation SEO and Answer Engine Optimization (AEO) platform built for high-performance crawling and AI search visibility.",
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

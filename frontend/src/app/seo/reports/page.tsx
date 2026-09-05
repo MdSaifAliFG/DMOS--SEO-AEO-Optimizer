@@ -76,7 +76,7 @@ export default function SeoReportsPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `dmos_seo_reports_${new Date().toISOString().split("T")[0]}.csv`);
+    link.setAttribute("download", `seosensing_reports_${new Date().toISOString().split("T")[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -122,10 +122,10 @@ export default function SeoReportsPage() {
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 text-white space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <Sparkles className="w-4 h-4 text-sky-400" />
                 <h3 className="text-sm font-bold text-white">Executive Optimization Summary</h3>
               </div>
-              <Link href="/seo/actions" className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1">
+              <Link href="/seo/actions" className="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1">
                 <ListTodo className="w-3.5 h-3.5" /> Open Action Center →
               </Link>
             </div>
@@ -145,9 +145,9 @@ export default function SeoReportsPage() {
                 <div className="text-[10px] text-slate-500 mt-0.5">Immediate ranking impact</div>
               </div>
 
-              <div className="bg-slate-950 p-3 rounded-lg border border-purple-500/20">
-                <div className="text-purple-400 font-semibold">Recoverable Impact</div>
-                <div className="text-xl font-bold text-purple-300 mt-1">+{optSummary.estimated_seo_impact} pts</div>
+              <div className="bg-slate-950 p-3 rounded-lg border border-sky-500/20">
+                <div className="text-sky-400 font-semibold">Recoverable Impact</div>
+                <div className="text-xl font-bold text-sky-300 mt-1">+{optSummary.estimated_seo_impact} pts</div>
                 <div className="text-[10px] text-slate-500 mt-0.5">Potential score: {optSummary.potential_seo_score}/100</div>
               </div>
 

@@ -28,6 +28,7 @@ import {
   Settings,
 } from "lucide-react";
 import { NAVIGATION_CONFIG, NavItem } from "@/lib/constants";
+import { SeoSensingBrand } from "@/components/brand/SeoSensingLogo";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -89,12 +90,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose }) => {
       <div className="relative w-72 bg-white border-r border-slate-200 h-full flex flex-col z-10 animate-in slide-in-from-left duration-200 shadow-xl">
         {/* Header */}
         <div className="h-14 px-4 flex items-center justify-between border-b border-slate-200">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold shadow-xs">
-              <Globe className="w-4 h-4" />
-            </div>
-            <span className="font-extrabold text-sm text-slate-900">DMOS Platform</span>
-          </div>
+          <SeoSensingBrand showTagline={false} showBadge={false} />
           <button
             onClick={onClose}
             className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"

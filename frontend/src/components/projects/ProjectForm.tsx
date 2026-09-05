@@ -19,7 +19,7 @@ export const ProjectForm: React.FC = () => {
   const [domain, setDomain] = useState("");
   const [description, setDescription] = useState("");
   const [crawlDepth, setCrawlDepth] = useState<number>(3);
-  const [userAgent, setUserAgent] = useState("DMOS-Bot/1.0 (SEO Crawler Engine)");
+  const [userAgent, setUserAgent] = useState("SeoSensing-Bot/1.0 (SEO Crawler Engine)");
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 

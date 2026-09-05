@@ -26,6 +26,19 @@ from app.models.aeo import (
     AeoCitationType,
     AeoAnalysisStatus,
 )
+from app.models.aeo_monitoring import (
+    AeoMonitoringSchedule,
+    AeoEngineSnapshot,
+    AeoCompetitorSnapshot,
+    AeoPromptSnapshot,
+    AeoChangeEvent,
+    AeoAlert,
+    MonitoringFrequency,
+    AeoChangeEventSeverity,
+    AeoChangeEventType,
+    AeoAlertSeverity,
+    AeoAlertStatus,
+)
 
 __all__ = [
     "Base",
@@ -60,4 +73,15 @@ __all__ = [
     "AeoEngine",
     "AeoCitationType",
     "AeoAnalysisStatus",
+    "AeoMonitoringSchedule",
+    "AeoEngineSnapshot",
+    "AeoCompetitorSnapshot",
+    "AeoPromptSnapshot",
+    "AeoChangeEvent",
+    "AeoAlert",
+    "MonitoringFrequency",
+    "AeoChangeEventSeverity",
+    "AeoChangeEventType",
+    "AeoAlertSeverity",
+    "AeoAlertStatus",
 ]

@@ -1,4 +1,4 @@
 """
-DMOS SEO & AEO Platform Backend Application (Phase 1).
+SeoSensing SEO & AEO Platform Backend Application.
 """
 __version__ = "0.1.0"

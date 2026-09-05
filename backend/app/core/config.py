@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "DMOS SEO & AEO Optimization Platform"
+    PROJECT_NAME: str = "SeoSensing SEO & AEO Optimization Platform"
     VERSION: str = "0.2.0"
     API_V1_STR: str = "/api/v1"
     ENVIRONMENT: str = "development"
@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     CRAWL_CONCURRENCY: int = 5
     CRAWL_MAX_RETRIES: int = 2
     CRAWL_MAX_RESPONSE_SIZE: int = 10485760  # 10MB
-    CRAWLER_USER_AGENT: str = "DMOSBot/1.0 (+https://dmos.io/bot; SEO & AEO Audit Engine)"
+    CRAWLER_USER_AGENT: str = "SeoSensingBot/1.0 (+https://seosensing.io/bot; SEO & AEO Audit Engine)"
 
     # Security
     SECRET_KEY: str = "dmos-phase-1-super-secret-key-change-in-production"

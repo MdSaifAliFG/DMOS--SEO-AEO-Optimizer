@@ -38,10 +38,10 @@ export const WhyDMOSSection: React.FC = () => {
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-200/70 px-3 py-1 rounded-full">
-            The DMOS Advantage
+            The SeoSensing Advantage
           </span>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Why teams choose DMOS
+            Why teams choose SeoSensing
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
             Engineered from first principles to provide transparent, deterministic website diagnostics and AI visibility analysis.

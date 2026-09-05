@@ -381,6 +381,15 @@ class AEOProviderRegistry:
     """Registry maintaining active and test Answer Engine providers."""
 
     @staticmethod
+    def is_configured(engine_id: str) -> bool:
+        """Returns True if the specified engine provider has valid server-side API keys."""
+        try:
+            prov = AEOProviderRegistry.get_provider(engine_id, allow_mock=False)
+            return prov.is_configured()
+        except Exception:
+            return False
+
+    @staticmethod
     def get_provider(engine_id: str, allow_mock: bool = False) -> AEOAnswerProvider:
         engine_id = engine_id.lower().strip()
         if engine_id in ("chatgpt", "openai"):

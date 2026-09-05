@@ -13,6 +13,7 @@ import {
   Cpu,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { SeoSensingLogo } from "@/components/brand/SeoSensingLogo";
 
 export const LandingFooter: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -79,17 +80,14 @@ export const LandingFooter: React.FC = () => {
           {/* Col 1: Brand Info (2 cols) */}
           <div className="space-y-4 md:col-span-2">
             <Link href="/" className="inline-flex items-center gap-2.5 group">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-transform">
-                <Globe className="w-4 h-4" />
-              </div>
-              <div className="flex items-center tracking-tight">
-                <span className="font-extrabold text-lg text-white">DMOS</span>
-                <span className="font-extrabold text-lg text-blue-500">WEBSCAN</span>
-              </div>
+              <SeoSensingLogo size={36} />
+              <span className="text-xl font-black tracking-tight text-white font-sans">
+                SEO<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Sensing</span>
+              </span>
             </Link>
 
             <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
-              Digital Marketing Operating System. Unified intelligence platform engineered for deterministic technical SEO crawling and AI Answer Engine Optimization (AEO).
+              AI Search & SEO Sensing Operating System. Unified intelligence platform engineered for deterministic technical SEO crawling and AI Answer Engine Optimization (AEO).
             </p>
 
             {/* System Status Pill */}
@@ -170,7 +168,7 @@ export const LandingFooter: React.FC = () => {
             <ul className="space-y-2 text-xs">
               <li>
                 <a href="#hero" className="hover:text-blue-400 transition-colors">
-                  About DMOS
+                  About SeoSensing
                 </a>
               </li>
               <li>
@@ -199,7 +197,7 @@ export const LandingFooter: React.FC = () => {
 
         {/* Bottom Section: Copyright & Badges */}
         <div className="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© 2026 DMOS Platform. Digital Marketing Operating System. All rights reserved.</p>
+          <p>© 2026 SeoSensing Platform. AI Search & SEO Sensing Operating System. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5 text-slate-400">
               <ShieldCheck className="w-4 h-4 text-emerald-500" />

@@ -11,24 +11,24 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
 export const metadata: Metadata = {
-  title: "DMOS WebScan — Unleash the Power of Smarter SEO & AEO",
+  title: "SeoSensing — Unleash the Power of Smarter SEO & AEO",
   description:
     "Stop all the guessing... Scan your website and see what is holding it back from showing in top results on Google, Bing, and AI answer engines.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "DMOS WebScan — Unleash the Power of Smarter SEO & AEO",
+    title: "SeoSensing — Unleash the Power of Smarter SEO & AEO",
     description:
       "Scan your website, evaluate technical SEO rules, and monitor AI answer engine citations in one unified platform.",
-    url: "https://dmos.internal",
-    siteName: "DMOS WebScan",
+    url: "https://seosensing.internal",
+    siteName: "SeoSensing",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "DMOS WebScan — SEO & AEO Platform",
+    title: "SeoSensing — SEO & AEO Platform",
     description:
       "Next-generation website crawler and AI Answer Engine Optimization platform.",
   },
@@ -44,7 +44,7 @@ export default function LandingPage() {
     "@graph": [
       {
         "@type": "SoftwareApplication",
-        "name": "DMOS WebScan",
+        "name": "SeoSensing",
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Web",
         "description":
@@ -57,19 +57,19 @@ export default function LandingPage() {
       },
       {
         "@type": "Organization",
-        "name": "DMOS",
-        "url": "https://dmos.internal",
+        "name": "SeoSensing",
+        "url": "https://seosensing.internal",
       },
       {
         "@type": "FAQPage",
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "What is DMOS WebScan?",
+            "name": "What is SeoSensing?",
             "acceptedAnswer": {
               "@type": "Answer",
               "text":
-                "DMOS WebScan is an all-in-one digital marketing operating system that brings automated technical SEO auditing, crawling, and AI-powered Answer Engine Optimization (AEO) into one unified workspace.",
+                "SeoSensing is an all-in-one digital marketing operating system that brings automated technical SEO auditing, crawling, and AI-powered Answer Engine Optimization (AEO) into one unified workspace.",
             },
           },
           {

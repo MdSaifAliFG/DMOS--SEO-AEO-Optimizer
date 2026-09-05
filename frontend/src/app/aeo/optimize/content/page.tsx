@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { api } from "@/lib/api-client";
+import { DashboardShell } from "@/components/layout/DashboardShell";
 import { AeoContentOptimizationResult } from "@/lib/types";
 import {
   Sparkles,
@@ -18,9 +19,9 @@ import {
 
 export default function AeoContentOptimizerPage() {
   const [targetQuestion, setTargetQuestion] = useState<string>("What is the best SEO and AEO optimization platform for marketing agencies?");
-  const [existingContent, setExistingContent] = useState<string>("DMOS is an all-in-one SEO and AEO optimization software designed for marketing teams and agencies. It automates technical audits, tracks citations across ChatGPT and Gemini, and generates actionable content briefs.");
+  const [existingContent, setExistingContent] = useState<string>("SeoSensing is an all-in-one SEO and AEO optimization software designed for marketing teams and agencies. It automates technical audits, tracks citations across ChatGPT and Gemini, and generates actionable content briefs.");
   const [targetKeyword, setTargetKeyword] = useState<string>("AEO optimization platform");
-  const [brandName, setBrandName] = useState<string>("DMOS");
+  const [brandName, setBrandName] = useState<string>("SeoSensing");
   const [productService, setProductService] = useState<string>("Search & Answer Engine Optimizer");
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -60,25 +61,27 @@ export default function AeoContentOptimizerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-20">
-      {/* Banner */}
-      <div className="bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 border-b border-purple-900/40 text-white pt-8 pb-10 px-6 sm:px-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-2 text-purple-400 text-xs font-bold uppercase tracking-widest mb-2">
-            <Sparkles className="w-4 h-4" />
-            AI Content Studio
+    <DashboardShell>
+      <div className="space-y-6">
+        {/* Banner */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 text-white shadow-md border border-purple-800/40">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-purple-500/20 border border-purple-400/30">
+                <Sparkles className="w-5 h-5 text-purple-300" />
+              </div>
+              <h1 className="text-xl font-bold tracking-tight">AEO Interactive Content Optimizer</h1>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-500/30 text-purple-200 border border-purple-400/20">
+                AI Content Studio
+              </span>
+            </div>
+            <p className="text-xs text-purple-200/80 max-w-2xl">
+              Engineer your webpage copy to be readily understood, summarized, and cited by AI answer engines like ChatGPT, Gemini, Perplexity, and Claude.
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
-            AEO Interactive Content Optimizer
-          </h1>
-          <p className="text-purple-200/80 text-sm sm:text-base mt-1 max-w-2xl">
-            Engineer your webpage copy to be readily understood, summarized, and cited by AI answer engines like ChatGPT, Gemini, Perplexity, and Claude.
-          </p>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 -mt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Input Form Column */}
           <div className="lg:col-span-6 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
             <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
@@ -95,7 +98,7 @@ export default function AeoContentOptimizerPage() {
                   type="text"
                   value={targetQuestion}
                   onChange={(e) => setTargetQuestion(e.target.value)}
-                  placeholder="e.g. How much does DMOS cost and what is included?"
+                  placeholder="e.g. How much does SeoSensing cost and what is included?"
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-purple-400"
                   required
                 />
@@ -122,7 +125,7 @@ export default function AeoContentOptimizerPage() {
                     type="text"
                     value={brandName}
                     onChange={(e) => setBrandName(e.target.value)}
-                    placeholder="e.g. DMOS"
+                    placeholder="e.g. SeoSensing"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400"
                   />
                 </div>
@@ -273,6 +276,6 @@ export default function AeoContentOptimizerPage() {
           </div>
         </div>
       </div>
-    </div>
+    </DashboardShell>
   );
 }

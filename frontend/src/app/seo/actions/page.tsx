@@ -30,6 +30,7 @@ import {
   Ban,
   Globe,
 } from "lucide-react";
+import { DashboardShell } from "@/components/layout/DashboardShell";
 import { api } from "@/lib/api-client";
 import {
   Project,
@@ -262,7 +263,7 @@ export default function SeoActionsPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `dmos_seo_actions_${selectedProjectId || "export"}.csv`);
+    link.setAttribute("download", `seosensing_actions_${selectedProjectId || "export"}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -335,65 +336,72 @@ export default function SeoActionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-20">
-      {/* Top Banner (Sky Blue Visual Identity) */}
-      <div className="bg-gradient-to-r from-sky-950 via-slate-900 to-indigo-950 border-b border-sky-900/40 text-white pt-8 pb-10 px-6 sm:px-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2 text-sky-400 text-xs font-bold uppercase tracking-widest mb-2">
-              <Sparkles className="w-4 h-4" />
-              Phase 4 SEO Action Workspace
+    <DashboardShell>
+      <div className="space-y-6">
+        {/* Top Banner (Cohesive Sky Blue SEO Identity) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-sky-950 via-cyan-900 to-slate-900 text-white shadow-md border border-sky-800/40">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-sky-500/20 border border-sky-400/30">
+                <Sparkles className="w-5 h-5 text-sky-300" />
+              </div>
+              <h1 className="text-xl font-bold tracking-tight">SEO Optimization & Action Center</h1>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-sky-500/30 text-sky-200 border border-sky-400/20">
+                Action Workspace
+              </span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
-              SEO Optimization & Action Center
-            </h1>
-            <p className="text-sky-200/80 text-sm sm:text-base mt-1 max-w-2xl">
+            <p className="text-xs text-sky-200/80 max-w-2xl">
               Turn technical audit findings into prioritized, high-impact tasks to recover organic search ranking and crawl health.
             </p>
           </div>
 
           {/* Project Switcher, Audit Selector & Export */}
           <div className="flex items-center gap-3 flex-wrap">
-            <select
-              value={selectedProjectId}
-              onChange={(e) => setSelectedProjectId(e.target.value)}
-              className="bg-sky-900/60 border border-sky-700/60 text-white rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-sky-400"
-            >
-              {projects.map((p) => (
-                <option key={p.id} value={p.id} className="bg-slate-900 text-white">
-                  {p.name} ({p.domain})
-                </option>
-              ))}
-            </select>
+            {projects.length > 0 && (
+              <div className="flex items-center gap-2 bg-sky-950/80 border border-sky-700/60 rounded-xl px-3 py-1.5">
+                <span className="text-xs font-semibold text-sky-200">Project:</span>
+                <select
+                  value={selectedProjectId}
+                  onChange={(e) => setSelectedProjectId(e.target.value)}
+                  className="bg-transparent text-xs font-semibold text-white focus:outline-none cursor-pointer"
+                >
+                  {projects.map((p) => (
+                    <option key={p.id} value={p.id} className="bg-slate-900 text-white">
+                      {p.name} ({p.domain})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {scans.length > 0 && (
-              <select
-                value={selectedScanId}
-                onChange={(e) => setSelectedScanId(e.target.value)}
-                className="bg-slate-800/80 border border-slate-700 text-white rounded-xl px-3 py-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-400"
-              >
-                {scans.map((s) => (
-                  <option key={s.id} value={s.id} className="bg-slate-900 text-white">
-                    {new Date(s.created_at).toLocaleDateString()} — Score: {s.overall_score ?? "N/A"}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center gap-2 bg-sky-950/80 border border-sky-700/60 rounded-xl px-3 py-1.5">
+                <span className="text-xs font-semibold text-sky-200">Scan:</span>
+                <select
+                  value={selectedScanId}
+                  onChange={(e) => setSelectedScanId(e.target.value)}
+                  className="bg-transparent text-xs font-semibold text-white focus:outline-none cursor-pointer"
+                >
+                  {scans.map((s) => (
+                    <option key={s.id} value={s.id} className="bg-slate-900 text-white">
+                      {new Date(s.created_at).toLocaleDateString()} — Score: {s.overall_score ?? "N/A"}
+                    </option>
+                  ))}
+                </select>
+              </div>
             )}
 
             <button
               onClick={handleExportCSV}
-              className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-sm font-medium rounded-xl transition"
+              className="px-3 py-1.5 text-xs font-medium bg-sky-900/60 hover:bg-sky-800/60 text-sky-100 rounded-xl border border-sky-700/60 transition flex items-center gap-1.5 cursor-pointer"
             >
-              <Download className="w-4 h-4" />
-              Export CSV
+              <Download className="w-3.5 h-3.5" /> Export CSV
             </button>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 -mt-6">
         {/* KPI Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-2">
           <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
             <span className="text-[11px] uppercase tracking-wider font-bold text-slate-500 block">Total Actions</span>
             <span className="text-2xl font-black text-slate-900 mt-1 block">{summary?.total_actions ?? "—"}</span>
@@ -811,6 +819,6 @@ export default function SeoActionsPage() {
           </div>
         </div>
       )}
-    </div>
+    </DashboardShell>
   );
 }

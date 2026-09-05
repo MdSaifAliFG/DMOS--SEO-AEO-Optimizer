@@ -68,7 +68,7 @@ export default function SettingsPage() {
                 <input
                   type="email"
                   disabled
-                  value="admin@dmos-enterprise.internal"
+                  value="admin@seosensing-enterprise.internal"
                   className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-xs text-slate-500 cursor-not-allowed font-mono"
                 />
               </div>

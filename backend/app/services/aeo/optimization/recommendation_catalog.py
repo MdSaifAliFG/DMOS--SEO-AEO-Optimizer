@@ -47,7 +47,7 @@ AEO_RECOMMENDATION_CATALOG: List[Dict[str, Any]] = [
             "Review the uncovered buyer prompts in the AEO Prompts tab.",
             "Create dedicated landing pages answering each specific search intent.",
             "Structure answers with concise 2-3 sentence overview paragraphs before deep dives.",
-            "Submit new URLs for indexing and re-crawl in DMOS.",
+            "Submit new URLs for indexing and re-crawl in SeoSensing.",
         ],
     },
     {

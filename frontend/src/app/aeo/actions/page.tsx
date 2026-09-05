@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api-client";
+import { DashboardShell } from "@/components/layout/DashboardShell";
 import { AeoProject, AeoRecommendation, AeoActionSummary } from "@/lib/types";
 import {
   Sparkles,
@@ -274,60 +275,64 @@ export default function AeoActionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-20">
-      {/* Top Banner */}
-      <div className="bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 border-b border-purple-900/40 text-white pt-8 pb-10 px-6 sm:px-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2 text-purple-400 text-xs font-bold uppercase tracking-widest mb-2">
-              <Sparkles className="w-4 h-4" />
-              Phase 6 Action Center
+    <DashboardShell>
+      <div className="space-y-6">
+        {/* Top Banner (Cohesive AEO Identity) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 text-white shadow-md border border-purple-800/40">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-purple-500/20 border border-purple-400/30">
+                <Sparkles className="w-5 h-5 text-purple-300" />
+              </div>
+              <h1 className="text-xl font-bold tracking-tight">AEO Optimization & Action Center</h1>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-500/30 text-purple-200 border border-purple-400/20">
+                Phase 6 Action Center
+              </span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
-              AEO Optimization & Action Center
-            </h1>
-            <p className="text-purple-200/80 text-sm sm:text-base mt-1 max-w-2xl">
+            <p className="text-xs text-purple-200/80 max-w-2xl">
               Prioritize deterministic opportunities to improve mentions, citations, entity knowledge, and AI answer prominence.
             </p>
           </div>
 
-          {/* Project Switcher & Export */}
+          {/* Project Switcher, Generate & Export */}
           <div className="flex items-center gap-3 flex-wrap">
-            <select
-              value={selectedProjectId}
-              onChange={(e) => setSelectedProjectId(e.target.value)}
-              className="bg-purple-900/60 border border-purple-700/60 text-white rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-400"
-            >
-              {projects.map((p) => (
-                <option key={p.id} value={p.id} className="bg-slate-900 text-white">
-                  {p.name} ({p.domain})
-                </option>
-              ))}
-            </select>
+            {projects.length > 0 && (
+              <div className="flex items-center gap-2 bg-purple-950/80 border border-purple-700/60 rounded-xl px-3 py-1.5">
+                <span className="text-xs font-semibold text-purple-200">Project:</span>
+                <select
+                  value={selectedProjectId}
+                  onChange={(e) => setSelectedProjectId(e.target.value)}
+                  className="bg-transparent text-xs font-semibold text-white focus:outline-none cursor-pointer"
+                >
+                  {projects.map((p) => (
+                    <option key={p.id} value={p.id} className="bg-slate-900 text-white">
+                      {p.name} ({p.domain})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <button
               onClick={handleGenerate}
               disabled={generating}
-              className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded-xl shadow-lg shadow-purple-900/40 transition disabled:opacity-50"
+              className="px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
             >
-              <RefreshCw className={`w-4 h-4 ${generating ? "animate-spin" : ""}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${generating ? "animate-spin" : ""}`} />
               {generating ? "Generating..." : "Generate Actions"}
             </button>
 
             <button
               onClick={handleExportCsv}
-              className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-sm font-medium rounded-xl transition"
+              className="px-3 py-1.5 text-xs font-medium bg-purple-900/60 hover:bg-purple-800/60 text-purple-100 rounded-xl border border-purple-700/60 transition flex items-center gap-1.5 cursor-pointer"
             >
-              <Download className="w-4 h-4" />
-              Export CSV
+              <Download className="w-3.5 h-3.5" /> Export CSV
             </button>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 -mt-6">
         {/* KPI Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-2">
           <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
             <span className="text-[11px] uppercase tracking-wider font-bold text-slate-500 block">Total Actions</span>
             <span className="text-2xl font-black text-slate-900 mt-1 block">{summary?.total_actions ?? "—"}</span>
@@ -730,6 +735,6 @@ export default function AeoActionsPage() {
           </div>
         </div>
       )}
-    </div>
+    </DashboardShell>
   );
 }

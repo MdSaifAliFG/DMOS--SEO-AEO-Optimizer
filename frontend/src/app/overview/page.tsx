@@ -26,10 +26,10 @@ export default function OverviewPage() {
           <div className="space-y-2 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold border border-blue-500/30">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Digital Marketing Operating System</span>
+              <span>AI Search & SEO Sensing Operating System</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              DMOS Intelligence Hub
+              SEO<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Sensing</span> Intelligence Hub
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               Unified control center for technical search engine crawling and AI answer engine visibility.

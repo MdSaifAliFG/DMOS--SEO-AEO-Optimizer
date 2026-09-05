@@ -459,6 +459,7 @@ export interface AeoEngineStatus {
   engine_id: string;
   name: string;
   is_connected: boolean;
+  is_available?: boolean;
   tracked_questions: number;
   visibility_rate: number;
   status_label: string;
@@ -951,3 +952,213 @@ export interface ApiError {
   detail?: string | Array<{ msg: string; loc?: string[] }>;
   status?: number;
 }
+
+// --- Phase 7 AEO Intelligence & Monitoring Types ---
+
+export interface AeoMonitoringSchedule {
+  id: string;
+  project_id: string;
+  frequency: "daily" | "weekly" | "monthly";
+  enabled: boolean;
+  selected_engines: string[];
+  alert_thresholds: Record<string, number>;
+  last_run_at?: string | null;
+  next_run_at?: string | null;
+  last_status?: string | null;
+  last_error?: string | null;
+}
+
+export interface AeoTrendPoint {
+  id: string;
+  date: string;
+  timestamp: string;
+  overall_score: number;
+  score?: number;
+  mention_score: number;
+  citation_score: number;
+  position_score: number;
+  coverage_score: number;
+  mention_rate: number;
+  citation_rate: number;
+  average_position?: number | null;
+  total_questions: number;
+  questions_mentioned: number;
+}
+
+export interface AeoTrendResponse {
+  project_id: string;
+  time_range: string;
+  has_enough_data: boolean;
+  message: string;
+  points_count: number;
+  score_change: number;
+  trend_direction: "improving" | "declining" | "stable";
+  first_score?: number | null;
+  current_score?: number | null;
+  timeline: AeoTrendPoint[];
+}
+
+export interface AeoEngineComparisonItem {
+  provider: string;
+  display_name: string;
+  is_configured: boolean;
+  has_data: boolean;
+  score?: number | null;
+  mention_rate?: number | null;
+  citation_rate?: number | null;
+  coverage_rate?: number | null;
+  average_position?: number | null;
+  questions_tested?: number | null;
+  questions_mentioned?: number | null;
+  citations_count?: number | null;
+  status_label: string;
+}
+
+export interface AeoEngineComparisonResponse {
+  project_id: string;
+  has_data: boolean;
+  provider_parity: string;
+  parity_ratio: number;
+  engines: AeoEngineComparisonItem[];
+}
+
+export interface AeoCompetitorItem {
+  name: string;
+  mention_count: number;
+  citation_count: number;
+  share_of_voice: number;
+  average_position?: number | null;
+  trend: "gaining" | "losing" | "stable";
+  delta: number;
+}
+
+export interface AeoCompetitorComparisonChartItem {
+  name: string;
+  is_brand: boolean;
+  share_of_voice: number;
+  mentions: number;
+  citations: number;
+}
+
+export interface AeoCompetitorIntelligenceResponse {
+  project_id: string;
+  has_data: boolean;
+  brand_name: string;
+  brand_share_of_voice: number;
+  total_market_mentions: number;
+  competitors_count: number;
+  highest_share_of_voice?: string | null;
+  biggest_gainer?: { name: string; delta: string } | null;
+  biggest_loser?: { name: string; delta: string } | null;
+  competitors_tracked: AeoCompetitorItem[];
+  comparison_chart_data: AeoCompetitorComparisonChartItem[];
+}
+
+export interface AeoChangeEvent {
+  id: string;
+  project_id: string;
+  analysis_id?: string | null;
+  event_type: string;
+  severity: "critical" | "high" | "medium" | "low" | "info";
+  provider?: string | null;
+  description: string;
+  previous_value?: string | null;
+  current_value?: string | null;
+  delta?: number | null;
+  percentage_delta?: number | null;
+  related_prompt_id?: string | null;
+  related_competitor?: string | null;
+  created_at: string;
+}
+
+export interface AeoAlert {
+  id: string;
+  project_id: string;
+  change_event_id?: string | null;
+  type: string;
+  severity: "critical" | "high" | "medium" | "low";
+  title: string;
+  description: string;
+  status: "new" | "acknowledged" | "resolved";
+  provider?: string | null;
+  created_at: string;
+  acknowledged_at?: string | null;
+  resolved_at?: string | null;
+}
+
+export interface AeoExecutiveIntelligence {
+  project_id: string;
+  brand_name: string;
+  domain: string;
+  aeo_score?: number | null;
+  monitoring_health_score: number;
+  monitoring_health_status: "Healthy" | "Attention Needed" | "Critical Risk";
+  data_freshness: "Fresh" | "Recent" | "Stale" | "No Data";
+  last_analyzed_at?: string | null;
+  executive_summary: string;
+  top_risks: Array<{
+    id: string;
+    title: string;
+    severity: string;
+    description: string;
+    created_at: string;
+  }>;
+  top_opportunities: Array<{
+    id: string;
+    title: string;
+    category: string;
+    priority: string;
+    estimated_impact: number;
+    why_it_matters: string;
+  }>;
+  recent_changes: Array<{
+    id: string;
+    event_type: string;
+    severity: string;
+    description: string;
+    previous_value?: string | null;
+    current_value?: string | null;
+    delta?: number | null;
+    provider?: string | null;
+    created_at: string;
+  }>;
+  competitive_position: {
+    brand_share_of_voice: number;
+    highest_competitor?: string | null;
+    competitors_tracked: number;
+  };
+}
+
+export interface AeoPromptMovementItem {
+  question_id: string;
+  prompt: string;
+  category: string;
+  intent: string;
+  provider: string;
+  previous_status: string;
+  current_status: string;
+  movement: "gained" | "lost" | "unchanged";
+  position?: number | null;
+  citation_found: boolean;
+  visibility_score: number;
+}
+
+export interface AeoCitationMovementItem {
+  domain: string;
+  citation_type: string;
+  count: number;
+  engines: string[];
+  sample_urls: string[];
+  trend: string;
+}
+
+export interface AeoEntityMovementItem {
+  id: string;
+  name: string;
+  entity_type: string;
+  confidence_score: number;
+  frequency: number;
+  associated_concepts: string[];
+  trend: string;
+}
+

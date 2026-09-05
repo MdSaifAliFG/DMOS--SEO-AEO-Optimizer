@@ -1,7 +1,7 @@
 [project]
 name = "dmos-seo-aeo-backend"
 version = "0.2.0"
-description = "DMOS SEO & AEO Optimization Platform Backend (Phase 2 - Crawler & Technical SEO Engine)"
+description = "SeoSensing SEO & AEO Optimization Platform Backend (Phase 2 - Crawler & Technical SEO Engine)"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

@@ -35,7 +35,7 @@ class RobotsResult:
     def set_parser(self, parser: RobotFileParser) -> None:
         self._parser = parser
 
-    def is_allowed(self, url: str, user_agent: str = "DMOSBot") -> bool:
+    def is_allowed(self, url: str, user_agent: str = "SeoSensingBot") -> bool:
         """Check whether the crawler is permitted to crawl the given URL path."""
         if not self.exists or not self._parser:
             return True

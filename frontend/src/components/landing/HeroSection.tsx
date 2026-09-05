@@ -52,7 +52,7 @@ export const HeroSection: React.FC = () => {
 
             {/* Subtitle */}
             <p className="text-xs sm:text-sm text-slate-300 max-w-lg leading-relaxed font-normal">
-              Stop guessing what is holding your website back. DMOS crawls, analyzes, and helps you optimize your website for traditional search engines and AI-powered answer engines.
+              Stop guessing what is holding your website back. SeoSensing crawls, analyzes, and helps you optimize your website for traditional search engines and AI-powered answer engines.
             </p>
 
             {/* Side-by-Side Pill CTA Buttons */}
@@ -70,7 +70,7 @@ export const HeroSection: React.FC = () => {
               </Link>
             </div>
 
-            {/* 2 Bottom Stat Highlights tailored to DMOS */}
+            {/* 2 Bottom Stat Highlights tailored to SeoSensing */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-5 border-t border-white/15">
               <div className="space-y-1">
                 <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight font-sans">
