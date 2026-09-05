@@ -118,7 +118,13 @@ async def init_db() -> None:
     async with engine.begin() as conn:
         # Import all models to ensure they are registered with Base.metadata
         import app.models  # noqa: F401
-        await conn.run_sync(Base.metadata.create_all)
+        try:
+            await conn.run_sync(Base.metadata.create_all)
+        except Exception as exc:
+            if "already exists" in str(exc).lower():
+                logger.info("Database tables already initialized: %s", exc)
+            else:
+                raise
 
         # Migration helper for SQLite / Postgres to add newly introduced columns to existing tables
         columns_to_ensure = [
