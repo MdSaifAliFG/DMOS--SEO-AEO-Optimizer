@@ -17,6 +17,7 @@ import {
   Users,
   Layers,
   ArrowUpRight,
+  Eye,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
@@ -128,6 +129,24 @@ export default function AeoExecutiveIntelligencePage() {
   return (
     <DashboardShell>
       <div className="space-y-6">
+        {/* Module Sub-Tabs */}
+        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+          <Link
+            href="/aeo/visibility"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            Visibility Share &amp; Progression
+          </Link>
+          <Link
+            href="/aeo/intelligence"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-xs"
+          >
+            <Brain className="w-3.5 h-3.5" />
+            Executive Intelligence Briefing
+          </Link>
+        </div>
+
         {/* Header Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 text-white shadow-md">
           <div className="space-y-1">

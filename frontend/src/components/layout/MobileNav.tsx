@@ -26,6 +26,13 @@ import {
   FileBarChart,
   Puzzle,
   Settings,
+  ListTodo,
+  History,
+  Users,
+  FileCheck,
+  Layers,
+  Brain,
+  Bell,
 } from "lucide-react";
 import { NAVIGATION_CONFIG, NavItem } from "@/lib/constants";
 import { SeoSensingBrand } from "@/components/brand/SeoSensingLogo";
@@ -42,6 +49,13 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   BookOpen: <BookOpen className="w-4 h-4" />,
   Link2: <Link2 className="w-4 h-4" />,
   FileSpreadsheet: <FileSpreadsheet className="w-4 h-4" />,
+  ListTodo: <ListTodo className="w-4 h-4" />,
+  History: <History className="w-4 h-4" />,
+  Users: <Users className="w-4 h-4" />,
+  FileCheck: <FileCheck className="w-4 h-4" />,
+  Layers: <Layers className="w-4 h-4" />,
+  Brain: <Brain className="w-4 h-4" />,
+  Bell: <Bell className="w-4 h-4" />,
   Bot: <Bot className="w-4 h-4" />,
   Sparkles: <Sparkles className="w-4 h-4" />,
   HelpCircle: <HelpCircle className="w-4 h-4" />,

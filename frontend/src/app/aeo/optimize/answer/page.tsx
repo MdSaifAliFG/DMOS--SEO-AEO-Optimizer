@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { api } from "@/lib/api-client";
@@ -15,6 +16,7 @@ import {
   ArrowRight,
   RefreshCw,
   FileCheck,
+  FileText,
 } from "lucide-react";
 
 function AeoDirectAnswerOptimizerContent() {
@@ -62,6 +64,24 @@ function AeoDirectAnswerOptimizerContent() {
   return (
     <DashboardShell>
       <div className="space-y-6">
+        {/* Module Sub-Tabs */}
+        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+          <Link
+            href="/aeo/optimize/content"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            Content Studio &amp; Optimizer
+          </Link>
+          <Link
+            href="/aeo/optimize/answer"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-xs"
+          >
+            <FileCheck className="w-3.5 h-3.5" />
+            Direct Answer Evaluator
+          </Link>
+        </div>
+
         {/* Banner */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-900 text-white shadow-md border border-purple-800/40">
           <div className="space-y-1">

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   HelpCircle,
   Plus,
@@ -148,6 +149,24 @@ export default function AeoQuestionsPage() {
   return (
     <DashboardShell>
       <div className="space-y-6">
+        {/* Module Sub-Tabs */}
+        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+          <Link
+            href="/aeo/questions"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-xs"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+            Tracked Questions &amp; Prompts
+          </Link>
+          <Link
+            href="/aeo/optimization/content-gaps"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <Layers className="w-3.5 h-3.5" />
+            Content Gaps &amp; Opportunities
+          </Link>
+        </div>
+
         {/* Header Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="space-y-1">

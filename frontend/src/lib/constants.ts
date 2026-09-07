@@ -13,15 +13,7 @@ export interface NavItem {
 
 export interface NavGroup {
   groupName: string;
-  groupKey:
-    | "overview"
-    | "seo"
-    | "aeo"
-    | "aeo_optimization"
-    | "aeo_intelligence"
-    | "aeo_monitoring"
-    | "system"
-    | string;
+  groupKey: "overview" | "seo" | "aeo" | "system" | string;
   items: NavItem[];
 }
 
@@ -106,7 +98,7 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
     ],
   },
   {
-    groupName: "AEO Core",
+    groupName: "AEO Optimization",
     groupKey: "aeo",
     items: [
       {
@@ -115,9 +107,16 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
         icon: "Bot",
       },
       {
+        title: "Action Center",
+        href: "/aeo/actions",
+        icon: "ListTodo",
+        badge: "Actions",
+        badgeVariant: "aeo",
+      },
+      {
         title: "Projects",
         href: "/aeo/projects",
-        icon: "Sparkles",
+        icon: "FolderKanban",
       },
       {
         title: "Questions",
@@ -130,6 +129,16 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
         icon: "Cpu",
       },
       {
+        title: "Visibility",
+        href: "/aeo/visibility",
+        icon: "Eye",
+      },
+      {
+        title: "Content Studio",
+        href: "/aeo/optimize/content",
+        icon: "FileText",
+      },
+      {
         title: "Entities",
         href: "/aeo/entities",
         icon: "Boxes",
@@ -140,121 +149,19 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
         icon: "Quote",
       },
       {
-        title: "Visibility",
-        href: "/aeo/visibility",
-        icon: "Eye",
-      },
-      {
-        title: "Reports",
-        href: "/aeo/reports",
-        icon: "FileBarChart",
-      },
-    ],
-  },
-  {
-    groupName: "AEO Optimization",
-    groupKey: "aeo_optimization",
-    items: [
-      {
-        title: "Action Center",
-        href: "/aeo/actions",
-        icon: "ListTodo",
-        badge: "Actions",
-        badgeVariant: "aeo",
-      },
-      {
-        title: "Content Gaps",
-        href: "/aeo/optimization/content-gaps",
-        icon: "Layers",
-      },
-      {
-        title: "Prompt Gaps",
-        href: "/aeo/optimization/prompts",
-        icon: "Target",
-      },
-      {
-        title: "Citation Gaps",
-        href: "/aeo/optimization/citations",
-        icon: "Share2",
-      },
-      {
-        title: "Entity Health",
-        href: "/aeo/optimization/entities",
-        icon: "Network",
-      },
-      {
-        title: "Content Studio",
-        href: "/aeo/optimize/content",
-        icon: "FileText",
-      },
-      {
-        title: "Answer Evaluator",
-        href: "/aeo/optimize/answer",
-        icon: "FileCheck",
+        title: "Competitors",
+        href: "/aeo/competitors",
+        icon: "Users",
       },
       {
         title: "Optimization History",
         href: "/aeo/optimization-history",
         icon: "History",
       },
-    ],
-  },
-  {
-    groupName: "AEO Intelligence",
-    groupKey: "aeo_intelligence",
-    items: [
       {
-        title: "Executive Intelligence",
-        href: "/aeo/intelligence",
-        icon: "Brain",
-        badge: "Exec",
-        badgeVariant: "aeo",
-      },
-      {
-        title: "AI Engines",
-        href: "/aeo/engines",
-        icon: "Cpu",
-      },
-      {
-        title: "Competitors",
-        href: "/aeo/competitors",
-        icon: "Users",
-      },
-      {
-        title: "Change Center",
-        href: "/aeo/changes",
-        icon: "ArrowLeftRight",
-      },
-      {
-        title: "Alerts",
-        href: "/aeo/alerts",
-        icon: "Bell",
-      },
-    ],
-  },
-  {
-    groupName: "AEO Monitoring",
-    groupKey: "aeo_monitoring",
-    items: [
-      {
-        title: "Prompt Monitoring",
-        href: "/aeo/monitoring/prompts",
-        icon: "Target",
-      },
-      {
-        title: "Citation Monitoring",
-        href: "/aeo/monitoring/citations",
-        icon: "Share2",
-      },
-      {
-        title: "Entity Monitoring",
-        href: "/aeo/monitoring/entities",
-        icon: "Network",
-      },
-      {
-        title: "Monitoring Settings",
-        href: "/aeo/settings/monitoring",
-        icon: "Sliders",
+        title: "Reports",
+        href: "/aeo/reports",
+        icon: "FileBarChart",
       },
     ],
   },
