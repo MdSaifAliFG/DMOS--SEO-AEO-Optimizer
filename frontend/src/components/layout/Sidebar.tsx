@@ -118,7 +118,7 @@ export const Sidebar: React.FC<{
   return (
     <aside
       className={cn(
-        "bg-white border-r border-slate-200 flex flex-col h-screen sticky top-0 z-30 transition-all duration-200 select-none",
+        "bg-white dark:bg-[#0c121e] border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen sticky top-0 z-30 transition-all duration-200 select-none",
         isCollapsed ? "w-16" : "w-64",
         className
       )}
@@ -127,7 +127,7 @@ export const Sidebar: React.FC<{
       <div
         suppressHydrationWarning
         className={cn(
-          "h-16 border-b border-slate-200 bg-white shrink-0 relative flex items-center transition-all",
+          "h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c121e] shrink-0 relative flex items-center transition-all",
           isCollapsed ? "justify-center px-2 group/header" : "justify-between px-4"
         )}
       >
@@ -136,7 +136,7 @@ export const Sidebar: React.FC<{
           <div
             onClick={onToggleCollapse}
             title="Expand Sidebar"
-            className="relative flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer group/logo hover:bg-slate-50 transition-colors"
+            className="relative flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer group/logo hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
           >
             {/* Freestanding Logo */}
             <SeoSensingLogo size={36} className="transition-opacity duration-200 group-hover/header:opacity-30" />
@@ -168,7 +168,7 @@ export const Sidebar: React.FC<{
                 type="button"
                 onClick={onToggleCollapse}
                 title="Collapse Sidebar"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors hidden lg:flex items-center justify-center cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors hidden lg:flex items-center justify-center cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -190,24 +190,28 @@ export const Sidebar: React.FC<{
                 <button
                   type="button"
                   onClick={() => toggleGroup(group.groupKey)}
-                  className="w-full px-2.5 py-1 flex items-center justify-between hover:bg-slate-50 rounded-md transition-colors text-left"
+                  className="w-full px-2.5 py-1 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-md transition-colors text-left cursor-pointer"
                 >
                   <div className="flex items-center gap-1.5">
                     <h4
                       className={cn(
                         "text-[10px] font-bold uppercase tracking-wider",
-                        isAeoGroup ? "text-purple-700" : isSeoGroup ? "text-sky-700" : "text-slate-500"
+                        isAeoGroup
+                          ? "text-purple-700 dark:text-purple-400"
+                          : isSeoGroup
+                            ? "text-sky-700 dark:text-sky-400"
+                            : "text-slate-500 dark:text-slate-400"
                       )}
                     >
                       {group.groupName}
                     </h4>
                     {isAeoGroup && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-50 text-purple-700 border border-purple-200">
+                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60">
                         AI
                       </span>
                     )}
                     {isSeoGroup && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-sky-50 text-sky-700 border border-sky-200">
+                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200/90 dark:border-sky-800/60">
                         CORE
                       </span>
                     )}
@@ -228,16 +232,16 @@ export const Sidebar: React.FC<{
                     const icon = ICON_MAP[item.icon] || <Globe className="w-4 h-4" />;
 
                     const activeStyles = isAeoGroup
-                      ? "bg-purple-50 text-purple-700 font-semibold border border-purple-200 shadow-xs"
+                      ? "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-semibold border border-purple-200 dark:border-purple-800/60 shadow-xs"
                       : isSeoGroup
-                        ? "bg-sky-50 text-sky-700 font-semibold border border-sky-200/90 shadow-xs"
-                        : "bg-slate-100 text-slate-900 font-semibold border border-slate-200 shadow-xs";
+                        ? "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 font-semibold border border-sky-200/90 dark:border-sky-800/60 shadow-xs"
+                        : "bg-slate-100 dark:bg-slate-800/80 text-slate-900 dark:text-white font-semibold border border-slate-200 dark:border-slate-700/80 shadow-xs";
 
                     const hoverStyles = isAeoGroup
-                      ? "text-slate-600 hover:text-purple-700 hover:bg-purple-50/50"
+                      ? "text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50/50 dark:hover:bg-purple-950/30"
                       : isSeoGroup
-                        ? "text-slate-600 hover:text-sky-700 hover:bg-sky-50/60"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50";
+                        ? "text-slate-600 dark:text-slate-400 hover:text-sky-700 dark:hover:text-sky-300 hover:bg-sky-50/60 dark:hover:bg-sky-950/30"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50";
 
                     return (
                       <Link
@@ -256,9 +260,9 @@ export const Sidebar: React.FC<{
                               "transition-colors",
                               active
                                 ? isAeoGroup
-                                  ? "text-purple-600"
-                                  : "text-blue-600"
-                                : "text-slate-400 group-hover:text-slate-600"
+                                  ? "text-purple-600 dark:text-purple-400"
+                                  : "text-blue-600 dark:text-blue-400"
+                                : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
                             )}
                           >
                             {icon}
@@ -267,7 +271,7 @@ export const Sidebar: React.FC<{
                         </div>
 
                         {!isCollapsed && item.badge && (
-                          <span className="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                          <span className="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
                             {item.badge}
                           </span>
                         )}
@@ -282,7 +286,7 @@ export const Sidebar: React.FC<{
       </div>
 
       {/* Compact Logout Button */}
-      <div suppressHydrationWarning className="p-2 border-t border-slate-200 bg-white shrink-0">
+      <div suppressHydrationWarning className="p-2 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c121e] shrink-0">
         <button
           type="button"
           onClick={() => {
@@ -291,7 +295,7 @@ export const Sidebar: React.FC<{
           }}
           title="Log Out of SeoSensing"
           className={cn(
-            "w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium cursor-pointer",
+            "w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors font-medium cursor-pointer",
             isCollapsed ? "justify-center py-2 px-0" : "justify-start"
           )}
         >

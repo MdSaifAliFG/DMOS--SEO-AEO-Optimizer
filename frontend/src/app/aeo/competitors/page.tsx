@@ -91,7 +91,7 @@ export default function AeoCompetitorsPage() {
   const getTrendBadge = (trend: "gaining" | "losing" | "stable", delta: number) => {
     if (trend === "gaining") {
       return (
-        <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-xs font-bold">
+        <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 px-2 py-0.5 rounded-full text-xs font-bold">
           <TrendingUp className="w-3 h-3" />
           {delta > 0 ? `+${delta.toFixed(1)}%` : "Gaining"}
         </span>
@@ -99,14 +99,14 @@ export default function AeoCompetitorsPage() {
     }
     if (trend === "losing") {
       return (
-        <span className="inline-flex items-center gap-1 text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full text-xs font-bold">
+        <span className="inline-flex items-center gap-1 text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 px-2 py-0.5 rounded-full text-xs font-bold">
           <TrendingDown className="w-3 h-3" />
           {delta < 0 ? `${delta.toFixed(1)}%` : "Losing"}
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full text-xs font-semibold">
+      <span className="inline-flex items-center gap-1 text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full text-xs font-semibold">
         <Minus className="w-3 h-3" />
         Stable
       </span>
@@ -166,16 +166,16 @@ export default function AeoCompetitorsPage() {
 
         {/* Content State */}
         {isLoading ? (
-          <div className="p-16 flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-slate-200/80 shadow-xs">
-            <RefreshCw className="w-8 h-8 text-purple-600 animate-spin mb-3" />
-            <p className="text-slate-800 font-semibold text-sm">Computing AI Share of Voice...</p>
-            <p className="text-xs text-slate-500 mt-1">Cross-referencing brand vs competitor mentions in answers</p>
+          <div className="p-16 flex flex-col items-center justify-center text-center bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <RefreshCw className="w-8 h-8 text-purple-600 dark:text-purple-400 animate-spin mb-3" />
+            <p className="text-slate-800 dark:text-slate-200 font-semibold text-sm">Computing AI Share of Voice...</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Cross-referencing brand vs competitor mentions in answers</p>
           </div>
         ) : projects.length === 0 ? (
-          <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl p-12 text-center">
+          <Card className="bg-white dark:bg-[#0f172a] border-slate-200/80 dark:border-slate-800 shadow-xs rounded-2xl p-12 text-center">
             <Users className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900">No AEO Projects Found</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">No AEO Projects Found</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
               Create an AEO project to benchmark brand share of voice and track competitor movements in AI responses.
             </p>
             <div className="mt-6 flex justify-center gap-3">
@@ -187,10 +187,10 @@ export default function AeoCompetitorsPage() {
             </div>
           </Card>
         ) : !data || !data.has_data ? (
-          <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl p-12 text-center">
+          <Card className="bg-white dark:bg-[#0f172a] border-slate-200/80 dark:border-slate-800 shadow-xs rounded-2xl p-12 text-center">
             <Users className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900">No Competitor Data Yet</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">No Competitor Data Yet</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
               No competitor mentions have been detected yet. Run an analysis across targeted search questions to uncover which competitors AI engines are recommending.
             </p>
             <div className="mt-6 flex justify-center gap-3">
@@ -201,7 +201,7 @@ export default function AeoCompetitorsPage() {
                 Run Analysis Now
               </Button>
               <Link href="/aeo/questions">
-                <Button variant="secondary" className="border-slate-200 text-slate-700 text-xs font-semibold px-4 py-2 rounded-xl">
+                <Button variant="secondary" className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold px-4 py-2 rounded-xl">
                   Manage Questions
                 </Button>
               </Link>
@@ -211,12 +211,12 @@ export default function AeoCompetitorsPage() {
           <div className="space-y-6">
             {/* KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              <div className="bg-gradient-to-br from-purple-50 to-indigo-50/50 border border-purple-200/80 rounded-2xl p-5 shadow-xs">
-                <span className="text-xs font-bold text-purple-800 uppercase tracking-wider block">Brand Share of Voice</span>
-                <p className="text-2xl sm:text-3xl font-black text-purple-950 mt-1">
+              <div className="bg-gradient-to-br from-purple-50 to-indigo-50/50 dark:from-purple-950/40 dark:to-indigo-950/30 border border-purple-200/80 dark:border-purple-800/60 rounded-2xl p-5 shadow-xs">
+                <span className="text-xs font-bold text-purple-800 dark:text-purple-300 uppercase tracking-wider block">Brand Share of Voice</span>
+                <p className="text-2xl sm:text-3xl font-black text-purple-950 dark:text-purple-100 mt-1">
                   {data.brand_share_of_voice.toFixed(1)}%
                 </p>
-                <div className="w-full bg-purple-200/60 rounded-full h-1.5 mt-3 overflow-hidden">
+                <div className="w-full bg-purple-200/60 dark:bg-purple-900/40 rounded-full h-1.5 mt-3 overflow-hidden">
                   <div
                     className="bg-purple-600 h-1.5 rounded-full"
                     style={{ width: `${Math.min(100, Math.max(0, data.brand_share_of_voice))}%` }}
@@ -224,59 +224,59 @@ export default function AeoCompetitorsPage() {
                 </div>
               </div>
 
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
-                <span className="text-xs font-semibold text-slate-500 block">Market Mentions</span>
-                <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-1">
+              <div className="bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block">Market Mentions</span>
+                <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">
                   {data.total_market_mentions}
                 </p>
-                <span className="text-[11px] text-slate-400 mt-1 block">Brand & competitors</span>
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 block">Brand & competitors</span>
               </div>
 
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
-                <span className="text-xs font-semibold text-slate-500 block">Top Competitor</span>
-                <p className="text-lg font-bold text-slate-900 mt-2 truncate">
+              <div className="bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block">Top Competitor</span>
+                <p className="text-lg font-bold text-slate-900 dark:text-white mt-2 truncate">
                   {data.highest_share_of_voice || "None detected"}
                 </p>
-                <span className="text-[11px] text-purple-600 font-semibold mt-1 block">Highest SoV</span>
+                <span className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold mt-1 block">Highest SoV</span>
               </div>
 
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
-                <span className="text-xs font-semibold text-slate-500 block">Biggest Gainer</span>
-                <p className="text-lg font-bold text-emerald-700 mt-2 truncate">
+              <div className="bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block">Biggest Gainer</span>
+                <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400 mt-2 truncate">
                   {data.biggest_gainer?.name || "--"}
                 </p>
-                <span className="text-[11px] text-emerald-600 font-semibold mt-1 block">
+                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1 block">
                   {data.biggest_gainer ? `${data.biggest_gainer.delta} gain` : "No movement"}
                 </span>
               </div>
 
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
-                <span className="text-xs font-semibold text-slate-500 block">Biggest Loser</span>
-                <p className="text-lg font-bold text-rose-700 mt-2 truncate">
+              <div className="bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block">Biggest Loser</span>
+                <p className="text-lg font-bold text-rose-700 dark:text-rose-400 mt-2 truncate">
                   {data.biggest_loser?.name || "--"}
                 </p>
-                <span className="text-[11px] text-rose-600 font-semibold mt-1 block">
+                <span className="text-[11px] text-rose-600 dark:text-rose-400 font-semibold mt-1 block">
                   {data.biggest_loser ? `${data.biggest_loser.delta} loss` : "No movement"}
                 </span>
               </div>
             </div>
 
             {/* Share of Voice Distribution Bar */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6">
+            <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-6">
               <div className="flex items-center justify-between pb-4">
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">AI Share of Voice Distribution</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">AI Share of Voice Distribution</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     Comparative distribution of direct AI answer mentions across all queries
                   </p>
                 </div>
-                <span className="text-xs text-slate-500 font-semibold">
-                  Tracked Entities: <strong className="text-slate-900">{data.comparison_chart_data.length}</strong>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                  Tracked Entities: <strong className="text-slate-900 dark:text-white">{data.comparison_chart_data.length}</strong>
                 </span>
               </div>
 
               {/* Progress Distribution Bar */}
-              <div className="w-full h-8 bg-slate-100 rounded-xl overflow-hidden flex border border-slate-200 p-1 gap-1">
+              <div className="w-full h-8 bg-slate-100 dark:bg-slate-800/60 rounded-xl overflow-hidden flex border border-slate-200 dark:border-slate-700 p-1 gap-1">
                 {data.comparison_chart_data.map((item, idx) => {
                   const colors = [
                     "bg-purple-600",
@@ -306,35 +306,35 @@ export default function AeoCompetitorsPage() {
               </div>
 
               {/* Legend */}
-              <div className="flex flex-wrap gap-4 mt-4 pt-3 border-t border-slate-100 text-xs">
+              <div className="flex flex-wrap gap-4 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
                 {data.comparison_chart_data.map((item) => (
                   <div key={item.name} className="flex items-center gap-2">
                     <span
                       className={`w-3 h-3 rounded-full ${
-                        item.is_brand ? "bg-purple-700 ring-2 ring-purple-300" : "bg-slate-400"
+                        item.is_brand ? "bg-purple-700 ring-2 ring-purple-300 dark:ring-purple-600" : "bg-slate-400 dark:bg-slate-600"
                       }`}
                     />
-                    <span className={item.is_brand ? "font-bold text-slate-900" : "text-slate-600"}>
+                    <span className={item.is_brand ? "font-bold text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-300"}>
                       {item.name} {item.is_brand && "(Your Brand)"}
                     </span>
-                    <span className="text-slate-400 font-mono">({item.share_of_voice.toFixed(1)}%)</span>
+                    <span className="text-slate-400 dark:text-slate-500 font-mono">({item.share_of_voice.toFixed(1)}%)</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Competitor Table */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-              <div className="p-5 border-b border-slate-100">
-                <h3 className="text-base font-bold text-slate-900">Competitor Rankings & Trajectory</h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+            <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+              <div className="p-5 border-b border-slate-100 dark:border-slate-800">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Competitor Rankings & Trajectory</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Detailed breakdown of competitor mention frequency and citation backing
                 </p>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                  <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
                     <tr>
                       <th className="py-3 px-4 font-bold">Entity</th>
                       <th className="py-3 px-4 font-bold">Mentions</th>
@@ -344,54 +344,54 @@ export default function AeoCompetitorsPage() {
                       <th className="py-3 px-4 font-bold">Movement Trend</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-200">
                     {/* Brand Row First */}
-                    <tr className="bg-purple-50/50 font-medium">
+                    <tr className="bg-purple-50/50 dark:bg-purple-950/30 font-medium">
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2">
-                          <Shield className="w-4 h-4 text-purple-700" />
-                          <span className="font-bold text-purple-950">{data.brand_name}</span>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-200">
+                          <Shield className="w-4 h-4 text-purple-700 dark:text-purple-400" />
+                          <span className="font-bold text-purple-950 dark:text-purple-200">{data.brand_name}</span>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60">
                             Your Brand
                           </span>
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 font-black text-slate-900">
+                      <td className="py-3.5 px-4 font-black text-slate-900 dark:text-white">
                         {data.comparison_chart_data.find((c) => c.is_brand)?.mentions || 0}
                       </td>
-                      <td className="py-3.5 px-4 font-bold text-purple-800">
+                      <td className="py-3.5 px-4 font-bold text-purple-800 dark:text-purple-300">
                         {data.comparison_chart_data.find((c) => c.is_brand)?.citations || 0}
                       </td>
                       <td className="py-3.5 px-4">
-                        <span className="font-black text-slate-900">
+                        <span className="font-black text-slate-900 dark:text-white">
                           {data.brand_share_of_voice.toFixed(1)}%
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-slate-400">--</td>
+                      <td className="py-3.5 px-4 text-slate-400 dark:text-slate-500">--</td>
                       <td className="py-3.5 px-4">
-                        <span className="text-xs font-semibold text-purple-700">Primary Baseline</span>
+                        <span className="text-xs font-semibold text-purple-700 dark:text-purple-300">Primary Baseline</span>
                       </td>
                     </tr>
 
                     {/* Competitor Rows */}
                     {data.competitors_tracked.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="py-8 text-center text-slate-500">
+                        <td colSpan={6} className="py-8 text-center text-slate-500 dark:text-slate-400">
                           No competitor entities extracted from answers yet.
                         </td>
                       </tr>
                     ) : (
                       data.competitors_tracked.map((comp) => (
-                        <tr key={comp.name} className="hover:bg-slate-50 transition-colors">
-                          <td className="py-3.5 px-4 font-bold text-slate-800">
+                        <tr key={comp.name} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                          <td className="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-100">
                             {comp.name}
                           </td>
-                          <td className="py-3.5 px-4 font-semibold text-slate-700">{comp.mention_count}</td>
-                          <td className="py-3.5 px-4 text-slate-500">{comp.citation_count}</td>
-                          <td className="py-3.5 px-4 font-bold text-slate-900">
+                          <td className="py-3.5 px-4 font-semibold text-slate-700 dark:text-slate-300">{comp.mention_count}</td>
+                          <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400">{comp.citation_count}</td>
+                          <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
                             {comp.share_of_voice.toFixed(1)}%
                           </td>
-                          <td className="py-3.5 px-4 text-slate-500">
+                          <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400">
                             {comp.average_position ? `#${comp.average_position.toFixed(1)}` : "N/A"}
                           </td>
                           <td className="py-3.5 px-4">

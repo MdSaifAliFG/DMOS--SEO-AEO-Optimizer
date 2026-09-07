@@ -149,30 +149,30 @@ export default function AeoCitationMovementsPage() {
 
         {/* Counters */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
-            <span className="text-xs font-semibold text-slate-500">Total Cited Domains</span>
-            <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-1">{citations.length}</p>
+          <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-5">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Cited Domains</span>
+            <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">{citations.length}</p>
           </div>
 
-          <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-2xl p-5 shadow-xs">
-            <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider block">Own Domain Citations</span>
-            <p className="text-2xl sm:text-3xl font-black text-emerald-950 mt-1">{ownCount}</p>
+          <div className="bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/40 rounded-2xl p-5 shadow-xs">
+            <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider block">Own Domain Citations</span>
+            <p className="text-2xl sm:text-3xl font-black text-emerald-950 dark:text-emerald-100 mt-1">{ownCount}</p>
           </div>
 
-          <div className="bg-rose-50/60 border border-rose-200/80 rounded-2xl p-5 shadow-xs">
-            <span className="text-xs font-bold text-rose-800 uppercase tracking-wider block">Competitor Citations</span>
-            <p className="text-2xl sm:text-3xl font-black text-rose-950 mt-1">{competitorCount}</p>
+          <div className="bg-rose-50/60 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-800/40 rounded-2xl p-5 shadow-xs">
+            <span className="text-xs font-bold text-rose-800 dark:text-rose-300 uppercase tracking-wider block">Competitor Citations</span>
+            <p className="text-2xl sm:text-3xl font-black text-rose-950 dark:text-rose-100 mt-1">{competitorCount}</p>
           </div>
 
-          <div className="bg-blue-50/60 border border-blue-200/80 rounded-2xl p-5 shadow-xs">
-            <span className="text-xs font-bold text-blue-800 uppercase tracking-wider block">Third-Party Citations</span>
-            <p className="text-2xl sm:text-3xl font-black text-blue-950 mt-1">{thirdPartyCount}</p>
+          <div className="bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/40 rounded-2xl p-5 shadow-xs">
+            <span className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wider block">Third-Party Citations</span>
+            <p className="text-2xl sm:text-3xl font-black text-blue-950 dark:text-blue-100 mt-1">{thirdPartyCount}</p>
           </div>
         </div>
 
         {/* Filter and Search */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-900/60 p-1 rounded-xl">
             {(["all", "own", "competitor", "third_party"] as const).map((filter) => (
               <button
                 key={filter}
@@ -180,7 +180,7 @@ export default function AeoCitationMovementsPage() {
                 className={`px-3.5 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${
                   typeFilter === filter
                     ? "bg-purple-600 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800/50"
                 }`}
               >
                 {filter === "third_party" ? "Third Party" : filter}
@@ -195,22 +195,22 @@ export default function AeoCitationMovementsPage() {
               placeholder="Search cited domains..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-xl pl-9 pr-3 py-2 focus:ring-1 focus:ring-purple-400 focus:outline-none"
+              className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-xs rounded-xl pl-9 pr-3 py-2 focus:ring-1 focus:ring-purple-400 focus:outline-none"
             />
           </div>
         </div>
 
         {/* Citations List */}
         {isLoading ? (
-          <div className="p-16 flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-slate-200/80 shadow-xs">
-            <RefreshCw className="w-8 h-8 text-purple-600 animate-spin mb-3" />
-            <p className="text-slate-800 font-semibold text-sm">Analyzing Citation Trajectories...</p>
+          <div className="p-16 flex flex-col items-center justify-center text-center bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <RefreshCw className="w-8 h-8 text-purple-600 dark:text-purple-400 animate-spin mb-3" />
+            <p className="text-slate-800 dark:text-white font-semibold text-sm">Analyzing Citation Trajectories...</p>
           </div>
         ) : projects.length === 0 ? (
-          <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl p-12 text-center">
+          <Card className="bg-white dark:bg-[#0f172a] border-slate-200/80 dark:border-slate-800 shadow-xs rounded-2xl p-12 text-center">
             <Link2 className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900">No AEO Projects Found</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">No AEO Projects Found</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
               Create an AEO project to monitor cited sources and build authority backlinks for answer engines.
             </p>
             <div className="mt-6 flex justify-center gap-3">
@@ -222,10 +222,10 @@ export default function AeoCitationMovementsPage() {
             </div>
           </Card>
         ) : filteredCitations.length === 0 ? (
-          <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl p-12 text-center">
+          <Card className="bg-white dark:bg-[#0f172a] border-slate-200/80 dark:border-slate-800 shadow-xs rounded-2xl p-12 text-center">
             <Link2 className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900">No Citations Recorded</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">No Citations Recorded</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
               No citations have been detected for your questions yet. Ensure your target prompts trigger search grounding in models like Perplexity and ChatGPT Search.
             </p>
             <div className="mt-6 flex justify-center gap-3">
@@ -239,39 +239,39 @@ export default function AeoCitationMovementsPage() {
             {filteredCitations.map((item) => (
               <div
                 key={item.domain}
-                className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 hover:border-purple-300 transition-all"
+                className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-5 hover:border-purple-300 dark:hover:border-purple-800/60 transition-all"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1.5 flex-1">
                     <div className="flex items-center gap-2">
-                      <Globe className="w-4 h-4 text-purple-600" />
-                      <h3 className="font-bold text-slate-900 text-base">{item.domain}</h3>
+                      <Globe className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      <h3 className="font-bold text-slate-900 dark:text-white text-base">{item.domain}</h3>
                       <span
                         className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                           item.citation_type === "own"
-                            ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                            ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
                             : item.citation_type === "competitor"
-                            ? "bg-rose-50 text-rose-800 border border-rose-200"
-                            : "bg-slate-100 text-slate-700 border border-slate-200"
+                            ? "bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
                         }`}
                       >
                         {item.citation_type}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-4 text-xs text-slate-500 pt-1">
+                    <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400 pt-1">
                       <span>
-                        Citations: <strong className="text-slate-900 font-bold">{item.count}</strong>
+                        Citations: <strong className="text-slate-900 dark:text-white font-bold">{item.count}</strong>
                       </span>
                       <span>
                         Trend:{" "}
                         <strong
                           className={
                             item.trend === "gaining"
-                              ? "text-emerald-700 font-bold"
+                              ? "text-emerald-700 dark:text-emerald-400 font-bold"
                               : item.trend === "losing"
-                              ? "text-rose-700 font-bold"
-                              : "text-slate-700"
+                              ? "text-rose-700 dark:text-rose-400 font-bold"
+                              : "text-slate-700 dark:text-slate-300"
                           }
                         >
                           {item.trend}
@@ -281,11 +281,11 @@ export default function AeoCitationMovementsPage() {
 
                     {/* Engines */}
                     <div className="flex items-center gap-1.5 pt-2">
-                      <span className="text-[11px] text-slate-400 mr-1">Cited in:</span>
+                      <span className="text-[11px] text-slate-400 dark:text-slate-500 mr-1">Cited in:</span>
                       {item.engines.map((eng) => (
                         <span
                           key={eng}
-                          className="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-50 text-purple-700 border border-purple-200 uppercase font-bold"
+                          className="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 uppercase font-bold"
                         >
                           {eng}
                         </span>
@@ -294,8 +294,8 @@ export default function AeoCitationMovementsPage() {
 
                     {/* Sample URLs */}
                     {item.sample_urls && item.sample_urls.length > 0 && (
-                      <div className="pt-3 border-t border-slate-100 mt-3 space-y-1">
-                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
+                      <div className="pt-3 border-t border-slate-100 dark:border-slate-800 mt-3 space-y-1">
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider block">
                           Sample Cited URLs
                         </span>
                         {item.sample_urls.slice(0, 2).map((url, i) => (
@@ -304,7 +304,7 @@ export default function AeoCitationMovementsPage() {
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-purple-700 hover:text-purple-900 flex items-center gap-1 truncate font-medium"
+                            className="text-xs text-purple-700 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300 flex items-center gap-1 truncate font-medium"
                           >
                             <ExternalLink className="w-3 h-3 flex-shrink-0" />
                             <span className="truncate">{url}</span>

@@ -31,28 +31,28 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
   return (
     <>
-      <Card hoverable className="flex flex-col justify-between h-full p-5 group border-slate-800/80">
+      <Card hoverable className="flex flex-col justify-between h-full p-5 group border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a]">
         <div>
           {/* Top header */}
           <div className="flex items-start justify-between gap-3 mb-3">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-surface-900 border border-slate-700/80 flex items-center justify-center text-primary-400 shrink-0 group-hover:border-primary-500/40 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0 group-hover:border-blue-500/40 transition-colors">
                 <Globe className="w-5 h-5" />
               </div>
               <div className="min-w-0">
                 <Link
                   href={`/projects/${project.id}`}
-                  className="text-sm font-bold text-slate-100 hover:text-primary-400 transition-colors truncate block"
+                  className="text-sm font-bold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate block"
                 >
                   {project.name}
                 </Link>
-                <div className="flex items-center gap-1 text-xs text-slate-400 truncate">
+                <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 truncate">
                   <span>{project.domain}</span>
                   <a
                     href={`https://${project.domain}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-slate-500 hover:text-slate-300 p-0.5"
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <ExternalLink className="w-3 h-3" />
@@ -63,7 +63,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
             <button
               onClick={() => onDeleteRequest(project)}
-              className="text-slate-500 hover:text-rose-400 p-1.5 rounded-lg hover:bg-white/5 transition-colors"
+              className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
               title="Delete Project"
             >
               <Trash2 className="w-4 h-4" />
@@ -72,26 +72,26 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
           {/* Description */}
           {project.description && (
-            <p className="text-xs text-slate-400 line-clamp-2 mb-4 leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-4 leading-relaxed">
               {project.description}
             </p>
           )}
 
           {/* Latest Scan Status */}
-          <div className="p-3 rounded-xl bg-surface-950/60 border border-slate-850 my-3">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 my-3">
             <div className="flex items-center justify-between text-[11px] mb-1.5">
-              <span className="text-slate-400 font-medium flex items-center gap-1">
-                <Activity className="w-3 h-3 text-slate-500" /> Latest Scan:
+              <span className="text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
+                <Activity className="w-3 h-3 text-slate-400" /> Latest Scan:
               </span>
               {project.latest_scan ? (
                 <ScanStatusBadge status={project.latest_scan.status} size="sm" />
               ) : (
-                <span className="text-slate-500 italic">No scans yet</span>
+                <span className="text-slate-400 italic">No scans yet</span>
               )}
             </div>
 
             {project.latest_scan && (
-              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1">
+              <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 pt-1">
                 <span className="truncate max-w-[140px]">
                   {project.latest_scan.current_step}
                 </span>
@@ -105,12 +105,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
 
         {/* Footer actions */}
-        <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2 mt-2">
+        <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 mt-2">
           <Button
             size="sm"
             variant="outline"
             onClick={() => setIsAuditModalOpen(true)}
-            leftIcon={<Play className="w-3 h-3 text-primary-400" />}
+            leftIcon={<Play className="w-3 h-3 text-blue-600 dark:text-blue-400" />}
             className="text-xs py-1.5 px-3"
           >
             Start Audit

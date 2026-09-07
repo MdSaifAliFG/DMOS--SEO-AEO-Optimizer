@@ -50,29 +50,29 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:32px_32px] opacity-15 pointer-events-none" />
 
       {/* Background Floating Isometric Badges (White & Animated Floating) */}
-      <div className="hidden xl:block absolute top-24 left-14 w-52 bg-white/95 backdrop-blur-xl border border-slate-100/90 rounded-2xl p-4 shadow-[0_20px_45px_rgba(0,0,0,0.4)] shadow-blue-500/10 pointer-events-none animate-float-slow z-10">
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
-          <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+      <div className="hidden xl:block absolute top-24 left-14 w-52 bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-xl border border-slate-100/90 dark:border-slate-800 rounded-2xl p-4 shadow-[0_20px_45px_rgba(0,0,0,0.4)] shadow-blue-500/10 pointer-events-none animate-float-slow z-10">
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+          <div className="w-6 h-6 rounded-lg bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-blue-600 dark:text-blue-400">
             <Activity className="w-3.5 h-3.5" />
           </div>
           <span>SEO Health Score</span>
         </div>
-        <div className="flex items-baseline gap-2 mt-2 pt-1 border-t border-slate-100">
-          <span className="text-xl font-black text-slate-950 font-mono">98 <span className="text-xs text-slate-400 font-normal">/ 100</span></span>
-          <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200">+12% ↑</span>
+        <div className="flex items-baseline gap-2 mt-2 pt-1 border-t border-slate-100 dark:border-slate-800">
+          <span className="text-xl font-black text-slate-950 dark:text-white font-mono">98 <span className="text-xs text-slate-400 font-normal">/ 100</span></span>
+          <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800/60">+12% ↑</span>
         </div>
       </div>
 
-      <div className="hidden xl:block absolute bottom-20 right-14 w-56 bg-white/95 backdrop-blur-xl border border-slate-100/90 rounded-2xl p-4 shadow-[0_20px_45px_rgba(0,0,0,0.4)] shadow-purple-500/10 pointer-events-none animate-float-reverse z-10">
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
-          <div className="w-6 h-6 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
+      <div className="hidden xl:block absolute bottom-20 right-14 w-56 bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-xl border border-slate-100/90 dark:border-slate-800 rounded-2xl p-4 shadow-[0_20px_45px_rgba(0,0,0,0.4)] shadow-purple-500/10 pointer-events-none animate-float-reverse z-10">
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+          <div className="w-6 h-6 rounded-lg bg-purple-50 dark:bg-purple-950/60 flex items-center justify-center text-purple-600 dark:text-purple-400">
             <Bot className="w-3.5 h-3.5" />
           </div>
           <span>Answer Engine Radar</span>
         </div>
-        <div className="mt-2 pt-1 border-t border-slate-100 space-y-1">
-          <span className="text-slate-900 font-bold block text-xs">ChatGPT & Perplexity</span>
-          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 inline-block">● 100% Citations Active</span>
+        <div className="mt-2 pt-1 border-t border-slate-100 dark:border-slate-800 space-y-1">
+          <span className="text-slate-900 dark:text-white font-bold block text-xs">ChatGPT & Perplexity</span>
+          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800/60 inline-block">● 100% Citations Active</span>
         </div>
       </div>
 
@@ -87,22 +87,22 @@ export default function LoginPage() {
         </Link>
       </div>
 
-      {/* Main Login Card - Sleek White Card */}
+      {/* Main Login Card */}
       <div className="w-full max-w-[410px] relative z-10 my-auto">
-        <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.55)] border border-slate-100 space-y-4 text-slate-900">
+        <div className="bg-white dark:bg-[#0f172a] rounded-3xl p-6 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.55)] border border-slate-100 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
           
           {/* Header Title & Brand Emblem with Name */}
           <div className="text-center space-y-1.5 flex flex-col items-center">
             <div className="inline-flex items-center gap-2.5 mb-0.5">
               <SeoSensingLogo size={38} />
-              <span className="text-2xl font-black tracking-tight text-slate-950 font-sans">
+              <span className="text-2xl font-black tracking-tight text-slate-950 dark:text-white font-sans">
                 SEO<span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">Sensing</span>
               </span>
             </div>
-            <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
               Sign in to your account
             </h1>
-            <p className="text-xs text-slate-500 font-normal">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">
               Deterministic SEO crawling & AI Answer Engine Optimization.
             </p>
           </div>
@@ -110,7 +110,7 @@ export default function LoginPage() {
           {/* Login Form */}
           <form onSubmit={handleLogin} className="space-y-3.5 pt-1">
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-700">Work Email</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Work Email</label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
@@ -119,15 +119,15 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all shadow-xs"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/10 transition-all shadow-xs"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="block text-xs font-semibold text-slate-700">Password</label>
-                <span className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold cursor-pointer">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Password</label>
+                <span className="text-[11px] text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-semibold cursor-pointer">
                   Forgot?
                 </span>
               </div>
@@ -139,12 +139,12 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/10 transition-all shadow-xs font-mono"
+                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/10 transition-all shadow-xs font-mono"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 flex items-center justify-center cursor-pointer transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 flex items-center justify-center cursor-pointer transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -163,8 +163,8 @@ export default function LoginPage() {
 
           {/* Divider */}
           <div className="relative flex items-center justify-center my-3">
-            <div className="border-t border-slate-200 w-full" />
-            <span className="bg-white px-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider relative z-10">
+            <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
+            <span className="bg-white dark:bg-[#0f172a] px-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider relative z-10">
               or explore demo
             </span>
           </div>
@@ -174,19 +174,19 @@ export default function LoginPage() {
             type="button"
             onClick={handleDemoAccess}
             disabled={isLoading}
-            className="w-full py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+            className="w-full py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/60 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
           >
-            <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+            <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
             <span>Instant Demo Access (No Password)</span>
           </button>
 
           {/* Link to Sign Up */}
           <div className="pt-1 text-center">
-            <p className="text-xs text-slate-600 font-normal">
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-normal">
               Don&apos;t have an account?{" "}
               <Link
                 href="/signup"
-                className="text-blue-600 hover:text-blue-700 font-bold hover:underline transition-colors ml-0.5"
+                className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-bold hover:underline transition-colors ml-0.5"
               >
                 Sign up
               </Link>

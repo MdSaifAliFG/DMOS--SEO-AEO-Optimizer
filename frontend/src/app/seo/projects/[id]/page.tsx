@@ -96,9 +96,9 @@ export default function SeoProjectDetailPage({
   if (!project) {
     return (
       <DashboardShell>
-        <div className="p-8 text-center bg-white rounded-xl border border-slate-200">
-          <h2 className="text-base font-bold text-slate-800">SEO Project Not Found</h2>
-          <p className="text-xs text-slate-500 mt-1 mb-4">The requested project ID does not exist.</p>
+        <div className="p-8 text-center bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800">
+          <h2 className="text-base font-bold text-slate-800 dark:text-white">SEO Project Not Found</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">The requested project ID does not exist.</p>
           <Link href="/seo/projects">
             <Button size="sm" variant="primary">Back to Projects</Button>
           </Link>
@@ -115,28 +115,28 @@ export default function SeoProjectDetailPage({
     <DashboardShell>
       <div className="space-y-6">
         {/* Navigation Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-500">
-          <Link href="/seo/projects" className="hover:text-blue-600 font-medium">
+        <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+          <Link href="/seo/projects" className="hover:text-blue-600 dark:hover:text-blue-400 font-medium">
             SEO Projects
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-slate-800 font-semibold truncate">{project.name}</span>
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+          <span className="text-slate-800 dark:text-white font-semibold truncate">{project.name}</span>
         </div>
 
         {/* Project Header Card */}
-        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <div className="p-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-600">
+              <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900/60 text-blue-600 dark:text-blue-400">
                 <Globe className="w-5 h-5" />
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">{project.name}</h1>
-              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{project.name}</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                 Active Project
               </span>
             </div>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-500 font-mono">
-              <span className="text-slate-700 font-medium">https://{cleanDomain(project.domain)}</span>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-500 dark:text-slate-400 font-mono">
+              <span className="text-slate-700 dark:text-slate-300 font-medium">https://{cleanDomain(project.domain)}</span>
               <span>•</span>
               <span>Created {formatDate(project.created_at)}</span>
               <span>•</span>
@@ -161,10 +161,10 @@ export default function SeoProjectDetailPage({
         {activeScan && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <h3 className="text-sm font-bold text-slate-900">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                 {isScanRunning ? "Live Crawler Execution" : "Audit Results Summary"}
               </h3>
-              <span className="text-xs text-slate-500 font-mono">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                 Scan ID: {activeScan.id.substring(0, 8)}...
               </span>
             </div>
@@ -178,13 +178,13 @@ export default function SeoProjectDetailPage({
         )}
 
         {/* Tabs Bar */}
-        <div className="flex items-center gap-2 border-b border-slate-200 text-xs">
+        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 text-xs">
           <button
             onClick={() => setActiveTab("overview")}
-            className={`pb-2.5 px-3 font-semibold transition-colors border-b-2 ${
+            className={`pb-2.5 px-3 font-semibold transition-colors border-b-2 cursor-pointer ${
               activeTab === "overview"
-                ? "border-blue-600 text-blue-700"
-                : "border-transparent text-slate-500 hover:text-slate-800"
+                ? "border-blue-600 text-blue-700 dark:text-blue-400 dark:border-blue-400"
+                : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
             }`}
           >
             Audit History ({scansHistory.length})
@@ -192,10 +192,10 @@ export default function SeoProjectDetailPage({
         </div>
 
         {/* Audit History Tab */}
-        <Card className="p-0 border-slate-200 overflow-hidden">
+        <Card className="p-0 border-slate-200 dark:border-slate-800 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs min-w-[620px]">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase">
                 <tr>
                   <th className="py-3 px-4">Date & Time</th>
                   <th className="py-3 px-4">Status</th>
@@ -205,7 +205,7 @@ export default function SeoProjectDetailPage({
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 text-slate-700 dark:text-slate-300">
                 {scansHistory.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-8 text-center text-xs text-slate-400">
@@ -214,24 +214,24 @@ export default function SeoProjectDetailPage({
                   </tr>
                 ) : (
                   scansHistory.map((scan) => (
-                    <tr key={scan.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3 px-4 font-mono font-medium text-slate-900">
+                    <tr key={scan.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="py-3 px-4 font-mono font-medium text-slate-900 dark:text-white">
                         {formatDate(scan.created_at)}
                       </td>
                       <td className="py-3 px-4">
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
                             scan.status === "completed"
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
                               : scan.status === "failed"
-                              ? "bg-rose-50 text-rose-700 border border-rose-200"
-                              : "bg-blue-50 text-blue-700 border border-blue-200"
+                              ? "bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60"
+                              : "bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/60"
                           }`}
                         >
                           {scan.status}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-center font-bold font-mono text-slate-800">
+                      <td className="py-3 px-4 text-center font-bold font-mono text-slate-800 dark:text-slate-200">
                         {scan.overall_score !== null ? `${scan.overall_score}/100` : "—"}
                       </td>
                       <td className="py-3 px-4 text-center font-mono">{scan.pages_crawled}</td>
@@ -242,7 +242,7 @@ export default function SeoProjectDetailPage({
                             setActiveScan(scan);
                             window.scrollTo({ top: 150, behavior: "smooth" });
                           }}
-                          className="px-2.5 py-1 text-xs font-semibold rounded bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                          className="px-2.5 py-1 text-xs font-semibold rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
                         >
                           View Scan
                         </button>

@@ -124,13 +124,13 @@ export default function AeoCitationsPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Quote className="w-5 h-5 text-purple-600" />
-              <h2 className="text-base font-bold text-slate-900">Source Citations & Outbound References ({total})</h2>
+              <Quote className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">Source Citations & Outbound References ({total})</h2>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Audit the specific domain URLs cited by LLM answer engines when responding to industry prompts.
             </p>
           </div>
@@ -140,10 +140,10 @@ export default function AeoCitationsPage() {
               <select
                 value={selectedProjectId}
                 onChange={(e) => setSelectedProjectId(e.target.value)}
-                className="text-xs font-medium bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="text-xs font-medium bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
               >
                 {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
+                  <option key={p.id} value={p.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
                     {p.name} ({p.domain})
                   </option>
                 ))}
@@ -191,7 +191,7 @@ export default function AeoCitationsPage() {
         </div>
 
         {/* Filters Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white rounded-xl border border-slate-200">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3 flex-wrap flex-1">
             <div className="relative flex-1 min-w-[200px] max-w-sm">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -200,39 +200,39 @@ export default function AeoCitationsPage() {
                 placeholder="Search domain or citation URL..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-slate-400"
               />
             </div>
 
             <select
               value={engineFilter}
               onChange={(e) => setEngineFilter(e.target.value)}
-              className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="text-xs bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
-              <option value="all">All Engines</option>
-              <option value="chatgpt">ChatGPT</option>
-              <option value="gemini">Gemini</option>
-              <option value="perplexity">Perplexity</option>
+              <option value="all" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">All Engines</option>
+              <option value="chatgpt" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">ChatGPT</option>
+              <option value="gemini" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Gemini</option>
+              <option value="perplexity" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Perplexity</option>
             </select>
 
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="text-xs bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
-              <option value="all">All Citation Types</option>
-              <option value="own_domain">Own Domain</option>
-              <option value="competitor">Competitors</option>
-              <option value="third_party">Third Party</option>
-              <option value="news">News & Media</option>
-              <option value="review">Reviews</option>
-              <option value="documentation">Documentation</option>
+              <option value="all" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">All Citation Types</option>
+              <option value="own_domain" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Own Domain</option>
+              <option value="competitor" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Competitors</option>
+              <option value="third_party" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Third Party</option>
+              <option value="news" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">News & Media</option>
+              <option value="review" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Reviews</option>
+              <option value="documentation" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Documentation</option>
             </select>
           </div>
         </div>
 
         {/* Citations Table */}
-        <Card className="border-slate-200 bg-white overflow-hidden">
+        <Card className="border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] overflow-hidden">
           {isLoading ? (
             <div className="py-20 text-center text-slate-400">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-purple-600 border-t-transparent" />
@@ -241,7 +241,7 @@ export default function AeoCitationsPage() {
           ) : citations.length === 0 ? (
             <div className="py-16 text-center space-y-3">
               <Quote className="w-8 h-8 text-purple-400 mx-auto" />
-              <p className="text-sm font-semibold text-slate-700">No citations found</p>
+              <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">No citations found</p>
               <p className="text-xs text-slate-400 max-w-sm mx-auto">
                 Run an AEO analysis to extract real citation links from engine answer responses.
               </p>
@@ -249,7 +249,7 @@ export default function AeoCitationsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-800">
                   <tr>
                     <th className="px-5 py-3">Referenced Domain & URL</th>
                     <th className="px-4 py-3">Engine</th>
@@ -258,15 +258,15 @@ export default function AeoCitationsPage() {
                     <th className="px-4 py-3 text-right">Link</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {citations.map((c) => (
-                    <tr key={c.id} className="hover:bg-purple-50/20 transition-colors">
+                    <tr key={c.id} className="hover:bg-purple-50/20 dark:hover:bg-purple-950/20 transition-colors">
                       <td className="px-5 py-3.5 max-w-md">
-                        <span className="font-bold text-slate-900 block truncate">{c.domain}</span>
-                        <span className="text-[11px] text-slate-500 truncate block">{c.source_url}</span>
+                        <span className="font-bold text-slate-900 dark:text-white block truncate">{c.domain}</span>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate block">{c.source_url}</span>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className="px-2 py-0.5 rounded font-bold uppercase text-[10px] bg-purple-100 text-purple-800">
+                        <span className="px-2 py-0.5 rounded font-bold uppercase text-[10px] bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border dark:border-purple-800/60">
                           {c.engine}
                         </span>
                       </td>
@@ -281,7 +281,7 @@ export default function AeoCitationsPage() {
                           href={c.source_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-1.5 text-slate-400 hover:text-purple-600 inline-block"
+                          className="p-1.5 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 inline-block"
                           title="Open Outbound Citation"
                         >
                           <ExternalLink className="w-4 h-4" />
@@ -298,54 +298,54 @@ export default function AeoCitationsPage() {
         {/* Modal: Add Citation */}
         {isAddOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
+            <div className="bg-white dark:bg-[#0f172a] rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-slate-900">Add Citation Source</h3>
-                <button onClick={() => setIsAddOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Add Citation Source</h3>
+                <button onClick={() => setIsAddOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               <form onSubmit={handleAddCitation} className="space-y-3.5">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Source URL</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Source URL</label>
                   <input
                     type="url"
                     value={newSourceUrl}
                     onChange={(e) => setNewSourceUrl(e.target.value)}
                     placeholder="https://example.com/blog/article"
                     required
-                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-slate-400"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-slate-700">Answer Engine</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Answer Engine</label>
                     <select
                       value={newEngine}
                       onChange={(e) => setNewEngine(e.target.value)}
-                      className="w-full text-xs p-2 rounded-xl border border-slate-200"
+                      className="w-full text-xs p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
-                      <option value="chatgpt">ChatGPT</option>
-                      <option value="gemini">Gemini</option>
-                      <option value="perplexity">Perplexity</option>
-                      <option value="google_ai">Google AI Overviews</option>
+                      <option value="chatgpt" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">ChatGPT</option>
+                      <option value="gemini" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Gemini</option>
+                      <option value="perplexity" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Perplexity</option>
+                      <option value="google_ai" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Google AI Overviews</option>
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-slate-700">Classification</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Classification</label>
                     <select
                       value={newCitationType}
                       onChange={(e) => setNewCitationType(e.target.value)}
-                      className="w-full text-xs p-2 rounded-xl border border-slate-200"
+                      className="w-full text-xs p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
-                      <option value="own_domain">Own Domain</option>
-                      <option value="competitor">Competitor</option>
-                      <option value="third_party">Third Party</option>
-                      <option value="news">News Source</option>
-                      <option value="review">Review Platform</option>
-                      <option value="documentation">Documentation</option>
+                      <option value="own_domain" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Own Domain</option>
+                      <option value="competitor" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Competitor</option>
+                      <option value="third_party" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Third Party</option>
+                      <option value="news" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">News Source</option>
+                      <option value="review" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Review Platform</option>
+                      <option value="documentation" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Documentation</option>
                     </select>
                   </div>
                 </div>

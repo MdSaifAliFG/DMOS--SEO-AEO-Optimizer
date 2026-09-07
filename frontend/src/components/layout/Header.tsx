@@ -20,6 +20,7 @@ import { HealthResponse } from "@/lib/types";
 import { useAuth } from "@/lib/auth";
 import { useNotifications } from "@/lib/notifications";
 import { GlobalSearch } from "./GlobalSearch";
+import { ThemeToggle } from "./ThemeToggle";
 
 export interface HeaderProps {
   onOpenMobileNav: () => void;
@@ -213,12 +214,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
   const headerInfo = getPageHeaderInfo();
 
   return (
-    <header className="h-16 2xl:h-20 px-3 sm:px-4 md:px-8 2xl:px-12 border-b border-slate-200 bg-white sticky top-0 z-20 flex items-center justify-between gap-2 sm:gap-6 2xl:gap-8 shadow-xs">
+    <header className="h-16 2xl:h-20 px-3 sm:px-4 md:px-8 2xl:px-12 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c121e] sticky top-0 z-20 flex items-center justify-between gap-2 sm:gap-6 2xl:gap-8 shadow-xs transition-colors duration-200">
       <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0">
         {/* Mobile menu trigger */}
         <button
           onClick={onOpenMobileNav}
-          className="lg:hidden p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+          className="lg:hidden p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors cursor-pointer"
           aria-label="Open menu"
         >
           <Menu className="w-5 h-5" />
@@ -226,11 +227,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
 
         {/* Dynamic Page Title & Subtitle */}
         <div className="flex flex-col justify-center min-w-0 max-w-[110px] xs:max-w-[160px] sm:max-w-none">
-          <h1 className="text-sm sm:text-base md:text-lg 2xl:text-xl font-bold text-slate-900 leading-tight truncate">
+          <h1 className="text-sm sm:text-base md:text-lg 2xl:text-xl font-bold text-slate-900 dark:text-white leading-tight truncate">
             {headerInfo.title}
           </h1>
           {headerInfo.subtitle ? (
-            <p className="text-[11px] 2xl:text-xs text-slate-500 hidden md:block leading-tight truncate mt-0.5 max-w-sm lg:max-w-md 2xl:max-w-xl">
+            <p className="text-[11px] 2xl:text-xs text-slate-500 dark:text-slate-400 hidden md:block leading-tight truncate mt-0.5 max-w-sm lg:max-w-md 2xl:max-w-xl">
               {headerInfo.subtitle}
             </p>
           ) : null}
@@ -243,13 +244,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+        {/* Dark Mode Toggle directly before notifications */}
+        <ThemeToggle />
+
         {/* Workable Global Notification Bell */}
         <div className="relative" ref={notificationMenuRef}>
           <button
             onClick={() => setIsNotificationMenuOpen(!isNotificationMenuOpen)}
             title="Notifications"
-            className="p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors relative cursor-pointer focus:outline-none"
+            className="p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors relative cursor-pointer focus:outline-none"
             aria-label="Open notifications"
           >
             <Bell className="w-4 h-4" />
@@ -262,13 +266,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
 
           {/* Notifications Dropdown Panel */}
           {isNotificationMenuOpen && (
-            <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-xs sm:w-96 sm:max-w-none bg-white border border-slate-200 rounded-2xl shadow-xl z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
+            <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-xs sm:w-96 sm:max-w-none bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
               {/* Dropdown Header */}
-              <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+              <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/80">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-slate-900">Notifications</span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">Notifications</span>
                   {unreadCount > 0 && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-700">
+                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300">
                       {unreadCount} unread
                     </span>
                   )}
@@ -276,7 +280,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllAsRead}
-                    className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold flex items-center gap-1 cursor-pointer"
                   >
                     <CheckCheck className="w-3 h-3" />
                     <span>Mark all read</span>
@@ -285,7 +289,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
               </div>
 
               {/* Notification Items List (Latest 4) */}
-              <div className="divide-y divide-slate-100 max-h-80 overflow-y-auto">
+              <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-80 overflow-y-auto">
                 {notifications.length > 0 ? (
                   notifications.slice(0, 4).map((notif) => (
                     <div
@@ -298,24 +302,26 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
                         }
                       }}
                       className={`p-3 transition-colors cursor-pointer flex items-start gap-2.5 ${
-                        notif.read ? "hover:bg-slate-50 opacity-80" : "bg-blue-50/30 hover:bg-blue-50/60"
+                        notif.read
+                          ? "hover:bg-slate-50 dark:hover:bg-slate-800/50 opacity-80"
+                          : "bg-blue-50/30 dark:bg-blue-950/20 hover:bg-blue-50/60 dark:hover:bg-blue-950/40"
                       }`}
                     >
                       <span
                         className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
-                          notif.read ? "bg-slate-300" : "bg-blue-600"
+                          notif.read ? "bg-slate-300 dark:bg-slate-600" : "bg-blue-600"
                         }`}
                       />
                       <div className="space-y-0.5 min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-1">
-                          <p className="text-xs font-bold text-slate-900 truncate">
+                          <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
                             {notif.title}
                           </p>
                           <span className="text-[10px] text-slate-400 shrink-0">
                             {notif.timestamp}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed">
+                        <p className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
                           {notif.message}
                         </p>
                       </div>
@@ -332,7 +338,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
               <Link
                 href="/notifications"
                 onClick={() => setIsNotificationMenuOpen(false)}
-                className="w-full py-2.5 px-4 text-xs font-bold text-blue-600 hover:text-blue-700 bg-slate-50 hover:bg-slate-100 border-t border-slate-100 flex items-center justify-center gap-1.5 transition-colors group"
+                className="w-full py-2.5 px-4 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-slate-50 dark:bg-slate-900/80 hover:bg-slate-100 dark:hover:bg-slate-800 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-1.5 transition-colors group"
               >
                 <span>View All Notifications ({notifications.length})</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -345,7 +351,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
         <div className="relative" ref={userMenuRef}>
           <button
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-            className="flex items-center gap-1.5 p-1 rounded-full hover:bg-slate-100 transition-colors focus:outline-none"
+            className="flex items-center gap-1.5 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
             title="User Account Menu"
           >
             <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
@@ -356,24 +362,24 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
 
           {/* User Menu Dropdown */}
           {isUserMenuOpen && (
-            <div className="absolute right-0 mt-2 w-60 max-w-[calc(100vw-2rem)] bg-white border border-slate-200 rounded-2xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
-              <div className="px-3.5 py-2.5 border-b border-slate-100">
-                <p className="text-xs font-bold text-slate-900">{user?.name || "Growth Lead"}</p>
-                <p className="text-[11px] text-slate-500 truncate">{user?.email || "admin@seosensing.internal"}</p>
-                <span className="inline-block mt-1 text-[10px] px-1.5 py-0.2 rounded font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+            <div className="absolute right-0 mt-2 w-60 max-w-[calc(100vw-2rem)] bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
+              <div className="px-3.5 py-2.5 border-b border-slate-100 dark:border-slate-800">
+                <p className="text-xs font-bold text-slate-900 dark:text-white">{user?.name || "Growth Lead"}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{user?.email || "admin@seosensing.internal"}</p>
+                <span className="inline-block mt-1 text-[10px] px-1.5 py-0.2 rounded font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                   {user?.role || "Enterprise Admin"}
                 </span>
               </div>
 
               {/* SeoSensing Engine Status Inside User Dropdown */}
-              <div className="p-2 border-b border-slate-100 bg-slate-50/50">
+              <div className="p-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                 <a
                   href="http://localhost:8000/api/v1/docs"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setIsUserMenuOpen(false)}
                   title="Open FastAPI Swagger API Docs (SeoSensing Engine)"
-                  className="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200/90 hover:border-blue-300 hover:shadow-xs text-slate-700 transition-all group select-none"
+                  className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700/80 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-xs text-slate-700 dark:text-slate-200 transition-all group select-none"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="relative flex h-2 w-2 shrink-0">
@@ -389,15 +395,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
                       />
                     </span>
                     <div className="flex flex-col min-w-0 text-left">
-                      <span className="text-[11px] font-bold text-slate-800 leading-tight group-hover:text-blue-600 transition-colors">
+                      <span className="text-[11px] font-bold text-slate-800 dark:text-slate-100 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         SeoSensing Engine
                       </span>
-                      <span className="text-[9px] font-semibold text-emerald-600 leading-tight">
+                      <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 leading-tight">
                         {health?.status === "healthy" ? "Online & Healthy" : "Connecting..."}
                       </span>
                     </div>
                   </div>
-                  <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-blue-600 transition-colors shrink-0 ml-1" />
+                  <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors shrink-0 ml-1" />
                 </a>
               </div>
 
@@ -405,7 +411,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
                 <Link
                   href="/settings"
                   onClick={() => setIsUserMenuOpen(false)}
-                  className="flex items-center gap-2 px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors"
+                  className="flex items-center gap-2 px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   <Settings className="w-3.5 h-3.5 text-slate-400" />
                   <span>Workspace Settings</span>
@@ -413,17 +419,17 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
                 <Link
                   href="/integrations"
                   onClick={() => setIsUserMenuOpen(false)}
-                  className="flex items-center gap-2 px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors"
+                  className="flex items-center gap-2 px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   <Puzzle className="w-3.5 h-3.5 text-slate-400" />
                   <span>Integrations Hub</span>
                 </Link>
               </div>
 
-              <div className="border-t border-slate-100 pt-1">
+              <div className="border-t border-slate-100 dark:border-slate-800 pt-1">
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-rose-600 hover:bg-rose-50 transition-colors font-medium text-left"
+                  className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors font-medium text-left cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5 text-rose-500" />
                   <span>Log Out of SeoSensing</span>

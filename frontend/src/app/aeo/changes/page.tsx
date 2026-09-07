@@ -100,31 +100,31 @@ export default function AeoChangesPage() {
     switch (severity.toLowerCase()) {
       case "critical":
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60">
             Critical
           </span>
         );
       case "high":
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
             High
           </span>
         );
       case "medium":
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-800 border border-yellow-200">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-50 dark:bg-yellow-950/40 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800/60">
             Medium
           </span>
         );
       case "low":
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60">
             Low
           </span>
         );
       default:
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60">
             Info
           </span>
         );
@@ -183,64 +183,64 @@ export default function AeoChangesPage() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <Filter className="w-4 h-4 text-purple-600" />
-            <span className="font-bold text-slate-800">Filter By:</span>
+        <div className="flex flex-wrap items-center gap-4 bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <Filter className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            <span className="font-bold text-slate-800 dark:text-slate-200">Filter By:</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <label className="text-xs text-slate-500 font-medium">Severity:</label>
+            <label className="text-xs text-slate-500 dark:text-slate-400 font-medium">Severity:</label>
             <select
               value={selectedSeverity}
               onChange={(e) => setSelectedSeverity(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-xl px-3 py-1.5 focus:ring-1 focus:ring-purple-400 focus:outline-none font-semibold cursor-pointer"
+              className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded-xl px-3 py-1.5 focus:ring-1 focus:ring-purple-400 focus:outline-none font-semibold cursor-pointer"
             >
-              <option value="all">All Severities</option>
-              <option value="critical">Critical</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-              <option value="info">Info</option>
+              <option value="all" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">All Severities</option>
+              <option value="critical" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Critical</option>
+              <option value="high" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">High</option>
+              <option value="medium" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Medium</option>
+              <option value="low" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Low</option>
+              <option value="info" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Info</option>
             </select>
           </div>
 
           <div className="flex items-center gap-2">
-            <label className="text-xs text-slate-500 font-medium">Event Type:</label>
+            <label className="text-xs text-slate-500 dark:text-slate-400 font-medium">Event Type:</label>
             <select
               value={selectedEventType}
               onChange={(e) => setSelectedEventType(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-xl px-3 py-1.5 focus:ring-1 focus:ring-purple-400 focus:outline-none font-semibold cursor-pointer"
+              className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded-xl px-3 py-1.5 focus:ring-1 focus:ring-purple-400 focus:outline-none font-semibold cursor-pointer"
             >
-              <option value="all">All Events</option>
-              <option value="score_drop">Score Drop</option>
-              <option value="score_gain">Score Gain</option>
-              <option value="mention_loss">Mention Lost</option>
-              <option value="mention_gain">Mention Gained</option>
-              <option value="citation_loss">Citation Lost</option>
-              <option value="citation_gain">Citation Gained</option>
-              <option value="competitor_gain">Competitor Gain</option>
-              <option value="parity_gap">Provider Parity Gap</option>
+              <option value="all" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">All Events</option>
+              <option value="score_drop" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Score Drop</option>
+              <option value="score_gain" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Score Gain</option>
+              <option value="mention_loss" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Mention Lost</option>
+              <option value="mention_gain" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Mention Gained</option>
+              <option value="citation_loss" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Citation Lost</option>
+              <option value="citation_gain" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Citation Gained</option>
+              <option value="competitor_gain" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Competitor Gain</option>
+              <option value="parity_gap" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Provider Parity Gap</option>
             </select>
           </div>
 
-          <div className="ml-auto text-xs text-slate-500">
-            Showing <strong className="text-slate-900 font-bold">{changes.length}</strong> change events
+          <div className="ml-auto text-xs text-slate-500 dark:text-slate-400">
+            Showing <strong className="text-slate-900 dark:text-white font-bold">{changes.length}</strong> change events
           </div>
         </div>
 
         {/* Change List */}
         {isLoading ? (
-          <div className="p-16 flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-slate-200/80 shadow-xs">
-            <RefreshCw className="w-8 h-8 text-purple-600 animate-spin mb-3" />
-            <p className="text-slate-800 font-semibold text-sm">Loading Change Events...</p>
-            <p className="text-xs text-slate-500 mt-1">Retrieving verified snapshot deltas</p>
+          <div className="p-16 flex flex-col items-center justify-center text-center bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <RefreshCw className="w-8 h-8 text-purple-600 dark:text-purple-400 animate-spin mb-3" />
+            <p className="text-slate-800 dark:text-slate-200 font-semibold text-sm">Loading Change Events...</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Retrieving verified snapshot deltas</p>
           </div>
         ) : projects.length === 0 ? (
-          <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl p-12 text-center">
+          <Card className="bg-white dark:bg-[#0f172a] border-slate-200/80 dark:border-slate-800 shadow-xs rounded-2xl p-12 text-center">
             <GitCommit className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900">No AEO Projects Found</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">No AEO Projects Found</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
               Create an AEO project to start monitoring changes and visibility trajectory across generative AI answers.
             </p>
             <div className="mt-6 flex justify-center gap-3">
@@ -252,10 +252,10 @@ export default function AeoChangesPage() {
             </div>
           </Card>
         ) : changes.length === 0 ? (
-          <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl p-12 text-center">
+          <Card className="bg-white dark:bg-[#0f172a] border-slate-200/80 dark:border-slate-800 shadow-xs rounded-2xl p-12 text-center">
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900">No Changes Recorded</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">No Changes Recorded</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
               No change events matching the current filter have been recorded. Changes are detected whenever consecutive monitoring runs or analyses differ in visibility or citations.
             </p>
             <div className="mt-6 flex justify-center gap-3">
@@ -270,35 +270,35 @@ export default function AeoChangesPage() {
               return (
                 <div
                   key={event.id}
-                  className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 hover:border-purple-300 transition-all"
+                  className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-5 hover:border-purple-300 dark:hover:border-purple-600/60 transition-all"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                     <div className="space-y-1.5 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         {getSeverityBadge(event.severity)}
-                        <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-slate-100 text-slate-700 border border-slate-200">
+                        <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                           {event.event_type}
                         </span>
                         {event.provider && (
-                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200 uppercase">
+                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 uppercase">
                             {event.provider}
                           </span>
                         )}
-                        <span className="text-xs text-slate-400 flex items-center gap-1">
+                        <span className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {new Date(event.created_at).toLocaleString()}
                         </span>
                       </div>
 
-                      <p className="text-sm text-slate-800 font-semibold pt-1">
+                      <p className="text-sm text-slate-800 dark:text-slate-100 font-semibold pt-1">
                         {event.description}
                       </p>
 
                       {(event.previous_value !== null || event.current_value !== null) && (
-                        <div className="flex items-center gap-2 text-xs pt-1 text-slate-500 font-medium">
-                          <span>Previous: <strong className="text-slate-700">{event.previous_value ?? "None"}</strong></span>
+                        <div className="flex items-center gap-2 text-xs pt-1 text-slate-500 dark:text-slate-400 font-medium">
+                          <span>Previous: <strong className="text-slate-700 dark:text-slate-300">{event.previous_value ?? "None"}</strong></span>
                           <span>&rarr;</span>
-                          <span>Current: <strong className="text-purple-950 font-bold">{event.current_value ?? "None"}</strong></span>
+                          <span>Current: <strong className="text-purple-950 dark:text-purple-200 font-bold">{event.current_value ?? "None"}</strong></span>
                         </div>
                       )}
                     </div>
@@ -308,10 +308,10 @@ export default function AeoChangesPage() {
                         <span
                           className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black border ${
                             event.delta > 0
-                              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60"
                               : event.delta < 0
-                              ? "bg-rose-50 text-rose-800 border-rose-200"
-                              : "bg-slate-100 text-slate-700 border-slate-200"
+                              ? "bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800/60"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
                           }`}
                         >
                           {event.delta > 0 ? (

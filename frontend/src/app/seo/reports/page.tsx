@@ -86,18 +86,18 @@ export default function SeoReportsPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100 text-blue-600">
+              <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400">
                 <FileSpreadsheet className="w-5 h-5" />
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">SEO Audit Reports ({scans.length})</h1>
-              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">SEO Audit Reports ({scans.length})</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                 Audit Archive
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
               Audit log archive with score breakdowns, technical health diagnostics, and historical records.
             </p>
           </div>
@@ -119,52 +119,52 @@ export default function SeoReportsPage() {
 
         {/* Phase 4: Executive Optimization Summary */}
         {optSummary && optSummary.total_actions > 0 && (
-          <Card className="p-4 sm:p-6 border-slate-200 bg-white shadow-xs rounded-2xl space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <Card className="p-4 sm:p-6 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] shadow-xs rounded-2xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-blue-600" />
-                <h3 className="text-sm font-bold text-slate-900">Executive Optimization Summary</h3>
+                <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Executive Optimization Summary</h3>
               </div>
-              <Link href="/seo/actions" className="text-xs text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1">
+              <Link href="/seo/actions" className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold flex items-center gap-1">
                 <ListTodo className="w-3.5 h-3.5" /> Open Action Center →
               </Link>
             </div>
 
             <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 shadow-2xs">
-                <div className="text-slate-500 font-medium">Total Actions</div>
-                <div className="text-xl font-bold text-slate-900 mt-1">{optSummary.total_actions}</div>
-                <div className="text-[10px] text-slate-500 mt-0.5">{optSummary.fixed_actions} resolved ({optSummary.optimization_progress}%)</div>
+              <div className="bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+                <div className="text-slate-500 dark:text-slate-400 font-medium">Total Actions</div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{optSummary.total_actions}</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{optSummary.fixed_actions} resolved ({optSummary.optimization_progress}%)</div>
               </div>
 
-              <div className="bg-rose-50/60 p-3.5 rounded-xl border border-rose-200 shadow-2xs">
-                <div className="text-rose-700 font-semibold">Critical / High</div>
-                <div className="text-xl font-bold text-rose-700 mt-1">
+              <div className="bg-rose-50/60 dark:bg-rose-950/40 p-3.5 rounded-xl border border-rose-200 dark:border-rose-900/60 shadow-2xs">
+                <div className="text-rose-700 dark:text-rose-400 font-semibold">Critical / High</div>
+                <div className="text-xl font-bold text-rose-700 dark:text-rose-400 mt-1">
                   {optSummary.critical_actions + optSummary.high_priority_actions}
                 </div>
-                <div className="text-[10px] text-rose-600/80 mt-0.5">Immediate ranking impact</div>
+                <div className="text-[10px] text-rose-600/80 dark:text-rose-400/80 mt-0.5">Immediate ranking impact</div>
               </div>
 
-              <div className="bg-blue-50/60 p-3.5 rounded-xl border border-blue-200 shadow-2xs">
-                <div className="text-blue-700 font-semibold">Recoverable Impact</div>
-                <div className="text-xl font-bold text-blue-700 mt-1">+{optSummary.estimated_seo_impact} pts</div>
-                <div className="text-[10px] text-blue-600/80 mt-0.5">Potential score: {optSummary.potential_seo_score}/100</div>
+              <div className="bg-blue-50/60 dark:bg-blue-950/40 p-3.5 rounded-xl border border-blue-200 dark:border-blue-900/60 shadow-2xs">
+                <div className="text-blue-700 dark:text-blue-400 font-semibold">Recoverable Impact</div>
+                <div className="text-xl font-bold text-blue-700 dark:text-blue-400 mt-1">+{optSummary.estimated_seo_impact} pts</div>
+                <div className="text-[10px] text-blue-600/80 dark:text-blue-400/80 mt-0.5">Potential score: {optSummary.potential_seo_score}/100</div>
               </div>
 
-              <div className="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-200 shadow-2xs">
-                <div className="text-emerald-700 font-semibold">Current Health</div>
-                <div className="text-xl font-bold text-emerald-700 mt-1">{optSummary.current_seo_score ?? "—"}/100</div>
-                <div className="text-[10px] text-emerald-600/80 mt-0.5">Latest audit score</div>
+              <div className="bg-emerald-50/60 dark:bg-emerald-950/40 p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-900/60 shadow-2xs">
+                <div className="text-emerald-700 dark:text-emerald-400 font-semibold">Current Health</div>
+                <div className="text-xl font-bold text-emerald-700 dark:text-emerald-400 mt-1">{optSummary.current_seo_score ?? "—"}/100</div>
+                <div className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 mt-0.5">Latest audit score</div>
               </div>
             </div>
           </Card>
         )}
 
         {/* Reports Table */}
-        <Card className="p-0 border-slate-200 overflow-hidden">
+        <Card className="p-0 border-slate-200 dark:border-slate-800 dark:bg-[#0f172a] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs min-w-[680px]">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase">
                 <tr>
                   <th className="py-3 px-4">Audit Target & ID</th>
                   <th className="py-3 px-4">Timestamp</th>
@@ -174,7 +174,7 @@ export default function SeoReportsPage() {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                 {isLoading ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center text-slate-400">
@@ -196,9 +196,9 @@ export default function SeoReportsPage() {
                   </tr>
                 ) : (
                   scans.map((scan) => (
-                    <tr key={scan.id} className="hover:bg-slate-50/60 transition-colors">
+                    <tr key={scan.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
                       <td className="py-3.5 px-4">
-                        <span className="font-semibold text-slate-900 block truncate max-w-sm">
+                        <span className="font-semibold text-slate-900 dark:text-white block truncate max-w-sm">
                           {scan.target_url}
                         </span>
                         <span className="font-mono text-[10px] text-slate-400">
@@ -206,7 +206,7 @@ export default function SeoReportsPage() {
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 font-mono text-slate-600">
+                      <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">
                         {formatDate(scan.created_at)}
                       </td>
 
@@ -218,11 +218,11 @@ export default function SeoReportsPage() {
                         )}
                       </td>
 
-                      <td className="py-3.5 px-4 text-center font-mono font-semibold">
+                      <td className="py-3.5 px-4 text-center font-mono font-semibold text-slate-800 dark:text-slate-200">
                         {scan.pages_crawled}
                       </td>
 
-                      <td className="py-3.5 px-4 text-center font-mono font-semibold text-amber-700">
+                      <td className="py-3.5 px-4 text-center font-mono font-semibold text-amber-700 dark:text-amber-400">
                         {scan.issues_count}
                       </td>
 

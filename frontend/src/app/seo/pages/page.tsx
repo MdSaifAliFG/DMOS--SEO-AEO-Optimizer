@@ -126,32 +126,32 @@ export default function SeoPagesPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header & Project Selector */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100 text-blue-600">
+              <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400">
                 <FileText className="w-5 h-5" />
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Crawled Webpages ({total})</h1>
-              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Crawled Webpages ({total})</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                 Site Hierarchy
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
               Detailed breakdown of discovered URLs, server response codes, on-page metadata, and indexability flags.
             </p>
           </div>
 
           {projects.length > 0 && (
-            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 shrink-0">
-              <span className="text-xs font-semibold text-slate-600">Active Website:</span>
+            <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 shrink-0">
+              <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Active Website:</span>
               <select
                 value={selectedProjectId}
                 onChange={(e) => handleProjectChange(e.target.value)}
-                className="bg-transparent text-xs font-semibold text-slate-900 focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
               >
                 {projects.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-white text-slate-900">
+                  <option key={p.id} value={p.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
                     {p.name} ({p.domain})
                   </option>
                 ))}
@@ -199,10 +199,10 @@ export default function SeoPagesPage() {
         />
 
         {/* Pages Table */}
-        <Card className="p-0 border-slate-200 overflow-hidden">
+        <Card className="p-0 border-slate-200 dark:border-slate-800 dark:bg-[#0f172a] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs min-w-[720px]">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase">
                 <tr>
                   <th className="py-3 px-4">URL & Title</th>
                   <th className="py-3 px-4 text-center">Status</th>
@@ -213,7 +213,7 @@ export default function SeoPagesPage() {
                   <th className="py-3 px-4 text-right">Inspect</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                 {isLoading ? (
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-slate-400">
@@ -238,13 +238,13 @@ export default function SeoPagesPage() {
                     <tr
                       key={page.id}
                       onClick={() => handleOpenPageDetail(page)}
-                      className="hover:bg-slate-50/60 cursor-pointer transition-colors"
+                      className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 cursor-pointer transition-colors"
                     >
                       <td className="py-3.5 px-4 max-w-sm">
-                        <span className="font-semibold text-slate-900 block truncate">
+                        <span className="font-semibold text-slate-900 dark:text-white block truncate">
                           {page.title || "Untitled Document"}
                         </span>
-                        <span className="font-mono text-[11px] text-slate-500 truncate block mt-0.5">
+                        <span className="font-mono text-[11px] text-slate-500 dark:text-slate-400 truncate block mt-0.5">
                           {page.url}
                         </span>
                       </td>
@@ -253,10 +253,10 @@ export default function SeoPagesPage() {
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                             page.status_code === 200
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
                               : page.status_code >= 300 && page.status_code < 400
-                              ? "bg-blue-50 text-blue-700 border border-blue-200"
-                              : "bg-rose-50 text-rose-700 border border-rose-200"
+                              ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800"
+                              : "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800"
                           }`}
                         >
                           {page.status_code}
@@ -265,11 +265,11 @@ export default function SeoPagesPage() {
 
                       <td className="py-3.5 px-4 text-center">
                         {page.is_indexable ? (
-                          <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold text-[11px]">
+                          <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-semibold text-[11px]">
                             <CheckCircle2 className="w-3.5 h-3.5" /> Yes
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-rose-700 font-semibold text-[11px]">
+                          <span className="inline-flex items-center gap-1 text-rose-700 dark:text-rose-400 font-semibold text-[11px]">
                             <XCircle className="w-3.5 h-3.5" /> No
                           </span>
                         )}
@@ -279,30 +279,30 @@ export default function SeoPagesPage() {
                         <span
                           className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
                             page.h1_count === 1
-                              ? "bg-emerald-50 text-emerald-700"
-                              : "bg-amber-50 text-amber-700"
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400"
+                              : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400"
                           }`}
                         >
                           {page.h1_count}
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 text-center font-mono text-slate-500">
+                      <td className="py-3.5 px-4 text-center font-mono text-slate-500 dark:text-slate-400">
                         {page.response_time ? `${page.response_time}ms` : "—"}
                       </td>
 
                       <td className="py-3.5 px-4 text-center font-mono">
                         {page.issues_count > 0 ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                             {page.issues_count}
                           </span>
                         ) : (
-                          <span className="text-[11px] text-emerald-600 font-semibold">Clean</span>
+                          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">Clean</span>
                         )}
                       </td>
 
                       <td className="py-3.5 px-4 text-right">
-                        <span className="text-xs font-semibold text-blue-600 hover:text-blue-700">
+                        <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
                           Audit →
                         </span>
                       </td>
@@ -316,102 +316,102 @@ export default function SeoPagesPage() {
 
         {/* Page Detail Drawer */}
         {selectedPageDetail && (
-          <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 backdrop-blur-xs animate-in fade-in">
+          <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
             <div
-              className="w-full max-w-xl bg-white h-full border-l border-slate-200 shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
+              className="w-full max-w-xl bg-white dark:bg-[#0f172a] h-full border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Drawer Header */}
-              <div className="p-5 border-b border-slate-200 flex items-center justify-between">
+              <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
                     Page Audit Inspection
                   </span>
-                  <h3 className="text-sm font-bold text-slate-900 truncate max-w-md mt-0.5">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate max-w-md mt-0.5">
                     {selectedPageDetail.title || selectedPageDetail.url}
                   </h3>
                 </div>
                 <button
                   onClick={() => setSelectedPageDetail(null)}
-                  className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
+                  className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Drawer Content */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-slate-700">
+              <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-slate-700 dark:text-slate-300">
                 {/* Meta Overview Card */}
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-slate-500 break-all">{selectedPageDetail.url}</span>
+                    <span className="font-mono text-slate-500 dark:text-slate-400 break-all">{selectedPageDetail.url}</span>
                     <a
                       href={selectedPageDetail.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-700 p-1"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 p-1"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200 font-mono text-[11px]">
-                    <div>Status: <span className="font-bold text-slate-900">{selectedPageDetail.status_code}</span></div>
-                    <div>Indexable: <span className="font-bold text-slate-900">{selectedPageDetail.is_indexable ? "Yes" : "No"}</span></div>
-                    <div>Word Count: <span className="font-bold text-slate-900">{selectedPageDetail.word_count} words</span></div>
-                    <div>Response Time: <span className="font-bold text-slate-900">{selectedPageDetail.response_time}ms</span></div>
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200 dark:border-slate-800 font-mono text-[11px]">
+                    <div>Status: <span className="font-bold text-slate-900 dark:text-white">{selectedPageDetail.status_code}</span></div>
+                    <div>Indexable: <span className="font-bold text-slate-900 dark:text-white">{selectedPageDetail.is_indexable ? "Yes" : "No"}</span></div>
+                    <div>Word Count: <span className="font-bold text-slate-900 dark:text-white">{selectedPageDetail.word_count} words</span></div>
+                    <div>Response Time: <span className="font-bold text-slate-900 dark:text-white">{selectedPageDetail.response_time}ms</span></div>
                   </div>
                 </div>
 
                 {/* On-Page SEO Checklist */}
                 <div className="space-y-3">
-                  <h4 className="font-bold text-slate-900 uppercase text-[11px] tracking-wider">
+                  <h4 className="font-bold text-slate-900 dark:text-white uppercase text-[11px] tracking-wider">
                     On-Page Tags & Directives
                   </h4>
 
-                  <div className="p-3 rounded-lg border border-slate-200 space-y-1">
-                    <span className="text-[10px] font-semibold text-slate-500 uppercase">Title Tag ({selectedPageDetail.title?.length || 0} chars)</span>
-                    <p className="font-semibold text-slate-900">{selectedPageDetail.title || "Missing Title Tag"}</p>
+                  <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-1">
+                    <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase">Title Tag ({selectedPageDetail.title?.length || 0} chars)</span>
+                    <p className="font-semibold text-slate-900 dark:text-white">{selectedPageDetail.title || "Missing Title Tag"}</p>
                   </div>
 
-                  <div className="p-3 rounded-lg border border-slate-200 space-y-1">
-                    <span className="text-[10px] font-semibold text-slate-500 uppercase">Meta Description ({selectedPageDetail.meta_description?.length || 0} chars)</span>
-                    <p className="text-slate-800">{selectedPageDetail.meta_description || "Missing Meta Description"}</p>
+                  <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-1">
+                    <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase">Meta Description ({selectedPageDetail.meta_description?.length || 0} chars)</span>
+                    <p className="text-slate-800 dark:text-slate-200">{selectedPageDetail.meta_description || "Missing Meta Description"}</p>
                   </div>
 
-                  <div className="p-3 rounded-lg border border-slate-200 space-y-1">
-                    <span className="text-[10px] font-semibold text-slate-500 uppercase">Canonical URL</span>
-                    <p className="font-mono text-slate-800">{selectedPageDetail.canonical_url || "Self-referencing / Default"}</p>
+                  <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-1">
+                    <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase">Canonical URL</span>
+                    <p className="font-mono text-slate-800 dark:text-slate-200">{selectedPageDetail.canonical_url || "Self-referencing / Default"}</p>
                   </div>
                 </div>
 
                 {/* Issues on this Page */}
                 <div className="space-y-3">
-                  <h4 className="font-bold text-slate-900 uppercase text-[11px] tracking-wider">
+                  <h4 className="font-bold text-slate-900 dark:text-white uppercase text-[11px] tracking-wider">
                     Detected Issues ({selectedPageDetail.issues?.length || 0})
                   </h4>
 
                   {selectedPageDetail.issues && selectedPageDetail.issues.length > 0 ? (
                     <div className="space-y-2">
                       {selectedPageDetail.issues.map((iss, idx) => (
-                        <div key={idx} className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 space-y-1">
+                        <div key={idx} className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-1">
                           <div className="flex items-center gap-2">
                             <span
                               className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
                                 iss.severity === "critical"
-                                  ? "bg-rose-50 text-rose-700 border border-rose-200"
-                                  : "bg-amber-50 text-amber-700 border border-amber-200"
+                                  ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800"
+                                  : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
                               }`}
                             >
                               {iss.severity}
                             </span>
-                            <span className="font-bold text-slate-900">{iss.title}</span>
+                            <span className="font-bold text-slate-900 dark:text-white">{iss.title}</span>
                           </div>
-                          <p className="text-slate-600 text-[11px]">{iss.description}</p>
+                          <p className="text-slate-600 dark:text-slate-400 text-[11px]">{iss.description}</p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-slate-500 italic">No issues detected on this webpage.</p>
+                    <p className="text-slate-500 dark:text-slate-400 italic">No issues detected on this webpage.</p>
                   )}
                 </div>
               </div>

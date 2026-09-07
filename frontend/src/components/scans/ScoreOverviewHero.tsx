@@ -143,11 +143,11 @@ export function ScoreOverviewHero({
 
   return (
     <>
-      <div className="rounded-2xl bg-white border border-slate-200 p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 shadow-xs">
+      <div className="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 shadow-xs">
         {/* Top Hero Section */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           {/* Main Score Hero Badge */}
-          <div className="lg:col-span-5 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200">
+          <div className="lg:col-span-5 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800">
             <div className="relative flex items-center justify-center shrink-0">
               {/* Circular Gauge Ring */}
               <div
@@ -155,10 +155,10 @@ export function ScoreOverviewHero({
                   score
                 )}`}
               >
-                <span className="text-3xl sm:text-4xl font-extrabold tracking-tight font-mono text-slate-900">
+                <span className="text-3xl sm:text-4xl font-extrabold tracking-tight font-mono text-slate-900 dark:text-white">
                   {score}
                 </span>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
                   / 100
                 </span>
               </div>
@@ -174,16 +174,16 @@ export function ScoreOverviewHero({
                   {label}
                 </span>
               </div>
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                 Technical SEO Score
               </h2>
-              <p className="text-xs text-slate-500 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 Audited {pagesCrawled} internal pages with {issuesCount} detected issue
                 {issuesCount === 1 ? "" : "s"}.
               </p>
               <button
                 onClick={() => setShowExplanation(true)}
-                className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 underline underline-offset-4 flex items-center justify-center sm:justify-start gap-1.5 pt-1 cursor-pointer"
+                className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 underline underline-offset-4 flex items-center justify-center sm:justify-start gap-1.5 pt-1 cursor-pointer"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -200,34 +200,34 @@ export function ScoreOverviewHero({
 
           {/* Quick Metrics */}
           <div className="lg:col-span-7 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-              <span className="text-xs font-semibold text-slate-500">Pages Crawled</span>
-              <span className="text-xl sm:text-2xl font-bold text-slate-900 font-mono mt-1.5 sm:mt-2">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Pages Crawled</span>
+              <span className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-mono mt-1.5 sm:mt-2">
                 {pagesCrawled}
               </span>
-              <span className="text-[11px] font-semibold text-emerald-600 mt-1">
+              <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
                 100% In-depth HTML audit
               </span>
             </div>
 
-            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-              <span className="text-xs font-semibold text-slate-500">Issues Detected</span>
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Issues Detected</span>
               <span
                 className={`text-xl sm:text-2xl font-bold font-mono mt-1.5 sm:mt-2 ${
-                  issuesCount > 0 ? "text-amber-600" : "text-emerald-600"
+                  issuesCount > 0 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"
                 }`}
               >
                 {issuesCount}
               </span>
-              <span className="text-[11px] text-slate-500 mt-1">Categorized by severity</span>
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Categorized by severity</span>
             </div>
 
-            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between xs:col-span-2 sm:col-span-1">
-              <span className="text-xs font-semibold text-slate-500">Crawl Duration</span>
-              <span className="text-xl sm:text-2xl font-bold text-slate-900 font-mono mt-1.5 sm:mt-2">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex flex-col justify-between xs:col-span-2 sm:col-span-1">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Crawl Duration</span>
+              <span className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-mono mt-1.5 sm:mt-2">
                 {crawlDuration ? `${crawlDuration}s` : "< 1s"}
               </span>
-              <span className="text-[11px] text-slate-500 mt-1">High-speed async BFS</span>
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">High-speed async BFS</span>
             </div>
           </div>
         </div>
@@ -235,10 +235,10 @@ export function ScoreOverviewHero({
         {/* Category Breakdown Cards */}
         <div className="space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Audit Pillar Category Scores
             </h3>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-slate-400 dark:text-slate-500">
               Base 100 with proportional deduction scaling
             </span>
           </div>
@@ -247,33 +247,33 @@ export function ScoreOverviewHero({
             {categories.map((cat, idx) => (
               <div
                 key={idx}
-                className="p-5 rounded-xl bg-slate-50 hover:bg-slate-100/70 border border-slate-200 hover:border-slate-300 flex flex-col justify-between space-y-4 transition-all"
+                className="p-5 rounded-xl bg-slate-50 dark:bg-slate-900/60 hover:bg-slate-100/70 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 flex flex-col justify-between space-y-4 transition-all"
               >
                 <div className="flex items-center justify-between">
-                  <div className="p-2 rounded-lg bg-white border border-slate-200 shadow-2xs text-slate-700">
+                  <div className="p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xs text-slate-700 dark:text-slate-300">
                     {cat.icon}
                   </div>
-                  <span className="text-xs font-mono font-medium text-slate-500">
+                  <span className="text-xs font-mono font-medium text-slate-500 dark:text-slate-400">
                     {cat.weight}
                   </span>
                 </div>
 
                 <div>
                   <div className="flex items-baseline justify-between mb-1">
-                    <span className="text-sm font-bold text-slate-900">{cat.title}</span>
+                    <span className="text-sm font-bold text-slate-900 dark:text-white">{cat.title}</span>
                     <span
                       className={`text-lg font-bold font-mono ${getScoreTextColor(cat.score)}`}
                     >
                       {cat.score}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 line-clamp-1 leading-normal">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 leading-normal">
                     {cat.description}
                   </p>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${getProgressColor(
                       cat.score

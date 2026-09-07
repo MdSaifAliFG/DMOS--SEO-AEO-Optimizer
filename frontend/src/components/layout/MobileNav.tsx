@@ -87,13 +87,13 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose }) => {
       />
 
       {/* Drawer */}
-      <div className="relative w-72 sm:w-80 max-w-[85vw] bg-white border-r border-slate-200 h-full flex flex-col z-10 animate-in slide-in-from-left duration-200 shadow-2xl">
+      <div className="relative w-72 sm:w-80 max-w-[85vw] bg-white dark:bg-[#0c121e] border-r border-slate-200 dark:border-slate-800 h-full flex flex-col z-10 animate-in slide-in-from-left duration-200 shadow-2xl">
         {/* Header */}
-        <div className="h-14 px-4 flex items-center justify-between border-b border-slate-200">
+        <div className="h-14 px-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
           <SeoSensingBrand showTagline={false} showBadge={false} />
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -110,7 +110,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose }) => {
                   <h4
                     className={cn(
                       "text-[10px] font-bold uppercase tracking-wider",
-                      isAeoGroup ? "text-purple-600" : "text-slate-400"
+                      isAeoGroup ? "text-purple-600 dark:text-purple-400" : "text-slate-400 dark:text-slate-500"
                     )}
                   >
                     {group.groupName}
@@ -130,11 +130,11 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose }) => {
                           "flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors",
                           active
                             ? isAeoGroup
-                              ? "bg-purple-50 text-purple-700 font-semibold border border-purple-200"
-                              : "bg-blue-50 text-blue-700 font-semibold border border-blue-200"
+                              ? "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-semibold border border-purple-200 dark:border-purple-800/60"
+                              : "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-800/60"
                             : isAeoGroup
-                            ? "text-slate-600 hover:text-purple-700 hover:bg-purple-50/50"
-                            : "text-slate-600 hover:text-blue-700 hover:bg-blue-50/50"
+                            ? "text-slate-600 dark:text-slate-300 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50/50 dark:hover:bg-purple-950/30"
+                            : "text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50/50 dark:hover:bg-blue-950/30"
                         )}
                       >
                         <div className="flex items-center gap-2.5">
@@ -142,9 +142,9 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose }) => {
                             className={cn(
                               active
                                 ? isAeoGroup
-                                  ? "text-purple-600"
-                                  : "text-blue-600"
-                                : "text-slate-400"
+                                  ? "text-purple-600 dark:text-purple-400"
+                                  : "text-blue-600 dark:text-blue-400"
+                                : "text-slate-400 dark:text-slate-500"
                             )}
                           >
                             {icon}

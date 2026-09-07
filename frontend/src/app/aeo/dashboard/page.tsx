@@ -195,18 +195,18 @@ export default function AeoDashboardPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <div className="p-2 rounded-xl bg-purple-50 border border-purple-100 text-purple-600">
+              <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-100 dark:border-purple-800/60 text-purple-600 dark:text-purple-400">
                 <Bot className="w-5 h-5" />
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Answer Engine Optimization (AEO)</h1>
-              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Answer Engine Optimization (AEO)</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800/60">
                 Intelligence Engine
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
               Monitor brand prominence, knowledge entity presence, and direct citation sources across generative AI answer engines.
             </p>
           </div>
@@ -216,10 +216,10 @@ export default function AeoDashboardPage() {
               <select
                 value={selectedProjectId}
                 onChange={(e) => setSelectedProjectId(e.target.value)}
-                className="text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400 cursor-pointer shadow-2xs"
+                className="text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-400 cursor-pointer shadow-2xs"
               >
                 {projects.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-white text-slate-900">
+                  <option key={p.id} value={p.id} className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                     {p.name} ({p.domain})
                   </option>
                 ))}
@@ -244,7 +244,7 @@ export default function AeoDashboardPage() {
               variant="outline"
               onClick={() => setIsAddProjectOpen(true)}
               leftIcon={<Plus className="w-3.5 h-3.5" />}
-              className="bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 shadow-xs"
+              className="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 shadow-xs"
             >
               New Project
             </Button>
@@ -264,14 +264,14 @@ export default function AeoDashboardPage() {
           </div>
         ) : projects.length === 0 ? (
           /* Empty State */
-          <Card className="p-12 text-center border-dashed border-2 border-purple-200 bg-purple-50/30">
+          <Card className="p-12 text-center border-dashed border-2 border-purple-200 dark:border-purple-800/60 bg-purple-50/30 dark:bg-purple-950/20">
             <div className="max-w-md mx-auto space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center mx-auto shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto shadow-xs">
                 <Bot className="w-6 h-6" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-base font-bold text-slate-900">No AEO Projects Created Yet</h3>
-                <p className="text-xs text-slate-500">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">No AEO Projects Created Yet</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   Create your first AEO project to start tracking brand prompts, citations, knowledge entities, and generative AI search visibility.
                 </p>
               </div>
@@ -279,7 +279,7 @@ export default function AeoDashboardPage() {
                 size="sm"
                 variant="primary"
                 onClick={() => setIsAddProjectOpen(true)}
-                leftIcon={<Plus className="w-4 h-4" />}
+                leftIcon={<Plus className="w-3.5 h-3.5" />}
                 className="bg-purple-600 hover:bg-purple-500 text-white"
               >
                 Create Your First AEO Project
@@ -291,29 +291,29 @@ export default function AeoDashboardPage() {
             {/* Top KPI Metrics */}
             <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* AEO Visibility Score */}
-              <Card className="p-5 border-slate-200 bg-white relative overflow-hidden flex flex-col justify-between">
+              <Card className="p-5 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] relative overflow-hidden flex flex-col justify-between">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">AEO Visibility Score</span>
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">AEO Visibility Score</span>
                   <button
                     onClick={() => setIsScoreModalOpen(true)}
-                    className="text-slate-400 hover:text-purple-600 transition-colors"
+                    className="text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                     title="How is this calculated?"
                   >
                     <HelpCircle className="w-4 h-4" />
                   </button>
                 </div>
                 <div className="mt-3 flex items-baseline gap-3">
-                  <span className="text-3xl font-black text-purple-950">
+                  <span className="text-3xl font-black text-purple-950 dark:text-purple-100">
                     {aeoScore !== null && aeoScore !== undefined ? `${aeoScore}/100` : "Untested"}
                   </span>
                   {scoreLabel && (
-                    <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                    <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border dark:border-purple-800/60">
                       {scoreLabel}
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-slate-500 mt-2 flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3 text-purple-600" />
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3 text-purple-600 dark:text-purple-400" />
                   Weighted by mentions, citations, position & coverage
                 </p>
               </Card>
@@ -346,13 +346,13 @@ export default function AeoDashboardPage() {
             {/* Middle Section: Engine Breakdown + Historical Trend */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Answer Engine Status */}
-              <Card className="p-6 border-slate-200 bg-white space-y-4 lg:col-span-1">
+              <Card className="p-6 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] space-y-4 lg:col-span-1">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Cpu className="w-4 h-4 text-purple-600" />
-                    <h3 className="text-sm font-bold text-slate-900">Answer Engines</h3>
+                    <Cpu className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Answer Engines</h3>
                   </div>
-                  <Link href="/aeo/answer-engine" className="text-xs text-purple-600 hover:underline font-medium">
+                  <Link href="/aeo/answer-engine" className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-medium">
                     View All
                   </Link>
                 </div>
@@ -361,16 +361,16 @@ export default function AeoDashboardPage() {
                   {engines.map((eng) => (
                     <div
                       key={eng.engine_id}
-                      className="p-3 rounded-xl border border-slate-100 bg-slate-50/50 flex items-center justify-between"
+                      className="p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between"
                     >
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-semibold text-slate-800">{eng.name}</span>
+                          <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">{eng.name}</span>
                         </div>
-                        <span className="text-[11px] text-slate-500">{eng.status_label}</span>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400">{eng.status_label}</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-xs font-bold text-purple-700">
+                        <span className="text-xs font-bold text-purple-700 dark:text-purple-300">
                           {eng.tracked_questions > 0 ? `${eng.visibility_rate}% Vis` : "—"}
                         </span>
                         <p className="text-[10px] text-slate-400">{eng.tracked_questions} queries</p>
@@ -381,27 +381,27 @@ export default function AeoDashboardPage() {
               </Card>
 
               {/* Visibility Progression / Trend with 7d/30d/90d/all */}
-              <Card className="p-6 border-slate-200 bg-white space-y-4 lg:col-span-2">
+              <Card className="p-6 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] space-y-4 lg:col-span-2">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-bold text-slate-900">AEO Visibility Progression</h3>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white">AEO Visibility Progression</h3>
                       {trendData && (
                         <span className={`text-xs font-bold ${
                           trendData.trend_direction === "improving"
-                            ? "text-emerald-600"
+                            ? "text-emerald-600 dark:text-emerald-400"
                             : trendData.trend_direction === "declining"
-                            ? "text-rose-600"
-                            : "text-slate-500"
+                            ? "text-rose-600 dark:text-rose-400"
+                            : "text-slate-500 dark:text-slate-400"
                         }`}>
                           ({trendData.score_change > 0 ? `+${trendData.score_change}` : trendData.score_change} pts)
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-500">Historical score snapshots across analysis executions</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Historical score snapshots across analysis executions</p>
                   </div>
 
-                  <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
+                  <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
                     {(["7d", "30d", "90d", "all"] as const).map((r) => (
                       <button
                         key={r}
@@ -409,7 +409,7 @@ export default function AeoDashboardPage() {
                         className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-colors ${
                           trendRange === r
                             ? "bg-purple-600 text-white shadow-xs"
-                            : "text-slate-600 hover:text-slate-900"
+                            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
                         }`}
                       >
                         {r.toUpperCase()}
@@ -419,9 +419,9 @@ export default function AeoDashboardPage() {
                 </div>
 
                 {(!trendData || !trendData.has_enough_data || trendData.timeline.length === 0) ? (
-                  <div className="h-48 flex flex-col items-center justify-center rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center p-6 space-y-2">
+                  <div className="h-48 flex flex-col items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800/30 border border-dashed border-slate-200 dark:border-slate-800 text-center p-6 space-y-2">
                     <Sparkles className="w-6 h-6 text-purple-400" />
-                    <p className="text-xs text-slate-600 font-medium">
+                    <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
                       {trendData?.message || "Not enough data yet"}
                     </p>
                     <p className="text-[11px] text-slate-400 max-w-sm">
@@ -435,14 +435,14 @@ export default function AeoDashboardPage() {
                         const scoreVal = pt.overall_score ?? pt.score ?? 0;
                         return (
                           <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 group">
-                            <span className="text-[10px] font-bold text-purple-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="text-[10px] font-bold text-purple-700 dark:text-purple-300 opacity-0 group-hover:opacity-100 transition-opacity">
                               {scoreVal}
                             </span>
                             <div
                               style={{ height: `${Math.max(scoreVal * 1.2, 16)}px` }}
                               className="w-full bg-gradient-to-t from-purple-600 to-indigo-500 rounded-t-lg transition-all hover:brightness-110"
                             />
-                            <span className="text-[10px] text-slate-500 font-medium truncate max-w-[60px]">
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate max-w-[60px]">
                               {pt.date}
                             </span>
                           </div>
@@ -592,17 +592,17 @@ export default function AeoDashboardPage() {
             </Card>
 
             {/* Phase 6 Action Center Highlights */}
-            <Card className="p-6 border-slate-200 bg-white space-y-4">
+            <Card className="p-6 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <ListTodo className="w-5 h-5 text-purple-600" />
-                    <h3 className="text-base font-bold text-slate-900">AEO Action Center & Top Opportunities</h3>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800">
+                    <ListTodo className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">AEO Action Center & Top Opportunities</h3>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border dark:border-purple-800/60">
                       Phase 6
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     Prioritized deterministic actions to improve brand mentions, citations, and direct answers.
                   </p>
                 </div>
@@ -618,45 +618,45 @@ export default function AeoDashboardPage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                 <Link
                   href="/aeo/optimization/content-gaps"
-                  className="p-3 rounded-xl bg-purple-50/50 hover:bg-purple-100/60 border border-purple-100 transition flex items-center gap-2.5 group"
+                  className="p-3 rounded-xl bg-purple-50/50 hover:bg-purple-100/60 dark:bg-purple-950/30 dark:hover:bg-purple-900/40 border border-purple-100 dark:border-purple-800/40 transition flex items-center gap-2.5 group"
                 >
-                  <Layers className="w-4 h-4 text-purple-600 group-hover:scale-110 transition-transform" />
+                  <Layers className="w-4 h-4 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform" />
                   <div>
-                    <span className="text-xs font-bold text-slate-900 block">Content Gaps</span>
-                    <span className="text-[10px] text-purple-700">Missing Topics</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white block">Content Gaps</span>
+                    <span className="text-[10px] text-purple-700 dark:text-purple-300">Missing Topics</span>
                   </div>
                 </Link>
 
                 <Link
                   href="/aeo/optimization/prompts"
-                  className="p-3 rounded-xl bg-indigo-50/50 hover:bg-indigo-100/60 border border-indigo-100 transition flex items-center gap-2.5 group"
+                  className="p-3 rounded-xl bg-indigo-50/50 hover:bg-indigo-100/60 dark:bg-indigo-950/30 dark:hover:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-800/40 transition flex items-center gap-2.5 group"
                 >
-                  <Target className="w-4 h-4 text-indigo-600 group-hover:scale-110 transition-transform" />
+                  <Target className="w-4 h-4 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform" />
                   <div>
-                    <span className="text-xs font-bold text-slate-900 block">Prompt Gaps</span>
-                    <span className="text-[10px] text-indigo-700">Uncovered Queries</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white block">Prompt Gaps</span>
+                    <span className="text-[10px] text-indigo-700 dark:text-indigo-300">Uncovered Queries</span>
                   </div>
                 </Link>
 
                 <Link
                   href="/aeo/optimization/citations"
-                  className="p-3 rounded-xl bg-violet-50/50 hover:bg-violet-100/60 border border-violet-100 transition flex items-center gap-2.5 group"
+                  className="p-3 rounded-xl bg-violet-50/50 hover:bg-violet-100/60 dark:bg-violet-950/30 dark:hover:bg-violet-900/40 border border-violet-100 dark:border-violet-800/40 transition flex items-center gap-2.5 group"
                 >
-                  <Share2 className="w-4 h-4 text-violet-600 group-hover:scale-110 transition-transform" />
+                  <Share2 className="w-4 h-4 text-violet-600 dark:text-violet-400 group-hover:scale-110 transition-transform" />
                   <div>
-                    <span className="text-xs font-bold text-slate-900 block">Citation Gaps</span>
-                    <span className="text-[10px] text-violet-700">Source Domains</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white block">Citation Gaps</span>
+                    <span className="text-[10px] text-violet-700 dark:text-violet-300">Source Domains</span>
                   </div>
                 </Link>
 
                 <Link
                   href="/aeo/optimization/entities"
-                  className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition flex items-center gap-2.5 group"
+                  className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/60 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition flex items-center gap-2.5 group"
                 >
-                  <Network className="w-4 h-4 text-slate-700 group-hover:scale-110 transition-transform" />
+                  <Network className="w-4 h-4 text-slate-700 dark:text-slate-300 group-hover:scale-110 transition-transform" />
                   <div>
-                    <span className="text-xs font-bold text-slate-900 block">Entity Health</span>
-                    <span className="text-[10px] text-slate-600">Knowledge Graph</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white block">Entity Health</span>
+                    <span className="text-[10px] text-slate-600 dark:text-slate-400">Knowledge Graph</span>
                   </div>
                 </Link>
               </div>
@@ -665,11 +665,11 @@ export default function AeoDashboardPage() {
             {/* Bottom Grid: Recent Questions & Citations */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Recent Tracked Questions */}
-              <Card className="p-6 border-slate-200 bg-white space-y-4">
+              <Card className="p-6 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <HelpCircle className="w-4 h-4 text-purple-600" />
-                    <h3 className="text-sm font-bold text-slate-900">Tracked AI Questions ({recentQuestions.length})</h3>
+                    <HelpCircle className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Tracked AI Questions ({recentQuestions.length})</h3>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -681,7 +681,7 @@ export default function AeoDashboardPage() {
                     >
                       Add Question
                     </Button>
-                    <Link href="/aeo/questions" className="text-xs text-purple-600 hover:underline font-medium">
+                    <Link href="/aeo/questions" className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-medium">
                       All
                     </Link>
                   </div>
@@ -694,22 +694,22 @@ export default function AeoDashboardPage() {
                     {recentQuestions.map((q) => (
                       <div
                         key={q.id}
-                        className="p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors bg-slate-50/40 flex items-center justify-between gap-3"
+                        className="p-3 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-purple-200 dark:hover:border-purple-700/50 transition-colors bg-slate-50/40 dark:bg-slate-800/40 flex items-center justify-between gap-3"
                       >
                         <div className="space-y-1 min-w-0 flex-1">
-                          <p className="text-xs font-semibold text-slate-800 truncate">{q.question_text}</p>
-                          <div className="flex items-center gap-2 text-[10px] text-slate-500">
-                            <span className="px-1.5 py-0.5 rounded bg-slate-200 font-medium">{q.category}</span>
+                          <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">{q.question_text}</p>
+                          <div className="flex items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400">
+                            <span className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium">{q.category}</span>
                             <span>Intent: {q.intent}</span>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           {q.brand_mentioned ? (
-                            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800">
+                            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border dark:border-emerald-800/60">
                               Mentioned {q.best_rank_position ? `(#${q.best_rank_position})` : ""}
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-slate-100 text-slate-600">
+                            <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                               {q.visibility_status}
                             </span>
                           )}
@@ -721,13 +721,13 @@ export default function AeoDashboardPage() {
               </Card>
 
               {/* Recent Source Citations */}
-              <Card className="p-6 border-slate-200 bg-white space-y-4">
+              <Card className="p-6 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Quote className="w-4 h-4 text-violet-600" />
-                    <h3 className="text-sm font-bold text-slate-900">Extracted Citations ({recentCitations.length})</h3>
+                    <Quote className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Extracted Citations ({recentCitations.length})</h3>
                   </div>
-                  <Link href="/aeo/citations" className="text-xs text-purple-600 hover:underline font-medium">
+                  <Link href="/aeo/citations" className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-medium">
                     View All
                   </Link>
                 </div>
@@ -739,21 +739,21 @@ export default function AeoDashboardPage() {
                     {recentCitations.map((c) => (
                       <div
                         key={c.id}
-                        className="p-3 rounded-xl border border-slate-100 bg-slate-50/40 flex items-center justify-between gap-3"
+                        className="p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-800/40 flex items-center justify-between gap-3"
                       >
                         <div className="space-y-0.5 min-w-0 flex-1">
                           <a
                             href={c.source_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs font-semibold text-purple-900 hover:underline truncate block"
+                            className="text-xs font-semibold text-purple-900 dark:text-purple-300 hover:underline truncate block"
                           >
                             {c.domain}
                           </a>
-                          <p className="text-[10px] text-slate-500 truncate">{c.source_url}</p>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{c.source_url}</p>
                         </div>
                         <div className="flex items-center gap-1.5 flex-shrink-0">
-                          <span className="px-2 py-0.5 text-[10px] font-semibold rounded-md bg-purple-100 text-purple-800 uppercase">
+                          <span className="px-2 py-0.5 text-[10px] font-semibold rounded-md bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border dark:border-purple-800/60 uppercase">
                             {c.engine}
                           </span>
                         </div>
@@ -769,22 +769,22 @@ export default function AeoDashboardPage() {
         {/* Modal: Score Explanation */}
         {isScoreModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl border border-slate-200 space-y-4">
+            <div className="bg-white dark:bg-[#0f172a] rounded-2xl p-6 max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
-                  <h3 className="text-base font-bold text-slate-900">AEO Visibility Formula</h3>
+                  <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">AEO Visibility Formula</h3>
                 </div>
-                <button onClick={() => setIsScoreModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <button onClick={() => setIsScoreModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="p-3 rounded-xl bg-purple-50/80 border border-purple-100 font-mono text-xs text-purple-950 text-center">
+              <div className="p-3 rounded-xl bg-purple-50/80 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-800/60 font-mono text-xs text-purple-950 dark:text-purple-200 text-center">
                 Score = (0.35 × Mention) + (0.25 × Citation) + (0.20 × Position) + (0.20 × Coverage)
               </div>
 
-              <div className="space-y-2.5 text-xs text-slate-600">
+              <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
                 <p>
                   <strong>• Brand Mentions (35%):</strong> Frequency of direct brand appearances across AI generated answers.
                 </p>
@@ -809,34 +809,34 @@ export default function AeoDashboardPage() {
         {/* Modal: Track Question */}
         {isTrackQuestionOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
+            <div className="bg-white dark:bg-[#0f172a] rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-slate-900">Track New AI Search Prompt</h3>
-                <button onClick={() => setIsTrackQuestionOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Track New AI Search Prompt</h3>
+                <button onClick={() => setIsTrackQuestionOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               <form onSubmit={handleTrackQuestionSubmit} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700">Question / Search Prompt</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Question / Search Prompt</label>
                   <textarea
                     value={questionText}
                     onChange={(e) => setQuestionText(e.target.value)}
                     placeholder="e.g. What are the best tools for SEO in 2026?"
                     rows={3}
                     required
-                    className="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-700">Category</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Category</label>
                     <select
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                       <option value="Brand Overview">Brand Overview</option>
                       <option value="Product Capabilities">Product Capabilities</option>
@@ -847,11 +847,11 @@ export default function AeoDashboardPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-700">Intent</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Intent</label>
                     <select
                       value={intent}
                       onChange={(e) => setIntent(e.target.value)}
-                      className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                       <option value="informational">Informational</option>
                       <option value="commercial">Commercial</option>
@@ -877,58 +877,58 @@ export default function AeoDashboardPage() {
         {/* Modal: New Project */}
         {isAddProjectOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
+            <div className="bg-white dark:bg-[#0f172a] rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-slate-900">Create AEO Project</h3>
-                <button onClick={() => setIsAddProjectOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Create AEO Project</h3>
+                <button onClick={() => setIsAddProjectOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               <form onSubmit={handleAddProjectSubmit} className="space-y-3.5">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Brand Name</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Brand Name</label>
                   <input
                     type="text"
                     value={newProjectName}
                     onChange={(e) => setNewProjectName(e.target.value)}
                     placeholder="e.g. Acme Cloud"
                     required
-                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Target Website Domain</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Target Website Domain</label>
                   <input
                     type="text"
                     value={newProjectDomain}
                     onChange={(e) => setNewProjectDomain(e.target.value)}
                     placeholder="e.g. acmecloud.com"
                     required
-                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Industry / Domain</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Industry / Domain</label>
                   <input
                     type="text"
                     value={newProjectIndustry}
                     onChange={(e) => setNewProjectIndustry(e.target.value)}
                     placeholder="e.g. Cloud Security & Infrastructure"
-                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Description (Optional)</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Description (Optional)</label>
                   <textarea
                     value={newProjectDescription}
                     onChange={(e) => setNewProjectDescription(e.target.value)}
                     placeholder="Brief description of primary services..."
                     rows={2}
-                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
 

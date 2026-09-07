@@ -73,22 +73,22 @@ export default function AeoEntityOptimizationPage() {
     const p = priority.toLowerCase();
     if (p === "critical") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-          <Flame className="w-3 h-3 text-rose-600" />
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60">
+          <Flame className="w-3 h-3 text-rose-600 dark:text-rose-400" />
           Critical
         </span>
       );
     }
     if (p === "high") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-          <AlertTriangle className="w-3 h-3 text-amber-600" />
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
+          <AlertTriangle className="w-3 h-3 text-amber-600 dark:text-amber-400" />
           High
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60">
         Medium
       </span>
     );
@@ -144,39 +144,39 @@ export default function AeoEntityOptimizationPage() {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mb-2">
-          <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
-            <span className="text-[11px] uppercase font-bold text-slate-500 block">Total Entities</span>
-            <span className="text-2xl font-black text-slate-900 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <span className="text-[11px] uppercase font-bold text-slate-500 dark:text-slate-400 block">Total Entities</span>
+            <span className="text-2xl font-black text-slate-900 dark:text-white mt-1 block">
               {data?.total_entities_count ?? "—"}
             </span>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-purple-100 shadow-sm">
-            <span className="text-[11px] uppercase font-bold text-purple-700 block">Brand Entities</span>
-            <span className="text-2xl font-black text-purple-950 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-purple-100 dark:border-purple-900/40 shadow-sm">
+            <span className="text-[11px] uppercase font-bold text-purple-700 dark:text-purple-400 block">Brand Entities</span>
+            <span className="text-2xl font-black text-purple-950 dark:text-purple-100 mt-1 block">
               {data?.brand_entities_count ?? "—"}
             </span>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-blue-100 shadow-sm">
-            <span className="text-[11px] uppercase font-bold text-blue-700 block">Product Entities</span>
-            <span className="text-2xl font-black text-blue-950 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-blue-100 dark:border-blue-900/40 shadow-sm">
+            <span className="text-[11px] uppercase font-bold text-blue-700 dark:text-blue-400 block">Product Entities</span>
+            <span className="text-2xl font-black text-blue-950 dark:text-blue-100 mt-1 block">
               {data?.product_entities_count ?? "—"}
             </span>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm">
-            <span className="text-[11px] uppercase font-bold text-indigo-700 block">Service Entities</span>
-            <span className="text-2xl font-black text-indigo-950 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-indigo-100 dark:border-indigo-900/40 shadow-sm">
+            <span className="text-[11px] uppercase font-bold text-indigo-700 dark:text-indigo-400 block">Service Entities</span>
+            <span className="text-2xl font-black text-indigo-950 dark:text-indigo-100 mt-1 block">
               {data?.service_entities_count ?? "—"}
             </span>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-            <span className="text-[11px] uppercase font-bold text-slate-600 block">Industry Entities</span>
-            <span className="text-2xl font-black text-slate-900 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <span className="text-[11px] uppercase font-bold text-slate-600 dark:text-slate-400 block">Industry Entities</span>
+            <span className="text-2xl font-black text-slate-900 dark:text-white mt-1 block">
               {data?.industry_entities_count ?? "—"}
             </span>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-rose-100 shadow-sm">
-            <span className="text-[11px] uppercase font-bold text-rose-700 block">Weak Entities</span>
-            <span className="text-2xl font-black text-rose-950 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-rose-100 dark:border-rose-900/40 shadow-sm">
+            <span className="text-[11px] uppercase font-bold text-rose-700 dark:text-rose-400 block">Weak Entities</span>
+            <span className="text-2xl font-black text-rose-950 dark:text-rose-100 mt-1 block">
               {data?.weak_entities_count ?? "—"}
             </span>
           </div>
@@ -184,26 +184,26 @@ export default function AeoEntityOptimizationPage() {
 
         {/* Entity Gaps & Action Items */}
         {(data?.gaps || []).length > 0 && (
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 mb-8">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 mb-4 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-600" />
+          <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6 mb-8">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
               Entity Optimization Action Items
             </h3>
             <div className="space-y-3">
               {data?.gaps.map((gap, i) => (
-                <div key={i} className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div key={i} className="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       {getPriorityBadge(gap.priority)}
-                      <span className="font-bold text-slate-900 text-sm">{gap.entity}</span>
-                      <span className="px-2 py-0.5 bg-purple-100 text-purple-800 rounded font-semibold text-[10px]">
+                      <span className="font-bold text-slate-900 dark:text-white text-sm">{gap.entity}</span>
+                      <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border border-transparent dark:border-purple-800/60 rounded font-semibold text-[10px]">
                         {gap.type}
                       </span>
                     </div>
-                    <div className="text-slate-600 font-medium">{gap.gap}</div>
+                    <div className="text-slate-600 dark:text-slate-300 font-medium">{gap.gap}</div>
                   </div>
-                  <div className="bg-white p-2.5 rounded-lg border border-slate-200 text-purple-950 font-medium sm:max-w-md">
-                    <span className="font-bold text-purple-700 block text-[10px] uppercase">Strategy</span>
+                  <div className="bg-white dark:bg-slate-800/80 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-purple-950 dark:text-purple-200 font-medium sm:max-w-md">
+                    <span className="font-bold text-purple-700 dark:text-purple-400 block text-[10px] uppercase">Strategy</span>
                     {gap.recommendation}
                   </div>
                 </div>
@@ -213,10 +213,10 @@ export default function AeoEntityOptimizationPage() {
         )}
 
         {/* Entity Knowledge Graph Cards */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+        <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
-              <Boxes className="w-4 h-4 text-purple-600" />
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+              <Boxes className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               Tracked Entities & Concept Associations
             </h3>
             <div className="relative">
@@ -226,23 +226,23 @@ export default function AeoEntityOptimizationPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search entities..."
-                className="bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-xl pl-8 pr-3 py-1.5 w-60 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-xs rounded-xl pl-8 pr-3 py-1.5 w-60 focus:outline-none focus:ring-2 focus:ring-purple-400"
               />
             </div>
           </div>
 
           {loading ? (
             <div className="py-20 text-center text-slate-400">
-              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-purple-600" />
+              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-purple-600 dark:text-purple-400" />
               <p className="text-sm font-semibold">Extracting knowledge graph entities...</p>
             </div>
           ) : error ? (
-            <div className="py-20 text-center text-rose-600">
+            <div className="py-20 text-center text-rose-600 dark:text-rose-400">
               <AlertTriangle className="w-8 h-8 mx-auto mb-2" />
               <p className="text-sm font-semibold">{error}</p>
             </div>
           ) : filteredEntities.length === 0 ? (
-            <div className="py-12 text-center text-slate-500 text-xs">
+            <div className="py-12 text-center text-slate-500 dark:text-slate-400 text-xs">
               No entities found matching your search.
             </div>
           ) : (
@@ -250,23 +250,23 @@ export default function AeoEntityOptimizationPage() {
               {filteredEntities.map((ent, idx) => (
                 <div
                   key={idx}
-                  className="bg-slate-50/60 p-4 rounded-xl border border-slate-200/80 hover:border-purple-300 transition"
+                  className="bg-slate-50/60 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-800/60 transition"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <div className="font-bold text-slate-900 text-sm">{ent.name}</div>
-                      <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800 uppercase">
+                      <div className="font-bold text-slate-900 dark:text-white text-sm">{ent.name}</div>
+                      <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border border-transparent dark:border-purple-800/60 uppercase">
                         {ent.type}
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="text-lg font-black text-slate-900">{ent.visibility_rate}%</span>
-                      <span className="text-[10px] text-slate-500 block">visibility</span>
+                      <span className="text-lg font-black text-slate-900 dark:text-white">{ent.visibility_rate}%</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 block">visibility</span>
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-slate-200/60">
-                    <span className="text-[10px] font-bold uppercase text-slate-400 block mb-1.5 flex items-center gap-1">
+                  <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-800">
+                    <span className="text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500 block mb-1.5 flex items-center gap-1">
                       <Tag className="w-3 h-3" />
                       Associated Concepts
                     </span>
@@ -275,13 +275,13 @@ export default function AeoEntityOptimizationPage() {
                         ent.concepts.map((c, i) => (
                           <span
                             key={i}
-                            className="px-2 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-medium text-slate-700"
+                            className="px-2 py-0.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-[10px] font-medium text-slate-700 dark:text-slate-300"
                           >
                             {c}
                           </span>
                         ))
                       ) : (
-                        <span className="text-[10px] text-slate-400 italic">No associated concepts detected</span>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 italic">No associated concepts detected</span>
                       )}
                     </div>
                   </div>

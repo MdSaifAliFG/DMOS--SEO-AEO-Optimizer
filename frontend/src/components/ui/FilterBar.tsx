@@ -39,7 +39,7 @@ export function FilterBar({
   return (
     <div
       className={cn(
-        "p-3 rounded-xl bg-white border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3",
+        "p-3 rounded-xl bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3",
         className
       )}
     >
@@ -51,22 +51,22 @@ export function FilterBar({
           placeholder={searchPlaceholder}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-9 pr-3.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-500 transition-colors"
+          className="w-full pl-9 pr-3.5 py-1.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 transition-colors"
         />
       </div>
 
       {/* Filter dropdowns & Actions */}
       <div className="flex items-center gap-2 flex-wrap">
         {filters.map((filter) => (
-          <div key={filter.id} className="flex items-center gap-1.5 text-xs text-slate-500">
+          <div key={filter.id} className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
             <span className="font-medium">{filter.label}:</span>
             <select
               value={filter.value}
               onChange={(e) => filter.onChange(e.target.value)}
-              className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:bg-white focus:border-blue-500 font-medium transition-colors"
+              className="px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 font-medium transition-colors cursor-pointer"
             >
               {filter.options.map((opt) => (
-                <option key={opt.value} value={opt.value}>
+                <option key={opt.value} value={opt.value} className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                   {opt.label}
                 </option>
               ))}
@@ -78,7 +78,7 @@ export function FilterBar({
           <button
             onClick={onReset}
             title="Reset Filters"
-            className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>

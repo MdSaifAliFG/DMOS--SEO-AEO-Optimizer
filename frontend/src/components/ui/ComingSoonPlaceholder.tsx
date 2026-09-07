@@ -20,7 +20,7 @@ export const ComingSoonPlaceholder: React.FC<ComingSoonPlaceholderProps> = ({
 }) => {
   return (
     <div className="max-w-4xl mx-auto py-8">
-      <Card className="p-8 md:p-12 relative overflow-hidden border-slate-800">
+      <Card className="p-8 md:p-12 relative overflow-hidden">
         {/* Background glow ambient */}
         <div className="absolute -right-20 -top-20 w-80 h-80 bg-primary-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -35,28 +35,28 @@ export const ComingSoonPlaceholder: React.FC<ComingSoonPlaceholderProps> = ({
             </Badge>
           </div>
 
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-primary-600/20 to-purple-600/20 border border-primary-500/30 flex items-center justify-center text-primary-400 mb-5 shadow-xl">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-primary-600/20 to-purple-600/20 border border-primary-500/30 flex items-center justify-center text-primary-600 dark:text-primary-400 mb-5 shadow-xl">
             <Sparkles className="w-8 h-8" />
           </div>
 
-          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-100 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             {title}
           </h1>
 
-          <p className="text-slate-400 max-w-xl mt-3 text-sm md:text-base leading-relaxed">
+          <p className="text-slate-500 dark:text-slate-400 max-w-xl mt-3 text-sm md:text-base leading-relaxed">
             {description}
           </p>
 
           {features.length > 0 && (
-            <div className="w-full max-w-md my-8 p-5 rounded-xl bg-surface-950/60 border border-slate-800 text-left">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">
-                <Layers className="w-3.5 h-3.5 text-primary-400" />
+            <div className="w-full max-w-md my-8 p-5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-left">
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3">
+                <Layers className="w-3.5 h-3.5 text-primary-500 dark:text-primary-400" />
                 Planned Capabilities
               </div>
               <ul className="space-y-2.5">
                 {features.map((feat, idx) => (
-                  <li key={idx} className="flex items-start gap-2.5 text-xs text-slate-300">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary-400 mt-1.5 shrink-0" />
+                  <li key={idx} className="flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-300">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary-500 dark:bg-primary-400 mt-1.5 shrink-0" />
                     <span>{feat}</span>
                   </li>
                 ))}

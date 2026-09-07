@@ -124,8 +124,8 @@ export default function ProjectDetailPage() {
                 Projects
               </Button>
             </Link>
-            <div className="h-4 w-px bg-slate-800" />
-            <h1 className="text-xl font-bold text-slate-100">{project.name}</h1>
+            <div className="h-4 w-px bg-slate-200 dark:bg-slate-800" />
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white">{project.name}</h1>
           </div>
 
           <div className="flex items-center gap-2.5">
@@ -150,7 +150,7 @@ export default function ProjectDetailPage() {
               variant="ghost"
               size="sm"
               onClick={() => setIsDeleteModalOpen(true)}
-              className="text-slate-400 hover:text-rose-400 hover:bg-rose-950/20"
+              className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20"
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -158,33 +158,33 @@ export default function ProjectDetailPage() {
         </div>
 
         {/* Hero Domain Card */}
-        <Card className="p-6 md:p-8 relative overflow-hidden border-slate-800">
+        <Card className="p-6 md:p-8 relative overflow-hidden">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary-600/20 to-indigo-600/20 border border-primary-500/30 flex items-center justify-center text-primary-400 shrink-0 shadow-lg">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary-600/20 to-indigo-600/20 border border-primary-500/30 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0 shadow-lg">
                 <Globe className="w-7 h-7" />
               </div>
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-xl font-extrabold text-white">{project.name}</h2>
+                  <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">{project.name}</h2>
                   <Badge variant="emerald" size="sm">
                     Active Target
                   </Badge>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-slate-400">
+                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                   <span>{project.domain}</span>
                   <a
                     href={`https://${project.domain}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary-400 hover:text-primary-300 flex items-center gap-1 text-xs"
+                    className="text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 flex items-center gap-1 text-xs"
                   >
                     <span>Visit website</span>
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 </div>
                 {project.description && (
-                  <p className="text-xs text-slate-300 mt-2 max-w-2xl leading-relaxed">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 max-w-2xl leading-relaxed">
                     {project.description}
                   </p>
                 )}
@@ -192,28 +192,28 @@ export default function ProjectDetailPage() {
             </div>
 
             {/* Quick Metadata Stats */}
-            <div className="flex flex-wrap gap-4 pt-4 md:pt-0 border-t md:border-t-0 border-slate-800">
-              <div className="p-3 rounded-xl bg-surface-950/60 border border-slate-800 min-w-28 text-center">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">
+            <div className="flex flex-wrap gap-4 pt-4 md:pt-0 border-t md:border-t-0 border-slate-200 dark:border-slate-800">
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 min-w-28 text-center">
+                <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block">
                   Total Scans
                 </span>
-                <span className="text-lg font-extrabold text-slate-100">
+                <span className="text-lg font-extrabold text-slate-900 dark:text-white">
                   {totalScans}
                 </span>
               </div>
-              <div className="p-3 rounded-xl bg-surface-950/60 border border-slate-800 min-w-28 text-center">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 min-w-28 text-center">
+                <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block">
                   Crawl Depth
                 </span>
-                <span className="text-lg font-extrabold text-slate-100">
+                <span className="text-lg font-extrabold text-slate-900 dark:text-white">
                   {(project.settings?.crawl_depth as number) || 3}
                 </span>
               </div>
-              <div className="p-3 rounded-xl bg-surface-950/60 border border-slate-800 min-w-28 text-center">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 min-w-28 text-center">
+                <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block">
                   Created
                 </span>
-                <span className="text-xs font-semibold text-slate-300">
+                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                   {formatDate(project.created_at).split(",")[0]}
                 </span>
               </div>
@@ -225,8 +225,8 @@ export default function ProjectDetailPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-bold text-slate-100">Audit Scan History</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">Audit Scan History</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Lifecycle executions and crawler orchestration runs
               </p>
             </div>
@@ -258,10 +258,10 @@ export default function ProjectDetailPage() {
               }
             />
           ) : (
-            <div className="rounded-2xl border border-slate-800 bg-surface-950/60 overflow-hidden shadow-xl">
+            <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#0f172a] overflow-hidden shadow-xs dark:shadow-none">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-surface-900/90 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
+                  <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-800">
                     <tr>
                       <th className="px-5 py-3.5">Scan Target</th>
                       <th className="px-5 py-3.5">Type</th>
@@ -272,26 +272,26 @@ export default function ProjectDetailPage() {
                       <th className="px-5 py-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-850">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {scans.map((scan) => (
                       <tr
                         key={scan.id}
-                        className="hover:bg-white/[0.02] transition-colors"
+                        className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors"
                       >
-                        <td className="px-5 py-4 font-mono font-medium text-slate-200">
+                        <td className="px-5 py-4 font-mono font-medium text-slate-800 dark:text-slate-200">
                           <div className="truncate max-w-[200px]" title={scan.target_url}>
                             {scan.target_url}
                           </div>
                         </td>
-                        <td className="px-5 py-4 text-slate-300 capitalize">
+                        <td className="px-5 py-4 text-slate-700 dark:text-slate-300 capitalize">
                           {scan.scan_type.replace("_", " ")}
                         </td>
                         <td className="px-5 py-4">
                           <ScanStatusBadge status={scan.status} size="sm" />
                         </td>
-                        <td className="px-5 py-4 font-mono text-slate-300">
+                        <td className="px-5 py-4 font-mono text-slate-700 dark:text-slate-300">
                           <div className="flex items-center gap-2">
-                            <div className="w-16 h-1.5 bg-surface-800 rounded-full overflow-hidden">
+                            <div className="w-16 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-primary-500 rounded-full"
                                 style={{ width: `${scan.progress}%` }}
@@ -300,10 +300,10 @@ export default function ProjectDetailPage() {
                             <span>{scan.progress}%</span>
                           </div>
                         </td>
-                        <td className="px-5 py-4 text-slate-400 max-w-[180px] truncate">
+                        <td className="px-5 py-4 text-slate-500 dark:text-slate-400 max-w-[180px] truncate">
                           {scan.current_step}
                         </td>
-                        <td className="px-5 py-4 text-slate-400">
+                        <td className="px-5 py-4 text-slate-500 dark:text-slate-400">
                           {formatTimeAgo(scan.created_at)}
                         </td>
                         <td className="px-5 py-4 text-right">
@@ -323,12 +323,12 @@ export default function ProjectDetailPage() {
         </div>
 
         {/* Phase 2 Feature Previews (Adhering to PRD Rule #1 & #5) */}
-        <div className="space-y-4 pt-6 border-t border-slate-800">
+        <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-slate-800">
           <div>
-            <h3 className="text-base font-bold text-slate-100">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">
               Future Analysis Modules
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Clean architectural extension slots for upcoming Phase 2 intelligence engines
             </p>
           </div>
@@ -336,33 +336,33 @@ export default function ProjectDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card variant="subtle" className="p-5 opacity-70 hover:opacity-100 transition-opacity">
               <div className="flex items-center justify-between mb-3">
-                <TrendingUp className="w-5 h-5 text-amber-400" />
+                <TrendingUp className="w-5 h-5 text-amber-500 dark:text-amber-400" />
                 <Badge variant="amber" size="sm">Phase 2</Badge>
               </div>
-              <h4 className="text-sm font-bold text-slate-200">Keyword Tracking</h4>
-              <p className="text-xs text-slate-400 mt-1">
+              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">Keyword Tracking</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 SERP ranking monitor and keyword position distribution.
               </p>
             </Card>
 
             <Card variant="subtle" className="p-5 opacity-70 hover:opacity-100 transition-opacity">
               <div className="flex items-center justify-between mb-3">
-                <Users className="w-5 h-5 text-amber-400" />
+                <Users className="w-5 h-5 text-amber-500 dark:text-amber-400" />
                 <Badge variant="amber" size="sm">Phase 2</Badge>
               </div>
-              <h4 className="text-sm font-bold text-slate-200">Competitor Matrix</h4>
-              <p className="text-xs text-slate-400 mt-1">
+              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">Competitor Matrix</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Domain overlap, competitive gap analysis, and content velocity.
               </p>
             </Card>
 
             <Card variant="subtle" className="p-5 opacity-70 hover:opacity-100 transition-opacity">
               <div className="flex items-center justify-between mb-3">
-                <Sparkles className="w-5 h-5 text-amber-400" />
+                <Sparkles className="w-5 h-5 text-amber-500 dark:text-amber-400" />
                 <Badge variant="amber" size="sm">Phase 2</Badge>
               </div>
-              <h4 className="text-sm font-bold text-slate-200">AEO & AI Search</h4>
-              <p className="text-xs text-slate-400 mt-1">
+              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">AEO & AI Search</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Answer Engine citation tracking and LLM brand visibility index.
               </p>
             </Card>

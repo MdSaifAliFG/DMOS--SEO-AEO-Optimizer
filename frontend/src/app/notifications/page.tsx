@@ -126,28 +126,28 @@ export default function NotificationsPage() {
     switch (type) {
       case "seo":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800/60">
             <Activity className="w-3 h-3" />
             SEO
           </span>
         );
       case "aeo":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800/60">
             <Bot className="w-3 h-3" />
             AEO
           </span>
         );
       case "system":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60">
             <Sparkles className="w-3 h-3" />
             SYSTEM
           </span>
         );
       case "security":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800/60">
             <ShieldCheck className="w-3 h-3" />
             SECURITY
           </span>
@@ -159,17 +159,17 @@ export default function NotificationsPage() {
     <DashboardShell>
       <div className="space-y-6 pb-12">
         {/* Page Banner & Controls */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 border border-blue-100">
+              <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0 border border-blue-100 dark:border-blue-800/60">
                 <Bell className="w-5 h-5" />
               </div>
               <div>
-                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                   Notification Center
                 </h1>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   Real-time events, SEO crawl audit flags, and AI answer engine alerts.
                 </p>
               </div>
@@ -179,7 +179,7 @@ export default function NotificationsPage() {
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={handleCreateTestAlert}
-              className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 dark:text-blue-300 dark:border-blue-800/60 font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Simulate Alert</span>
@@ -188,9 +188,9 @@ export default function NotificationsPage() {
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
               >
-                <CheckCheck className="w-3.5 h-3.5 text-slate-600" />
+                <CheckCheck className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
                 <span>Mark all as read</span>
               </button>
             )}
@@ -198,7 +198,7 @@ export default function NotificationsPage() {
             {notifications.length > 0 ? (
               <button
                 onClick={clearAll}
-                className="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                className="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 dark:bg-slate-800/80 dark:hover:bg-rose-950/50 dark:border-slate-700 dark:text-slate-400 dark:hover:text-rose-400 dark:hover:border-rose-800/60 font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Clear all</span>
@@ -216,41 +216,41 @@ export default function NotificationsPage() {
 
         {/* Quick Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500">Total Alerts</span>
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Alerts</span>
               <Bell className="w-4 h-4 text-slate-400" />
             </div>
-            <p className="text-2xl font-black text-slate-900 mt-1">{counts.all}</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">{counts.all}</p>
           </div>
 
-          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500">Unread</span>
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Unread</span>
               <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
             </div>
-            <p className="text-2xl font-black text-blue-600 mt-1">{counts.unread}</p>
+            <p className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">{counts.unread}</p>
           </div>
 
-          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500">SEO Alerts</span>
-              <Activity className="w-4 h-4 text-sky-600" />
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">SEO Alerts</span>
+              <Activity className="w-4 h-4 text-sky-600 dark:text-sky-400" />
             </div>
-            <p className="text-2xl font-black text-slate-900 mt-1">{counts.seo}</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">{counts.seo}</p>
           </div>
 
-          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500">AEO Updates</span>
-              <Bot className="w-4 h-4 text-purple-600" />
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">AEO Updates</span>
+              <Bot className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             </div>
-            <p className="text-2xl font-black text-slate-900 mt-1">{counts.aeo}</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">{counts.aeo}</p>
           </div>
         </div>
 
         {/* Filter & Search Bar */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-3 shadow-xs space-y-3">
+        <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-3 shadow-xs space-y-3">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             {/* Category Filter Tabs */}
             <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
@@ -271,8 +271,8 @@ export default function NotificationsPage() {
                     onClick={() => setActiveTab(tab.key)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
                       isActive
-                        ? "bg-slate-900 text-white shadow-xs"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                        ? "bg-slate-900 dark:bg-blue-600 text-white shadow-xs"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
                     <span>{tab.label}</span>
@@ -280,7 +280,7 @@ export default function NotificationsPage() {
                       className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                         isActive
                           ? "bg-white/20 text-white"
-                          : "bg-slate-100 text-slate-600"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                       }`}
                     >
                       {tab.count}
@@ -298,7 +298,7 @@ export default function NotificationsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search alerts..."
-                className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-800 transition-all"
               />
             </div>
           </div>
@@ -313,8 +313,8 @@ export default function NotificationsPage() {
                 onClick={() => !notif.read && markAsRead(notif.id)}
                 className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 group cursor-pointer ${
                   notif.read
-                    ? "bg-white border-slate-200 hover:border-slate-300"
-                    : "bg-blue-50/40 border-blue-200/80 shadow-xs hover:border-blue-300 hover:bg-blue-50/70"
+                    ? "bg-white dark:bg-[#0f172a] border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                    : "bg-blue-50/40 dark:bg-blue-950/30 border-blue-200/80 dark:border-blue-900/60 shadow-xs hover:border-blue-300 dark:hover:border-blue-800 hover:bg-blue-50/70 dark:hover:bg-blue-950/40"
                 }`}
               >
                 <div className="flex items-start gap-3 min-w-0">
@@ -323,7 +323,7 @@ export default function NotificationsPage() {
                   <div className="space-y-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       {getTypeBadge(notif.type)}
-                      <h2 className="text-xs sm:text-sm font-bold text-slate-900 leading-tight">
+                      <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-tight">
                         {notif.title}
                       </h2>
                       {!notif.read && (
@@ -331,17 +331,17 @@ export default function NotificationsPage() {
                       )}
                     </div>
 
-                    <p className="text-xs text-slate-600 leading-relaxed max-w-3xl">
+                    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">
                       {notif.message}
                     </p>
 
-                    <div className="flex items-center gap-3 pt-0.5 text-[11px] text-slate-400">
+                    <div className="flex items-center gap-3 pt-0.5 text-[11px] text-slate-400 dark:text-slate-500">
                       <span>{notif.timestamp}</span>
                       {notif.link && (
                         <Link
                           href={notif.link}
                           onClick={(e) => e.stopPropagation()}
-                          className="text-blue-600 hover:text-blue-700 font-semibold inline-flex items-center gap-1 hover:underline"
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold inline-flex items-center gap-1 hover:underline"
                         >
                           <span>{notif.linkText || "View Details"}</span>
                           <ArrowRight className="w-3 h-3" />
@@ -361,8 +361,8 @@ export default function NotificationsPage() {
                     disabled={notif.read}
                     className={`p-1.5 rounded-lg transition-colors ${
                       notif.read
-                        ? "text-slate-300 cursor-default"
-                        : "text-slate-500 hover:text-blue-600 hover:bg-blue-50 cursor-pointer"
+                        ? "text-slate-300 dark:text-slate-700 cursor-default"
+                        : "text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 cursor-pointer"
                     }`}
                   >
                     <CheckCheck className="w-4 h-4" />
@@ -374,7 +374,7 @@ export default function NotificationsPage() {
                       removeNotification(notif.id);
                     }}
                     title="Delete Notification"
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -383,15 +383,15 @@ export default function NotificationsPage() {
             ))
           ) : (
             /* Empty State */
-            <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mx-auto">
+            <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-12 text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mx-auto">
                 <Bell className="w-6 h-6" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm font-bold text-slate-800">
+                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
                   No notifications match your filter
                 </h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                   {searchQuery
                     ? `No alert results found for "${searchQuery}". Try a different search term.`
                     : "You're all caught up! No active notifications in this category."}
@@ -403,7 +403,7 @@ export default function NotificationsPage() {
                     setActiveTab("all");
                     setSearchQuery("");
                   }}
-                  className="px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all cursor-pointer"
                 >
                   Reset Filters
                 </button>

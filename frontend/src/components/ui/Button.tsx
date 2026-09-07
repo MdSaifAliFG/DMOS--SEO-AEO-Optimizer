@@ -24,7 +24,7 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    "inline-flex items-center justify-center font-medium rounded-lg whitespace-nowrap shrink-0 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.99]";
+    "inline-flex items-center justify-center font-medium rounded-lg whitespace-nowrap shrink-0 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#090d16] disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.99]";
 
   const sizeStyles = {
     sm: "px-2.5 py-1.5 text-xs gap-1.5",
@@ -36,13 +36,13 @@ export const Button: React.FC<ButtonProps> = ({
     primary:
       "bg-primary-600 hover:bg-primary-700 text-white shadow-xs focus:ring-primary-500 border border-primary-700",
     secondary:
-      "bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-xs focus:ring-slate-400",
+      "bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-xs focus:ring-slate-400 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 dark:border-slate-700 dark:hover:border-slate-600 cursor-pointer",
     outline:
-      "bg-transparent hover:bg-slate-100 text-slate-700 border border-slate-300 focus:ring-slate-400",
+      "bg-transparent hover:bg-slate-100 text-slate-700 border border-slate-300 focus:ring-slate-400 dark:hover:bg-slate-800 dark:text-slate-300 dark:border-slate-700 cursor-pointer",
     danger:
       "bg-rose-600 hover:bg-rose-700 text-white shadow-xs focus:ring-rose-500 border border-rose-700",
     ghost:
-      "bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 focus:ring-slate-400",
+      "bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 focus:ring-slate-400 dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-slate-200 cursor-pointer",
     aeo:
       "bg-aeo-600 hover:bg-aeo-700 text-white shadow-xs focus:ring-aeo-500 border border-aeo-700",
   };

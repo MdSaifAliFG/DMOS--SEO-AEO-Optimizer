@@ -12,12 +12,23 @@
   --ring: #2563eb;
 }
 
+.dark {
+  --background: #090d16;
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #3b82f6;
+}
+
 @layer base {
   body {
     background-color: var(--background);
     color: var(--foreground);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 }
 
@@ -40,11 +51,29 @@
   background: #94a3b8;
 }
 
-/* Light Card Panels */
+.dark ::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #1e293b;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Card Panels */
 .saas-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+}
+
+.dark .saas-card {
+  background: #0f172a;
+  border-color: #1e293b;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
 }
 
 .saas-card-hover {
@@ -55,11 +84,22 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
 }
 
+.dark .saas-card-hover:hover {
+  border-color: #334155;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.5);
+}
+
 /* Clean Badge Classes */
 .badge-blue {
   background-color: #eff6ff;
   color: #1d4ed8;
   border: 1px solid #dbeafe;
+}
+
+.dark .badge-blue {
+  background-color: rgba(30, 58, 138, 0.35);
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .badge-green {
@@ -68,10 +108,22 @@
   border: 1px solid #dcfce7;
 }
 
+.dark .badge-green {
+  background-color: rgba(6, 78, 59, 0.35);
+  color: #86efac;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
 .badge-amber {
   background-color: #fffbeb;
   color: #b45309;
   border: 1px solid #fef3c7;
+}
+
+.dark .badge-amber {
+  background-color: rgba(120, 53, 15, 0.35);
+  color: #fcd34d;
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
 .badge-red {
@@ -80,10 +132,22 @@
   border: 1px solid #fee2e2;
 }
 
+.dark .badge-red {
+  background-color: rgba(127, 29, 29, 0.35);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
 .badge-purple {
   background-color: #faf5ff;
   color: #7e22ce;
   border: 1px solid #f3e8ff;
+}
+
+.dark .badge-purple {
+  background-color: rgba(88, 28, 135, 0.35);
+  color: #d8b4fe;
+  border-color: rgba(168, 85, 247, 0.3);
 }
 
 /* Floating Badges Animation */

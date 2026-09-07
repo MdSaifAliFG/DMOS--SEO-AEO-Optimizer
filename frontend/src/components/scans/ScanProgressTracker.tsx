@@ -53,14 +53,14 @@ export const ScanProgressTracker: React.FC<ScanProgressTrackerProps> = ({
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-200">Current Phase:</span>
-            <span className="text-primary-400 font-medium">{currentStep}</span>
+            <span className="font-semibold text-slate-700 dark:text-slate-200">Current Phase:</span>
+            <span className="text-primary-600 dark:text-primary-400 font-medium">{currentStep}</span>
           </div>
-          <span className="font-mono font-bold text-slate-300">{progress}%</span>
+          <span className="font-mono font-bold text-slate-600 dark:text-slate-300">{progress}%</span>
         </div>
 
         {/* Bar */}
-        <div className="w-full h-2.5 bg-surface-900 rounded-full overflow-hidden border border-slate-800 p-0.5">
+        <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800 p-0.5">
           <div
             className={cn(
               "h-full rounded-full transition-all duration-500",
@@ -69,7 +69,7 @@ export const ScanProgressTracker: React.FC<ScanProgressTrackerProps> = ({
                 : status === "failed"
                 ? "bg-rose-500"
                 : status === "cancelled"
-                ? "bg-slate-600"
+                ? "bg-slate-500"
                 : "bg-gradient-to-r from-primary-600 to-cyan-400"
             )}
             style={{ width: `${Math.max(progress, 3)}%` }}
@@ -96,38 +96,38 @@ export const ScanProgressTracker: React.FC<ScanProgressTrackerProps> = ({
               className={cn(
                 "p-3 rounded-xl border text-left transition-all duration-200",
                 state === "current"
-                  ? "bg-primary-500/10 border-primary-500/40 shadow-lg shadow-primary-950/20"
+                  ? "bg-primary-50 dark:bg-primary-500/10 border-primary-300 dark:border-primary-500/40 shadow-xs"
                   : state === "done"
-                  ? "bg-emerald-500/5 border-emerald-500/20"
+                  ? "bg-emerald-50/60 dark:bg-emerald-500/5 border-emerald-200 dark:border-emerald-500/20"
                   : state === "aborted"
-                  ? "bg-rose-500/5 border-rose-500/20"
-                  : "bg-surface-900/40 border-slate-800/60 opacity-60"
+                  ? "bg-rose-50/60 dark:bg-rose-500/5 border-rose-200 dark:border-rose-500/20"
+                  : "bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800/60 opacity-60"
               )}
             >
               <div className="flex items-center gap-2 mb-1.5">
                 {state === "done" ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 ) : state === "current" ? (
-                  <Loader2 className="w-4 h-4 text-primary-400 animate-spin shrink-0" />
+                  <Loader2 className="w-4 h-4 text-primary-600 dark:text-primary-400 animate-spin shrink-0" />
                 ) : state === "aborted" ? (
-                  <XCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                  <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
                 ) : (
-                  <Clock className="w-4 h-4 text-slate-500 shrink-0" />
+                  <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" />
                 )}
                 <span
                   className={cn(
                     "text-xs font-bold truncate",
                     state === "current"
-                      ? "text-primary-300"
+                      ? "text-primary-700 dark:text-primary-300"
                       : state === "done"
-                      ? "text-emerald-300"
-                      : "text-slate-300"
+                      ? "text-emerald-700 dark:text-emerald-300"
+                      : "text-slate-700 dark:text-slate-300"
                   )}
                 >
                   {stage.label}
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 line-clamp-2 leading-tight">
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-tight">
                 {stage.description}
               </p>
             </div>

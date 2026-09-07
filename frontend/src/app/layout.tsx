@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { NotificationProvider } from "@/lib/notifications";
+import { ThemeProvider } from "@/lib/theme";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -28,11 +29,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${jakarta.variable} scroll-smooth`}>
+    <html lang="en" suppressHydrationWarning className={`${jakarta.variable} scroll-smooth`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const stored = localStorage.getItem('seosensing_theme');
+                if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
       <body className="bg-background text-foreground min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white">
-        <NotificationProvider>
-          <ToastProvider>{children}</ToastProvider>
-        </NotificationProvider>
+        <ThemeProvider>
+          <NotificationProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </NotificationProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

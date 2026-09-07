@@ -47,25 +47,25 @@ export default function OverviewPage() {
         {/* 2 Primary Module Launch Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* Module 1: SEO Optimization */}
-          <Card className="p-5 sm:p-7 border-slate-200 bg-white shadow-xs rounded-2xl flex flex-col justify-between space-y-6 hover:border-blue-300 transition-all">
+          <Card className="p-5 sm:p-7 border-slate-200 bg-white dark:bg-[#0f172a] dark:border-slate-800 shadow-xs rounded-2xl flex flex-col justify-between space-y-6 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/20">
                   <Globe className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200">
+                <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-400 dark:border-blue-800/60">
                   Active Engine
                 </span>
               </div>
 
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900">SEO Optimization</h3>
-                <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">SEO Optimization</h3>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                   Deterministic website crawler, robots.txt & XML sitemap analysis, on-page HTML tag inspections, and prioritized technical issues.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 text-xs text-slate-600 font-medium pt-2 border-t border-slate-100">
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-300 font-medium pt-2 border-t border-slate-100 dark:border-slate-800">
                 <span>• Technical Health Scoring</span>
                 <span>• BFS Web Crawler</span>
                 <span>• Indexability Audits</span>
@@ -73,8 +73,8 @@ export default function OverviewPage() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-              <span className="text-xs text-slate-400 font-mono truncate">/seo/dashboard</span>
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate">/seo/dashboard</span>
               <Link href="/seo/dashboard" className="shrink-0">
                 <Button variant="primary" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
                   Open SEO Module
@@ -84,25 +84,25 @@ export default function OverviewPage() {
           </Card>
 
           {/* Module 2: AEO Optimization */}
-          <Card className="p-5 sm:p-7 border-slate-200 bg-white shadow-xs rounded-2xl flex flex-col justify-between space-y-6 hover:border-purple-300 transition-all">
+          <Card className="p-5 sm:p-7 border-slate-200 bg-white dark:bg-[#0f172a] dark:border-slate-800 shadow-xs rounded-2xl flex flex-col justify-between space-y-6 hover:border-purple-300 dark:hover:border-purple-500/50 transition-all">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-purple-600 flex items-center justify-center text-white shadow-md shadow-purple-600/20">
                   <Bot className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-purple-50 text-purple-700 border border-purple-200">
+                <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-950/60 dark:text-purple-400 dark:border-purple-800/60">
                   AI Answer Engine
                 </span>
               </div>
 
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900">AEO Optimization</h3>
-                <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">AEO Optimization</h3>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                   Monitor brand visibility, citation frequency, and buyer prompt positioning across ChatGPT Search, Perplexity AI, Google AI, and Gemini.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 text-xs text-slate-600 font-medium pt-2 border-t border-slate-100">
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-300 font-medium pt-2 border-t border-slate-100 dark:border-slate-800">
                 <span>• AI Visibility Rate %</span>
                 <span>• Engine Status (5 Models)</span>
                 <span>• Tracked Buyer Prompts</span>
@@ -110,8 +110,8 @@ export default function OverviewPage() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-              <span className="text-xs text-slate-400 font-mono truncate">/aeo/dashboard</span>
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate">/aeo/dashboard</span>
               <Link href="/aeo/dashboard" className="shrink-0">
                 <Button variant="aeo" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
                   Open AEO Module

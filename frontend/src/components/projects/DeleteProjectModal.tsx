@@ -49,28 +49,28 @@ export const DeleteProjectModal: React.FC<DeleteProjectModalProps> = ({
       maxWidth="sm"
     >
       <div className="space-y-5">
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-900 flex items-start gap-3 shadow-2xs">
-          <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
+        <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/60 text-xs text-rose-900 dark:text-rose-200 flex items-start gap-3 shadow-2xs">
+          <div className="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 mt-0.5">
             <AlertTriangle className="w-4 h-4" />
           </div>
           <div className="space-y-1">
-            <p className="font-semibold text-rose-950">
+            <p className="font-semibold text-rose-950 dark:text-rose-100">
               Permanently delete {project.name}?
             </p>
-            <p className="text-rose-700 text-[11.5px] leading-relaxed">
-              All associated crawl data, page metadata, detected SEO issues, and optimization history for <span className="font-mono font-semibold text-rose-900">{project.domain}</span> will be permanently removed.
+            <p className="text-rose-700 dark:text-rose-300 text-[11.5px] leading-relaxed">
+              All associated crawl data, page metadata, detected SEO issues, and optimization history for <span className="font-mono font-semibold text-rose-900 dark:text-rose-200">{project.domain}</span> will be permanently removed.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={onClose}
             disabled={isDeleting}
-            className="text-slate-600 hover:text-slate-900"
+            className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           >
             Cancel
           </Button>

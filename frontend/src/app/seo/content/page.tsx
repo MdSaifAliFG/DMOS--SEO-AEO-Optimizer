@@ -81,32 +81,32 @@ export default function SeoContentPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100 text-blue-600">
+              <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400">
                 <BookOpen className="w-5 h-5" />
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Content & Metadata Optimization</h1>
-              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Content & Metadata Optimization</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                 Quality Audit
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
               Audit on-page title tags, meta descriptions, heading hierarchies, and word count distributions.
             </p>
           </div>
 
           {projects.length > 0 && (
-            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 shrink-0">
-              <span className="text-xs font-semibold text-slate-600">Active Website:</span>
+            <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 shrink-0">
+              <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Active Website:</span>
               <select
                 value={selectedProjectId}
                 onChange={(e) => handleProjectChange(e.target.value)}
-                className="bg-transparent text-xs font-semibold text-slate-900 focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
               >
                 {projects.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-white text-slate-900">
+                  <option key={p.id} value={p.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
                     {p.name} ({p.domain})
                   </option>
                 ))}
@@ -129,7 +129,7 @@ export default function SeoContentPage() {
             value={missingTitles}
             subValue="0% of crawled pages"
             change={missingTitles > 0 ? { value: `${missingTitles} missing`, trend: "down" } : undefined}
-            icon={<FileText className="w-5 h-5 text-blue-600" />}
+            icon={<FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
             variant="blue"
           />
 
@@ -138,7 +138,7 @@ export default function SeoContentPage() {
             value={missingDescriptions}
             subValue="Snippet optimization"
             change={missingDescriptions > 0 ? { value: `${missingDescriptions} missing`, trend: "down" } : undefined}
-            icon={<AlertTriangle className="w-5 h-5 text-amber-600" />}
+            icon={<AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />}
             variant="amber"
           />
 
@@ -147,23 +147,23 @@ export default function SeoContentPage() {
             value={duplicateH1}
             subValue="Hierarchy structure"
             change={duplicateH1 > 0 ? { value: `${duplicateH1} pages`, trend: "down" } : undefined}
-            icon={<Sparkles className="w-5 h-5 text-purple-600" />}
+            icon={<Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />}
             variant="purple"
           />
         </div>
 
         {/* Content Pages Table */}
-        <Card className="p-0 border-slate-200 overflow-hidden">
-          <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+        <Card className="p-0 border-slate-200 dark:border-slate-800 dark:bg-[#0f172a] overflow-hidden">
+          <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-center justify-between">
+            <h3 className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">
               On-Page Content Checklist
             </h3>
-            <span className="text-xs text-slate-500 font-mono">{totalPages} Pages Analyzed</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">{totalPages} Pages Analyzed</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs min-w-[680px]">
-              <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase">
+              <thead className="bg-slate-50/80 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase">
                 <tr>
                   <th className="py-3 px-4">Page URL</th>
                   <th className="py-3 px-4">Title Tag</th>
@@ -172,7 +172,7 @@ export default function SeoContentPage() {
                   <th className="py-3 px-4 text-center">Word Count</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                 {pages.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-10 text-center text-slate-400">
@@ -181,21 +181,21 @@ export default function SeoContentPage() {
                   </tr>
                 ) : (
                   pages.map((p) => (
-                    <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3 px-4 font-mono font-medium text-slate-800 truncate max-w-[200px]">
+                    <tr key={p.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="py-3 px-4 font-mono font-medium text-slate-800 dark:text-slate-300 truncate max-w-[200px]">
                         {p.url}
                       </td>
 
-                      <td className="py-3 px-4 max-w-sm truncate text-slate-900 font-medium">
-                        {p.title || <span className="text-rose-600 italic">Missing Title</span>}
+                      <td className="py-3 px-4 max-w-sm truncate text-slate-900 dark:text-white font-medium">
+                        {p.title || <span className="text-rose-600 dark:text-rose-400 italic">Missing Title</span>}
                       </td>
 
                       <td className="py-3 px-4 text-center font-mono">
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                             (p.title?.length || 0) >= 30 && (p.title?.length || 0) <= 60
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                              : "bg-amber-50 text-amber-700 border border-amber-200"
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
+                              : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
                           }`}
                         >
                           {p.title?.length || 0} chars
@@ -206,15 +206,15 @@ export default function SeoContentPage() {
                         <span
                           className={`px-1.5 py-0.2 rounded text-[10px] ${
                             p.h1_count === 1
-                              ? "bg-emerald-50 text-emerald-700"
-                              : "bg-rose-50 text-rose-700"
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400"
+                              : "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400"
                           }`}
                         >
                           {p.h1_count}
                         </span>
                       </td>
 
-                      <td className="py-3 px-4 text-center font-mono font-semibold text-slate-800">
+                      <td className="py-3 px-4 text-center font-mono font-semibold text-slate-800 dark:text-slate-200">
                         {p.word_count.toLocaleString()}
                       </td>
                     </tr>

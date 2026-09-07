@@ -157,16 +157,16 @@ export default function AeoEngineComparisonPage() {
 
         {/* Loading State */}
         {isLoading ? (
-          <div className="p-16 flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-slate-200/80 shadow-xs">
-            <RefreshCw className="w-8 h-8 text-purple-600 animate-spin mb-3" />
-            <p className="text-slate-800 font-semibold text-sm">Gathering Multi-Engine Intelligence...</p>
-            <p className="text-xs text-slate-500 mt-1">Auditing ChatGPT, Gemini, and Perplexity visibility metrics</p>
+          <div className="p-16 flex flex-col items-center justify-center text-center bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <RefreshCw className="w-8 h-8 text-purple-600 dark:text-purple-400 animate-spin mb-3" />
+            <p className="text-slate-800 dark:text-slate-200 font-semibold text-sm">Gathering Multi-Engine Intelligence...</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Auditing ChatGPT, Gemini, and Perplexity visibility metrics</p>
           </div>
         ) : projects.length === 0 ? (
-          <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl p-12 text-center">
+          <Card className="bg-white dark:bg-[#0f172a] border-slate-200/80 dark:border-slate-800 shadow-xs rounded-2xl p-12 text-center">
             <Bot className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900">No AEO Projects Found</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">No AEO Projects Found</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
               Create an AEO project to start analyzing brand presence and visibility metrics across AI answer engines.
             </p>
             <div className="mt-6 flex justify-center gap-3">
@@ -178,10 +178,10 @@ export default function AeoEngineComparisonPage() {
             </div>
           </Card>
         ) : !engineData || !engineData.has_data ? (
-          <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl p-12 text-center">
+          <Card className="bg-white dark:bg-[#0f172a] border-slate-200/80 dark:border-slate-800 shadow-xs rounded-2xl p-12 text-center">
             <Bot className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900">No Engine Data Yet</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">No Engine Data Yet</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
               Multi-engine telemetry has not been collected for this project yet. Run an AEO analysis to discover brand presence across LLM answer engines.
             </p>
             <div className="mt-6 flex justify-center gap-3">
@@ -192,7 +192,7 @@ export default function AeoEngineComparisonPage() {
                 Run Analysis Now
               </Button>
               <Link href="/aeo/questions">
-                <Button variant="secondary" className="border-slate-200 text-slate-700 text-xs font-semibold px-4 py-2 rounded-xl">
+                <Button variant="secondary" className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold px-4 py-2 rounded-xl">
                   Manage Questions
                 </Button>
               </Link>
@@ -201,39 +201,39 @@ export default function AeoEngineComparisonPage() {
         ) : (
           <div className="space-y-6">
             {/* Parity Banner */}
-            <div className="bg-gradient-to-r from-purple-50 via-indigo-50/50 to-slate-50 border border-purple-200/80 rounded-2xl p-6 shadow-xs">
+            <div className="bg-gradient-to-r from-purple-50 via-indigo-50/50 to-slate-50 dark:from-purple-950/40 dark:via-indigo-950/30 dark:to-slate-900/50 border border-purple-200/80 dark:border-purple-800/60 rounded-2xl p-6 shadow-xs">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-purple-100 border border-purple-200 rounded-xl text-purple-800">
+                  <div className="p-3 bg-purple-100 dark:bg-purple-950/80 border border-purple-200 dark:border-purple-800 rounded-xl text-purple-800 dark:text-purple-300">
                     <Award className="w-6 h-6" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-base font-bold text-slate-900">Cross-Engine Parity Status</h2>
+                      <h2 className="text-base font-bold text-slate-900 dark:text-white">Cross-Engine Parity Status</h2>
                       <span
                         className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
                           engineData.provider_parity.includes("Parity Achieved") || engineData.parity_ratio >= 0.8
-                            ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
-                            : "bg-amber-100 text-amber-800 border border-amber-200"
+                            ? "bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
+                            : "bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60"
                         }`}
                       >
                         {engineData.provider_parity}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-600 mt-1 max-w-2xl">
+                    <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-2xl">
                       Provider parity measures the consistency of your brand recommendations across different AI platforms. Higher parity ensures users receive consistent answers regardless of which assistant they ask.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-6 border-t md:border-t-0 md:border-l border-purple-200/60 pt-4 md:pt-0 md:pl-6">
+                <div className="flex items-center gap-6 border-t md:border-t-0 md:border-l border-purple-200/60 dark:border-purple-800/60 pt-4 md:pt-0 md:pl-6">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-400">Parity Ratio</span>
-                    <p className="text-2xl font-black text-purple-950">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">Parity Ratio</span>
+                    <p className="text-2xl font-black text-purple-950 dark:text-purple-100">
                       {(engineData.parity_ratio * 100).toFixed(0)}%
                     </p>
                   </div>
-                  <div className="w-32 bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                  <div className="w-32 bg-slate-200 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
                     <div
                       className="bg-gradient-to-r from-purple-600 to-indigo-600 h-2.5 rounded-full"
                       style={{ width: `${Math.min(100, Math.max(0, engineData.parity_ratio * 100))}%` }}
@@ -248,26 +248,26 @@ export default function AeoEngineComparisonPage() {
               {engineData.engines.map((engine) => (
                 <div
                   key={engine.provider}
-                  className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 flex flex-col justify-between hover:border-purple-300 hover:shadow-md transition-all"
+                  className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-6 flex flex-col justify-between hover:border-purple-300 dark:hover:border-purple-600/60 hover:shadow-md transition-all"
                 >
                   <div>
-                    <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                    <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
                       <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                        <div className="p-2.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800">
                           {getProviderIcon(engine.provider)}
                         </div>
                         <div>
-                          <h3 className="font-bold text-slate-900 text-base">{engine.display_name}</h3>
-                          <span className="text-xs text-slate-400 capitalize">{engine.provider}</span>
+                          <h3 className="font-bold text-slate-900 dark:text-white text-base">{engine.display_name}</h3>
+                          <span className="text-xs text-slate-400 dark:text-slate-500 capitalize">{engine.provider}</span>
                         </div>
                       </div>
                       <span
                         className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
                           !engine.is_configured
-                            ? "bg-slate-100 text-slate-600 border border-slate-200"
+                            ? "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
                             : engine.has_data
-                            ? "bg-purple-50 text-purple-700 border border-purple-200"
-                            : "bg-amber-50 text-amber-700 border border-amber-200"
+                            ? "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60"
+                            : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60"
                         }`}
                       >
                         {engine.status_label}
@@ -277,57 +277,57 @@ export default function AeoEngineComparisonPage() {
                     {!engine.is_configured ? (
                       <div className="py-8 text-center">
                         <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto mb-2 opacity-80" />
-                        <p className="text-sm font-bold text-slate-800">Provider Not Configured</p>
-                        <p className="text-xs text-slate-500 mt-1">
+                        <p className="text-sm font-bold text-slate-800 dark:text-slate-200">Provider Not Configured</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                           API credentials are missing for this engine. Add the API key in environment settings to enable live querying.
                         </p>
                       </div>
                     ) : !engine.has_data ? (
                       <div className="py-8 text-center">
                         <HelpCircle className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                        <p className="text-sm font-bold text-slate-800">No Answers Generated</p>
-                        <p className="text-xs text-slate-500 mt-1">
+                        <p className="text-sm font-bold text-slate-800 dark:text-slate-200">No Answers Generated</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                           Run an AEO analysis to query {engine.display_name} for brand mentions.
                         </p>
                       </div>
                     ) : (
                       <div className="mt-6 space-y-4">
                         <div className="flex items-baseline justify-between">
-                          <span className="text-xs font-semibold text-slate-400">Visibility Score</span>
-                          <span className="text-3xl font-black text-slate-900">
+                          <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">Visibility Score</span>
+                          <span className="text-3xl font-black text-slate-900 dark:text-white">
                             {engine.score !== null && engine.score !== undefined ? engine.score : "--"}
-                            <span className="text-xs font-normal text-slate-400"> / 100</span>
+                            <span className="text-xs font-normal text-slate-400 dark:text-slate-500"> / 100</span>
                           </span>
                         </div>
 
                         <div className="space-y-2 text-xs">
-                          <div className="flex justify-between py-1.5 border-b border-slate-100">
-                            <span className="text-slate-500">Mention Rate</span>
-                            <span className="font-bold text-slate-800">
+                          <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+                            <span className="text-slate-500 dark:text-slate-400">Mention Rate</span>
+                            <span className="font-bold text-slate-800 dark:text-slate-200">
                               {engine.mention_rate !== null && engine.mention_rate !== undefined
                                 ? `${engine.mention_rate.toFixed(1)}%`
                                 : "--"}
                             </span>
                           </div>
-                          <div className="flex justify-between py-1.5 border-b border-slate-100">
-                            <span className="text-slate-500">Citation Rate</span>
-                            <span className="font-bold text-slate-800">
+                          <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+                            <span className="text-slate-500 dark:text-slate-400">Citation Rate</span>
+                            <span className="font-bold text-slate-800 dark:text-slate-200">
                               {engine.citation_rate !== null && engine.citation_rate !== undefined
                                 ? `${engine.citation_rate.toFixed(1)}%`
                                 : "--"}
                             </span>
                           </div>
-                          <div className="flex justify-between py-1.5 border-b border-slate-100">
-                            <span className="text-slate-500">Coverage Rate</span>
-                            <span className="font-bold text-slate-800">
+                          <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+                            <span className="text-slate-500 dark:text-slate-400">Coverage Rate</span>
+                            <span className="font-bold text-slate-800 dark:text-slate-200">
                               {engine.coverage_rate !== null && engine.coverage_rate !== undefined
                                 ? `${engine.coverage_rate.toFixed(1)}%`
                                 : "--"}
                             </span>
                           </div>
                           <div className="flex justify-between py-1.5">
-                            <span className="text-slate-500">Average Position</span>
-                            <span className="font-bold text-slate-800">
+                            <span className="text-slate-500 dark:text-slate-400">Average Position</span>
+                            <span className="font-bold text-slate-800 dark:text-slate-200">
                               {engine.average_position ? `#${engine.average_position.toFixed(1)}` : "N/A"}
                             </span>
                           </div>
@@ -336,15 +336,15 @@ export default function AeoEngineComparisonPage() {
                     )}
                   </div>
 
-                  <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                  <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                     <span>
-                      Tested: <strong className="text-slate-800">{engine.questions_tested || 0}</strong>
+                      Tested: <strong className="text-slate-800 dark:text-slate-200">{engine.questions_tested || 0}</strong>
                     </span>
                     <span>
-                      Mentioned: <strong className="text-emerald-700">{engine.questions_mentioned || 0}</strong>
+                      Mentioned: <strong className="text-emerald-700 dark:text-emerald-400">{engine.questions_mentioned || 0}</strong>
                     </span>
                     <span>
-                      Citations: <strong className="text-purple-700">{engine.citations_count || 0}</strong>
+                      Citations: <strong className="text-purple-700 dark:text-purple-400">{engine.citations_count || 0}</strong>
                     </span>
                   </div>
                 </div>
@@ -352,17 +352,17 @@ export default function AeoEngineComparisonPage() {
             </div>
 
             {/* Detailed Comparison Table */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-              <div className="p-5 border-b border-slate-100">
-                <h3 className="text-base font-bold text-slate-900">Engine Performance Matrix</h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+            <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+              <div className="p-5 border-b border-slate-100 dark:border-slate-800">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Engine Performance Matrix</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Side-by-side metric breakdown across configured answer engines
                 </p>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                  <thead className="bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
                     <tr>
                       <th className="py-3 px-4 font-bold">Engine</th>
                       <th className="py-3 px-4 font-bold">Status</th>
@@ -374,27 +374,27 @@ export default function AeoEngineComparisonPage() {
                       <th className="py-3 px-4 font-bold">Tested / Mentions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-200">
                     {engineData.engines.map((eng) => (
-                      <tr key={eng.provider} className="hover:bg-purple-50/30 transition-colors">
+                      <tr key={eng.provider} className="hover:bg-purple-50/30 dark:hover:bg-purple-950/20 transition-colors">
                         <td className="py-3.5 px-4">
                           <div className="flex items-center gap-2">
                             {getProviderIcon(eng.provider)}
-                            <span className="font-bold text-slate-900">{eng.display_name}</span>
+                            <span className="font-bold text-slate-900 dark:text-white">{eng.display_name}</span>
                           </div>
                         </td>
                         <td className="py-3.5 px-4">
                           <span
                             className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
                               eng.is_configured
-                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                : "bg-slate-100 text-slate-600 border border-slate-200"
+                                ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
+                                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
                             }`}
                           >
                             {eng.status_label}
                           </span>
                         </td>
-                        <td className="py-3.5 px-4 font-extrabold text-slate-900">
+                        <td className="py-3.5 px-4 font-extrabold text-slate-900 dark:text-white">
                           {eng.score !== null && eng.score !== undefined ? eng.score : "--"}
                         </td>
                         <td className="py-3.5 px-4 font-semibold">
@@ -415,9 +415,9 @@ export default function AeoEngineComparisonPage() {
                         <td className="py-3.5 px-4 font-semibold">
                           {eng.average_position ? `#${eng.average_position.toFixed(1)}` : "N/A"}
                         </td>
-                        <td className="py-3.5 px-4 text-slate-500">
+                        <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400">
                           {eng.questions_tested || 0} tested /{" "}
-                          <span className="text-emerald-700 font-bold">{eng.questions_mentioned || 0} mentions</span>
+                          <span className="text-emerald-700 dark:text-emerald-400 font-bold">{eng.questions_mentioned || 0} mentions</span>
                         </td>
                       </tr>
                     ))}

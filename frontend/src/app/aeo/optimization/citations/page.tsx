@@ -74,22 +74,22 @@ export default function AeoCitationOpportunitiesPage() {
     const p = priority.toLowerCase();
     if (p === "critical") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-          <Flame className="w-3 h-3 text-rose-600" />
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60">
+          <Flame className="w-3 h-3 text-rose-600 dark:text-rose-400" />
           Critical
         </span>
       );
     }
     if (p === "high") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-          <AlertTriangle className="w-3 h-3 text-amber-600" />
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
+          <AlertTriangle className="w-3 h-3 text-amber-600 dark:text-amber-400" />
           High
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60">
         Medium
       </span>
     );
@@ -145,27 +145,27 @@ export default function AeoCitationOpportunitiesPage() {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-2">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <span className="text-xs uppercase font-bold text-slate-500 block">Total Citations</span>
-            <span className="text-3xl font-black text-slate-900 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <span className="text-xs uppercase font-bold text-slate-500 dark:text-slate-400 block">Total Citations</span>
+            <span className="text-3xl font-black text-slate-900 dark:text-white mt-1 block">
               {data?.total_citations ?? "—"}
             </span>
           </div>
-          <div className="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm">
-            <span className="text-xs uppercase font-bold text-emerald-700 block">Own Domain Citations</span>
-            <span className="text-3xl font-black text-emerald-950 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 shadow-sm">
+            <span className="text-xs uppercase font-bold text-emerald-700 dark:text-emerald-400 block">Own Domain Citations</span>
+            <span className="text-3xl font-black text-emerald-950 dark:text-emerald-100 mt-1 block">
               {data?.own_citations_count ?? "—"}
             </span>
           </div>
-          <div className="bg-white p-5 rounded-2xl border border-rose-100 shadow-sm">
-            <span className="text-xs uppercase font-bold text-rose-700 block">Competitor Citations</span>
-            <span className="text-3xl font-black text-rose-950 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-rose-100 dark:border-rose-900/40 shadow-sm">
+            <span className="text-xs uppercase font-bold text-rose-700 dark:text-rose-400 block">Competitor Citations</span>
+            <span className="text-3xl font-black text-rose-950 dark:text-rose-100 mt-1 block">
               {data?.competitor_citations_count ?? "—"}
             </span>
           </div>
-          <div className="bg-white p-5 rounded-2xl border border-blue-100 shadow-sm">
-            <span className="text-xs uppercase font-bold text-blue-700 block">3rd Party Sources</span>
-            <span className="text-3xl font-black text-blue-950 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-blue-100 dark:border-blue-900/40 shadow-sm">
+            <span className="text-xs uppercase font-bold text-blue-700 dark:text-blue-400 block">3rd Party Sources</span>
+            <span className="text-3xl font-black text-blue-950 dark:text-blue-100 mt-1 block">
               {data?.third_party_citations_count ?? "—"}
             </span>
           </div>
@@ -178,9 +178,9 @@ export default function AeoCitationOpportunitiesPage() {
         </div>
 
         {/* Top Cited Domains Leaderboard */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 mb-8">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 mb-4 flex items-center gap-2">
-            <Globe className="w-4 h-4 text-purple-600" />
+        <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6 mb-8">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <Globe className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             Top Cited Domains Across Answer Engines
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -189,31 +189,31 @@ export default function AeoCitationOpportunitiesPage() {
                 key={i}
                 className={`p-3 rounded-xl border flex flex-col justify-between ${
                   d.is_own
-                    ? "bg-emerald-50/50 border-emerald-200"
+                    ? "bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/50"
                     : d.is_competitor
-                    ? "bg-amber-50/50 border-amber-200"
-                    : "bg-slate-50 border-slate-200"
+                    ? "bg-amber-50/50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50"
+                    : "bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800"
                 }`}
               >
                 <div>
-                  <div className="font-bold text-slate-900 text-xs truncate" title={d.domain}>
+                  <div className="font-bold text-slate-900 dark:text-white text-xs truncate" title={d.domain}>
                     {d.domain}
                   </div>
                   <span
                     className={`inline-block text-[10px] font-semibold mt-1 px-1.5 py-0.5 rounded capitalize ${
                       d.is_own
-                        ? "bg-emerald-100 text-emerald-800"
+                        ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300"
                         : d.is_competitor
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-slate-200 text-slate-700"
+                        ? "bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300"
+                        : "bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                     }`}
                   >
                     {d.is_own ? "Own Brand" : d.is_competitor ? "Competitor" : "Third Party"}
                   </span>
                 </div>
                 <div className="mt-3 text-right">
-                  <span className="text-lg font-black text-slate-900">{d.count}</span>
-                  <span className="text-[10px] text-slate-500 ml-1">citations</span>
+                  <span className="text-lg font-black text-slate-900 dark:text-white">{d.count}</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-1">citations</span>
                 </div>
               </div>
             ))}
@@ -221,8 +221,8 @@ export default function AeoCitationOpportunitiesPage() {
         </div>
 
         {/* Search Bar */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm mb-6 flex items-center justify-between">
-          <div className="font-bold text-slate-900 text-sm">
+        <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm mb-6 flex items-center justify-between">
+          <div className="font-bold text-slate-900 dark:text-white text-sm">
             Opportunities with Missing Brand Citation
           </div>
           <div className="relative">
@@ -232,35 +232,35 @@ export default function AeoCitationOpportunitiesPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search prompts or sources..."
-              className="bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-xl pl-8 pr-3 py-1.5 w-64 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-xs rounded-xl pl-8 pr-3 py-1.5 w-64 focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
           </div>
         </div>
 
         {/* Opportunities Table */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
           {loading ? (
             <div className="py-20 text-center text-slate-400">
-              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-purple-600" />
+              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-purple-600 dark:text-purple-400" />
               <p className="text-sm font-semibold">Analyzing engine citations...</p>
             </div>
           ) : error ? (
-            <div className="py-20 text-center text-rose-600">
+            <div className="py-20 text-center text-rose-600 dark:text-rose-400">
               <AlertTriangle className="w-8 h-8 mx-auto mb-2" />
               <p className="text-sm font-semibold">{error}</p>
             </div>
           ) : filteredOpportunities.length === 0 ? (
-            <div className="py-20 text-center text-slate-500">
-              <CheckCircle2 className="w-10 h-10 mx-auto mb-3 text-emerald-500" />
-              <h3 className="text-base font-bold text-slate-800">No Citation Gaps Found</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+            <div className="py-20 text-center text-slate-500 dark:text-slate-400">
+              <CheckCircle2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 dark:text-emerald-400" />
+              <h3 className="text-base font-bold text-slate-800 dark:text-white">No Citation Gaps Found</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1">
                 Your domain is properly cited for all evaluated answer queries.
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
                   <tr>
                     <th className="py-3.5 px-4">Priority</th>
                     <th className="py-3.5 px-4">Target Prompt</th>
@@ -269,16 +269,16 @@ export default function AeoCitationOpportunitiesPage() {
                     <th className="py-3.5 px-4">Recommended Citation Strategy</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredOpportunities.map((op, idx) => (
-                    <tr key={idx} className="hover:bg-purple-50/30 transition">
+                    <tr key={idx} className="hover:bg-purple-50/30 dark:hover:bg-purple-950/20 transition">
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         {getPriorityBadge(op.priority)}
                       </td>
-                      <td className="py-3.5 px-4 font-bold text-slate-900 max-w-md">
+                      <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white max-w-md">
                         {op.prompt}
                       </td>
-                      <td className="py-3.5 px-4 whitespace-nowrap font-medium text-slate-700">
+                      <td className="py-3.5 px-4 whitespace-nowrap font-medium text-slate-700 dark:text-slate-300">
                         {op.category}
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
@@ -287,17 +287,17 @@ export default function AeoCitationOpportunitiesPage() {
                             {op.competitor_sources.map((s, i) => (
                               <span
                                 key={i}
-                                className="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-800 border border-rose-200"
+                                className="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60"
                               >
                                 {s}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          <span className="text-slate-400 text-[11px]">3rd Party Only</span>
+                          <span className="text-slate-400 dark:text-slate-500 text-[11px]">3rd Party Only</span>
                         )}
                       </td>
-                      <td className="py-3.5 px-4 text-slate-700 font-medium">
+                      <td className="py-3.5 px-4 text-slate-700 dark:text-slate-300 font-medium">
                         {op.recommendation}
                       </td>
                     </tr>

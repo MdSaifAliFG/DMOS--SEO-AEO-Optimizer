@@ -104,56 +104,56 @@ export default function DashboardPage() {
         {/* Metric Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Card 1: Total Websites */}
-          <Card hoverable className="p-5 border-slate-800">
+          <Card hoverable className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Managed Websites
               </span>
-              <div className="w-8 h-8 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center text-primary-400">
+              <div className="w-8 h-8 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center text-primary-600 dark:text-primary-400">
                 <Globe className="w-4 h-4" />
               </div>
             </div>
             {isLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
-              <div className="text-2xl font-bold text-slate-100">
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">
                 {totalProjects}
               </div>
             )}
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
               Active domain targets
             </p>
           </Card>
 
           {/* Card 2: Total Scans */}
-          <Card hoverable className="p-5 border-slate-800">
+          <Card hoverable className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Total Audit Scans
               </span>
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
                 <Activity className="w-4 h-4" />
               </div>
             </div>
             {isLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
-              <div className="text-2xl font-bold text-slate-100">
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">
                 {totalScans}
               </div>
             )}
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
               Lifecycle runs executed
             </p>
           </Card>
 
           {/* Card 3: Backend API Status */}
-          <Card hoverable className="p-5 border-slate-800">
+          <Card hoverable className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 FastAPI Gateway
               </span>
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                 <Server className="w-4 h-4" />
               </div>
             </div>
@@ -161,33 +161,33 @@ export default function DashboardPage() {
               <span
                 className={`w-2.5 h-2.5 rounded-full ${
                   health?.status === "healthy"
-                    ? "bg-emerald-400"
+                    ? "bg-emerald-500"
                     : "bg-amber-400 animate-ping"
                 }`}
               />
-              <span className="text-base font-bold text-slate-100 capitalize">
+              <span className="text-base font-bold text-slate-900 dark:text-white capitalize">
                 {health?.status || "Connecting"}
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
               REST /api/v1 connected
             </p>
           </Card>
 
           {/* Card 4: Database Infrastructure */}
-          <Card hoverable className="p-5 border-slate-800">
+          <Card hoverable className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Database Engine
               </span>
-              <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+              <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
                 <Database className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-base font-bold text-slate-100 capitalize">
+            <div className="text-base font-bold text-slate-900 dark:text-white capitalize">
               {health?.database || "PostgreSQL Ready"}
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
               SQLAlchemy & Async driver
             </p>
           </Card>
@@ -197,10 +197,10 @@ export default function DashboardPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base md:text-lg font-bold text-slate-100">
+              <h2 className="text-base md:text-lg font-bold text-slate-900 dark:text-white">
                 Recent Projects
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Websites registered for crawl orchestration
               </p>
             </div>
@@ -218,10 +218,10 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : projects.length === 0 ? (
-            <Card className="p-8 text-center border-dashed border-slate-800">
-              <Globe className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-              <p className="text-sm text-slate-300 font-medium">No websites added yet</p>
-              <p className="text-xs text-slate-500 mt-1 mb-4">
+            <Card className="p-8 text-center border-dashed border-slate-300 dark:border-slate-800">
+              <Globe className="w-8 h-8 text-slate-400 dark:text-slate-600 mx-auto mb-2" />
+              <p className="text-sm text-slate-800 dark:text-slate-200 font-medium">No websites added yet</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">
                 Add your first domain to explore the scan lifecycle.
               </p>
               <Link href="/projects/new">
@@ -235,20 +235,20 @@ export default function DashboardPage() {
               {projects.map((project) => (
                 <div
                   key={project.id}
-                  className="p-4 rounded-xl glass-panel border border-slate-800 hover:border-primary-500/30 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                  className="p-4 rounded-xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 hover:border-primary-500/40 dark:hover:border-primary-500/40 shadow-xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="w-9 h-9 rounded-lg bg-surface-900 border border-slate-700 flex items-center justify-center text-primary-400 shrink-0">
+                    <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
                       <Globe className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
                       <Link
                         href={`/projects/${project.id}`}
-                        className="text-sm font-bold text-slate-100 hover:text-primary-400 transition-colors truncate block"
+                        className="text-sm font-bold text-slate-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors truncate block"
                       >
                         {project.name}
                       </Link>
-                      <span className="text-xs text-slate-400 block truncate">
+                      <span className="text-xs text-slate-500 dark:text-slate-400 block truncate">
                         {project.domain}
                       </span>
                     </div>
@@ -259,12 +259,12 @@ export default function DashboardPage() {
                       {project.latest_scan ? (
                         <div className="flex items-center gap-2">
                           <ScanStatusBadge status={project.latest_scan.status} size="sm" />
-                          <span className="text-[11px] text-slate-500 hidden sm:inline">
+                          <span className="text-[11px] text-slate-400 dark:text-slate-500 hidden sm:inline">
                             {formatTimeAgo(project.latest_scan.created_at)}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-xs text-slate-500 italic">No scans yet</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 italic">No scans yet</span>
                       )}
                     </div>
 

@@ -191,15 +191,15 @@ export default function AeoMonitoringSettingsPage() {
 
         {/* Form Body */}
         {isLoading ? (
-          <div className="p-16 flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-slate-200/80 shadow-xs">
-            <RefreshCw className="w-8 h-8 text-purple-600 animate-spin mb-3" />
-            <p className="text-slate-800 font-semibold text-sm">Loading Monitoring Preferences...</p>
+          <div className="p-16 flex flex-col items-center justify-center text-center bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <RefreshCw className="w-8 h-8 text-purple-600 dark:text-purple-400 animate-spin mb-3" />
+            <p className="text-slate-800 dark:text-white font-semibold text-sm">Loading Monitoring Preferences...</p>
           </div>
         ) : projects.length === 0 ? (
-          <Card className="bg-white border-slate-200/80 shadow-xs rounded-2xl p-12 text-center">
+          <Card className="bg-white dark:bg-[#0f172a] border-slate-200/80 dark:border-slate-800 shadow-xs rounded-2xl p-12 text-center">
             <Settings className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900">No AEO Projects Found</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">No AEO Projects Found</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
               Create an AEO project to set up automated recurring monitoring schedules and anomaly detection thresholds.
             </p>
             <div className="mt-6 flex justify-center gap-3">
@@ -213,14 +213,14 @@ export default function AeoMonitoringSettingsPage() {
         ) : (
           <div className="space-y-6">
             {/* Status & Frequency Card */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 space-y-6">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-6 space-y-6">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-purple-600" />
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     Automated Monitoring Status
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     Enable continuous background checks for visibility changes and engine answer shifts
                   </p>
                 </div>
@@ -232,22 +232,22 @@ export default function AeoMonitoringSettingsPage() {
                     onChange={(e) => setEnabled(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                  <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                 </label>
               </div>
 
               {/* Schedule Info */}
               {schedule && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-purple-50/50 p-4 rounded-xl border border-purple-100 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-purple-50/50 dark:bg-purple-950/30 p-4 rounded-xl border border-purple-100 dark:border-purple-800/40 text-xs">
                   <div>
-                    <span className="text-slate-500 font-medium">Last Monitored Run:</span>
-                    <p className="font-bold text-slate-900 mt-1">
+                    <span className="text-slate-500 dark:text-slate-400 font-medium">Last Monitored Run:</span>
+                    <p className="font-bold text-slate-900 dark:text-white mt-1">
                       {schedule.last_run_at ? new Date(schedule.last_run_at).toLocaleString() : "Never run"}
                     </p>
                   </div>
                   <div>
-                    <span className="text-slate-500 font-medium">Next Scheduled Run:</span>
-                    <p className="font-bold text-purple-900 mt-1">
+                    <span className="text-slate-500 dark:text-slate-400 font-medium">Next Scheduled Run:</span>
+                    <p className="font-bold text-purple-900 dark:text-purple-300 mt-1">
                       {schedule.next_run_at ? new Date(schedule.next_run_at).toLocaleString() : "Calculated upon save"}
                     </p>
                   </div>
@@ -256,7 +256,7 @@ export default function AeoMonitoringSettingsPage() {
 
               {/* Frequency Selection */}
               <div>
-                <label className="text-sm font-bold text-slate-900 block mb-2">
+                <label className="text-sm font-bold text-slate-900 dark:text-white block mb-2">
                   Audit Frequency
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -272,12 +272,12 @@ export default function AeoMonitoringSettingsPage() {
                       onClick={() => setFrequency(f.id)}
                       className={`p-3.5 rounded-xl text-left border transition-all ${
                         frequency === f.id
-                          ? "bg-purple-50 border-purple-600 text-purple-950 shadow-xs"
-                          : "bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300"
+                          ? "bg-purple-50 dark:bg-purple-950/60 border-purple-600 dark:border-purple-500 text-purple-950 dark:text-purple-200 shadow-xs"
+                          : "bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700"
                       }`}
                     >
                       <span className="font-bold text-sm block">{f.label}</span>
-                      <span className="text-[11px] text-slate-500 mt-0.5 block">{f.desc}</span>
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block">{f.desc}</span>
                     </button>
                   ))}
                 </div>
@@ -285,13 +285,13 @@ export default function AeoMonitoringSettingsPage() {
             </div>
 
             {/* Monitored Engines Card */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 space-y-4">
+            <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-6 space-y-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Bot className="w-4 h-4 text-purple-600" />
+                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Bot className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                   Monitored Answer Engines
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Select which generative AI engines are queried during automated monitoring cycles
                 </p>
               </div>
@@ -309,8 +309,8 @@ export default function AeoMonitoringSettingsPage() {
                       onClick={() => handleEngineToggle(eng.id)}
                       className={`p-4 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
                         isChecked
-                          ? "bg-purple-50 border-purple-400 text-purple-950 font-bold shadow-xs"
-                          : "bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300"
+                          ? "bg-purple-50 dark:bg-purple-950/60 border-purple-400 dark:border-purple-600 text-purple-950 dark:text-purple-200 font-bold shadow-xs"
+                          : "bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700"
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
@@ -330,13 +330,13 @@ export default function AeoMonitoringSettingsPage() {
             </div>
 
             {/* Anomaly Alert Thresholds Card */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 space-y-6">
+            <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-6 space-y-6">
               <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Bell className="w-4 h-4 text-purple-600" />
+                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Bell className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                   Alert Notification Thresholds
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Define sensitivity triggers for firing warnings and critical alerts when anomalies are detected
                 </p>
               </div>
@@ -345,10 +345,10 @@ export default function AeoMonitoringSettingsPage() {
                 {/* Score Drop */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-bold text-slate-800">
+                    <span className="font-bold text-slate-800 dark:text-slate-200">
                       Visibility Score Drop Threshold:
                     </span>
-                    <span className="font-mono text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                    <span className="font-mono text-purple-700 dark:text-purple-300 font-bold bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800/60">
                       {scoreDropThreshold} pts
                     </span>
                   </div>
@@ -358,9 +358,9 @@ export default function AeoMonitoringSettingsPage() {
                     max="50"
                     value={scoreDropThreshold}
                     onChange={(e) => setScoreDropThreshold(parseInt(e.target.value))}
-                    className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                    className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-purple-600"
                   />
-                  <span className="text-[11px] text-slate-500 block">
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
                     Trigger an alert if the composite AEO Visibility score falls by this amount or more between cycles.
                   </span>
                 </div>
@@ -368,10 +368,10 @@ export default function AeoMonitoringSettingsPage() {
                 {/* Competitor Gain */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-bold text-slate-800">
+                    <span className="font-bold text-slate-800 dark:text-slate-200">
                       Competitor Share of Voice Gain Threshold:
                     </span>
-                    <span className="font-mono text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                    <span className="font-mono text-purple-700 dark:text-purple-300 font-bold bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800/60">
                       {competitorGainThreshold}%
                     </span>
                   </div>
@@ -381,9 +381,9 @@ export default function AeoMonitoringSettingsPage() {
                     max="50"
                     value={competitorGainThreshold}
                     onChange={(e) => setCompetitorGainThreshold(parseInt(e.target.value))}
-                    className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                    className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-purple-600"
                   />
-                  <span className="text-[11px] text-slate-500 block">
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
                     Trigger an alert if a single competitor increases their share of voice by this percentage.
                   </span>
                 </div>
@@ -391,10 +391,10 @@ export default function AeoMonitoringSettingsPage() {
                 {/* Mention Loss */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-bold text-slate-800">
+                    <span className="font-bold text-slate-800 dark:text-slate-200">
                       Brand Mention Loss Threshold:
                     </span>
-                    <span className="font-mono text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                    <span className="font-mono text-purple-700 dark:text-purple-300 font-bold bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800/60">
                       {mentionLossThreshold}%
                     </span>
                   </div>
@@ -404,9 +404,9 @@ export default function AeoMonitoringSettingsPage() {
                     max="50"
                     value={mentionLossThreshold}
                     onChange={(e) => setMentionLossThreshold(parseInt(e.target.value))}
-                    className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                    className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-purple-600"
                   />
-                  <span className="text-[11px] text-slate-500 block">
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
                     Trigger an alert if brand mentions decrease by this percentage across all prompts.
                   </span>
                 </div>

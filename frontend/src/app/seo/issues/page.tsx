@@ -123,32 +123,32 @@ export default function SeoIssuesPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header & Project Selector */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100 text-blue-600">
+              <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/50 border border-blue-100 dark:border-blue-900/60 text-blue-600 dark:text-blue-400">
                 <AlertTriangle className="w-5 h-5" />
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Technical SEO Issues ({total})</h1>
-              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Technical SEO Issues ({total})</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                 Issue Audit
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
               Prioritized list of crawl bottlenecks, broken tags, and on-page optimization opportunities.
             </p>
           </div>
 
           {projects.length > 0 && (
-            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 shrink-0">
-              <span className="text-xs font-semibold text-slate-600">Active Website:</span>
+            <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 shrink-0">
+              <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Active Website:</span>
               <select
                 value={selectedProjectId}
                 onChange={(e) => handleProjectChange(e.target.value)}
-                className="bg-transparent text-xs font-semibold text-slate-900 focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
               >
                 {projects.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-white text-slate-900">
+                  <option key={p.id} value={p.id} className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                     {p.name} ({p.domain})
                   </option>
                 ))}
@@ -161,70 +161,70 @@ export default function SeoIssuesPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
           <button
             onClick={() => setSeverityFilter(severityFilter === "critical" ? "all" : "critical")}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               severityFilter === "critical"
-                ? "bg-rose-50 border-rose-300 ring-2 ring-rose-500"
-                : "bg-white border-slate-200 hover:border-slate-300"
+                ? "bg-rose-50 dark:bg-rose-950/50 border-rose-300 dark:border-rose-800 ring-2 ring-rose-500"
+                : "bg-white dark:bg-[#0f172a] border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-rose-700 uppercase">Critical</span>
-              <span className="px-1.5 py-0.2 rounded font-mono text-xs font-bold bg-rose-100 text-rose-800">
+              <span className="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase">Critical</span>
+              <span className="px-1.5 py-0.2 rounded font-mono text-xs font-bold bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-300">
                 {severityCounts.critical || 0}
               </span>
             </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">Blocks indexing or crawling</span>
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">Blocks indexing or crawling</span>
           </button>
 
           <button
             onClick={() => setSeverityFilter(severityFilter === "high" ? "all" : "high")}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               severityFilter === "high"
-                ? "bg-amber-50 border-amber-300 ring-2 ring-amber-500"
-                : "bg-white border-slate-200 hover:border-slate-300"
+                ? "bg-amber-50 dark:bg-amber-950/50 border-amber-300 dark:border-amber-800 ring-2 ring-amber-500"
+                : "bg-white dark:bg-[#0f172a] border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-amber-700 uppercase">High</span>
-              <span className="px-1.5 py-0.2 rounded font-mono text-xs font-bold bg-amber-100 text-amber-800">
+              <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase">High</span>
+              <span className="px-1.5 py-0.2 rounded font-mono text-xs font-bold bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300">
                 {severityCounts.high || 0}
               </span>
             </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">Major SEO ranking penalty</span>
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">Major SEO ranking penalty</span>
           </button>
 
           <button
             onClick={() => setSeverityFilter(severityFilter === "medium" ? "all" : "medium")}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               severityFilter === "medium"
-                ? "bg-blue-50 border-blue-300 ring-2 ring-blue-500"
-                : "bg-white border-slate-200 hover:border-slate-300"
+                ? "bg-blue-50 dark:bg-blue-950/50 border-blue-300 dark:border-blue-800 ring-2 ring-blue-500"
+                : "bg-white dark:bg-[#0f172a] border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-blue-700 uppercase">Medium</span>
-              <span className="px-1.5 py-0.2 rounded font-mono text-xs font-bold bg-blue-100 text-blue-800">
+              <span className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase">Medium</span>
+              <span className="px-1.5 py-0.2 rounded font-mono text-xs font-bold bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300">
                 {severityCounts.medium || 0}
               </span>
             </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">On-page quality issue</span>
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">On-page quality issue</span>
           </button>
 
           <button
             onClick={() => setSeverityFilter(severityFilter === "low" ? "all" : "low")}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               severityFilter === "low"
-                ? "bg-slate-100 border-slate-300 ring-2 ring-slate-500"
-                : "bg-white border-slate-200 hover:border-slate-300"
+                ? "bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 ring-2 ring-slate-500"
+                : "bg-white dark:bg-[#0f172a] border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-700 uppercase">Low / Info</span>
-              <span className="px-1.5 py-0.2 rounded font-mono text-xs font-bold bg-slate-200 text-slate-800">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Low / Info</span>
+              <span className="px-1.5 py-0.2 rounded font-mono text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
                 {(severityCounts.low || 0) + (severityCounts.info || 0)}
               </span>
             </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">Best practice suggestions</span>
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">Best practice suggestions</span>
           </button>
         </div>
 
@@ -256,10 +256,10 @@ export default function SeoIssuesPage() {
         />
 
         {/* Issues Table */}
-        <Card className="p-0 border-slate-200 overflow-hidden">
+        <Card className="p-0 border-slate-200 dark:border-slate-800 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs min-w-[650px]">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase">
                 <tr>
                   <th className="py-3 px-4">Severity</th>
                   <th className="py-3 px-4">Category</th>
@@ -268,7 +268,7 @@ export default function SeoIssuesPage() {
                   <th className="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 text-slate-700 dark:text-slate-300">
                 {isLoading ? (
                   <tr>
                     <td colSpan={5} className="py-12 text-center text-slate-400">
@@ -291,41 +291,41 @@ export default function SeoIssuesPage() {
                     <tr
                       key={iss.id}
                       onClick={() => setSelectedIssue(iss)}
-                      className="hover:bg-slate-50/60 cursor-pointer transition-colors"
+                      className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
                     >
                       <td className="py-3.5 px-4 font-mono">
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                             iss.severity === "critical"
-                              ? "bg-rose-50 text-rose-700 border border-rose-200"
+                              ? "bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60"
                               : iss.severity === "high"
-                              ? "bg-amber-50 text-amber-700 border border-amber-200"
+                              ? "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/60"
                               : iss.severity === "medium"
-                              ? "bg-blue-50 text-blue-700 border border-blue-200"
-                              : "bg-slate-100 text-slate-700 border border-slate-200"
+                              ? "bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/60"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
                           }`}
                         >
                           {iss.severity}
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 font-semibold text-slate-600 uppercase text-[10px]">
+                      <td className="py-3.5 px-4 font-semibold text-slate-600 dark:text-slate-400 uppercase text-[10px]">
                         {iss.category}
                       </td>
 
                       <td className="py-3.5 px-4 max-w-md">
-                        <span className="font-semibold text-slate-900 block">{iss.title}</span>
-                        <span className="text-slate-500 text-[11px] line-clamp-1 mt-0.5">
+                        <span className="font-semibold text-slate-900 dark:text-white block">{iss.title}</span>
+                        <span className="text-slate-500 dark:text-slate-400 text-[11px] line-clamp-1 mt-0.5">
                           {iss.description}
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 font-mono text-[11px] text-slate-500 truncate max-w-[200px]">
+                      <td className="py-3.5 px-4 font-mono text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
                         {iss.page_url || "Site-wide"}
                       </td>
 
                       <td className="py-3.5 px-4 text-right">
-                        <span className="text-xs font-semibold text-blue-600 hover:text-blue-700">
+                        <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
                           Fix Guide →
                         </span>
                       </td>
@@ -339,9 +339,9 @@ export default function SeoIssuesPage() {
 
         {/* Issue Details Modal */}
         {selectedIssue && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
             <div
-              className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-xl p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+              className="relative w-full max-w-lg bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-start justify-between">
@@ -350,50 +350,50 @@ export default function SeoIssuesPage() {
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                         selectedIssue.severity === "critical"
-                          ? "bg-rose-50 text-rose-700 border border-rose-200"
+                          ? "bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60"
                           : selectedIssue.severity === "high"
-                          ? "bg-amber-50 text-amber-700 border border-amber-200"
-                          : "bg-blue-50 text-blue-700 border border-blue-200"
+                          ? "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/60"
+                          : "bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/60"
                       }`}
                     >
                       {selectedIssue.severity}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       {selectedIssue.category} • Code: {selectedIssue.issue_code}
                     </span>
                   </div>
-                  <h3 className="text-base font-bold text-slate-900">{selectedIssue.title}</h3>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">{selectedIssue.title}</h3>
                 </div>
                 <button
                   onClick={() => setSelectedIssue(null)}
-                  className="p-1 text-slate-400 hover:text-slate-700 rounded-lg"
+                  className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="space-y-3 pt-2 text-xs text-slate-700">
-                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                  <span className="text-[10px] font-bold uppercase text-slate-500">Why It Matters</span>
-                  <p className="leading-relaxed text-slate-800">{selectedIssue.description}</p>
+              <div className="space-y-3 pt-2 text-xs text-slate-700 dark:text-slate-300">
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-1">
+                  <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Why It Matters</span>
+                  <p className="leading-relaxed text-slate-800 dark:text-slate-200">{selectedIssue.description}</p>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-blue-50/60 border border-blue-200 space-y-1">
-                  <span className="text-[10px] font-bold uppercase text-blue-700">Recommended Fix</span>
-                  <p className="leading-relaxed text-blue-900 font-medium">{selectedIssue.recommendation}</p>
+                <div className="p-3.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 space-y-1">
+                  <span className="text-[10px] font-bold uppercase text-blue-700 dark:text-blue-300">Recommended Fix</span>
+                  <p className="leading-relaxed text-blue-900 dark:text-blue-200 font-medium">{selectedIssue.recommendation}</p>
                 </div>
 
                 {selectedIssue.page_url && (
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold uppercase text-slate-500">Affected URL</span>
-                    <div className="p-2.5 rounded-lg bg-slate-100 font-mono text-[11px] text-slate-800 break-all">
+                    <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Affected URL</span>
+                    <div className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-900 font-mono text-[11px] text-slate-800 dark:text-slate-300 break-all border border-slate-200 dark:border-slate-800">
                       {selectedIssue.page_url}
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="flex justify-end pt-3 border-t border-slate-100">
+              <div className="flex justify-end pt-3 border-t border-slate-100 dark:border-slate-800">
                 <Button size="sm" variant="secondary" onClick={() => setSelectedIssue(null)}>
                   Close
                 </Button>

@@ -75,22 +75,22 @@ export default function AeoPromptOpportunitiesPage() {
     const p = priority.toLowerCase();
     if (p === "critical") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-          <Flame className="w-3 h-3 text-rose-600" />
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60">
+          <Flame className="w-3 h-3 text-rose-600 dark:text-rose-400" />
           Critical
         </span>
       );
     }
     if (p === "high") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-          <AlertTriangle className="w-3 h-3 text-amber-600" />
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
+          <AlertTriangle className="w-3 h-3 text-amber-600 dark:text-amber-400" />
           High
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60">
         Medium
       </span>
     );
@@ -146,21 +146,21 @@ export default function AeoPromptOpportunitiesPage() {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-2">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <span className="text-xs uppercase font-bold text-slate-500 block">Total Prompts</span>
-            <span className="text-3xl font-black text-slate-900 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <span className="text-xs uppercase font-bold text-slate-500 dark:text-slate-400 block">Total Prompts</span>
+            <span className="text-3xl font-black text-slate-900 dark:text-white mt-1 block">
               {data?.total_tracked ?? "—"}
             </span>
           </div>
-          <div className="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm">
-            <span className="text-xs uppercase font-bold text-emerald-700 block">Covered Prompts</span>
-            <span className="text-3xl font-black text-emerald-950 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 shadow-sm">
+            <span className="text-xs uppercase font-bold text-emerald-700 dark:text-emerald-400 block">Covered Prompts</span>
+            <span className="text-3xl font-black text-emerald-950 dark:text-emerald-100 mt-1 block">
               {data?.covered_prompts_count ?? "—"}
             </span>
           </div>
-          <div className="bg-white p-5 rounded-2xl border border-rose-100 shadow-sm">
-            <span className="text-xs uppercase font-bold text-rose-700 block">Uncovered Prompts</span>
-            <span className="text-3xl font-black text-rose-950 mt-1 block">
+          <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-rose-100 dark:border-rose-900/40 shadow-sm">
+            <span className="text-xs uppercase font-bold text-rose-700 dark:text-rose-400 block">Uncovered Prompts</span>
+            <span className="text-3xl font-black text-rose-950 dark:text-rose-100 mt-1 block">
               {data?.uncovered_prompts_count ?? "—"}
             </span>
           </div>
@@ -173,7 +173,7 @@ export default function AeoPromptOpportunitiesPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
             {["all", "informational", "commercial", "transactional", "navigational"].map((intent) => (
               <button
@@ -182,7 +182,7 @@ export default function AeoPromptOpportunitiesPage() {
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize transition ${
                   intentFilter === intent
                     ? "bg-purple-900 text-white shadow-sm"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                 }`}
               >
                 {intent}
@@ -197,35 +197,35 @@ export default function AeoPromptOpportunitiesPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search prompts or categories..."
-              className="bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-xl pl-8 pr-3 py-1.5 w-64 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-xs rounded-xl pl-8 pr-3 py-1.5 w-64 focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
           </div>
         </div>
 
         {/* Opportunities Table */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
           {loading ? (
             <div className="py-20 text-center text-slate-400">
-              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-purple-600" />
+              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-purple-600 dark:text-purple-400" />
               <p className="text-sm font-semibold">Loading prompt opportunities...</p>
             </div>
           ) : error ? (
-            <div className="py-20 text-center text-rose-600">
+            <div className="py-20 text-center text-rose-600 dark:text-rose-400">
               <AlertTriangle className="w-8 h-8 mx-auto mb-2" />
               <p className="text-sm font-semibold">{error}</p>
             </div>
           ) : filteredOpportunities.length === 0 ? (
-            <div className="py-20 text-center text-slate-500">
-              <CheckCircle2 className="w-10 h-10 mx-auto mb-3 text-emerald-500" />
-              <h3 className="text-base font-bold text-slate-800">All Tracked Prompts Covered</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+            <div className="py-20 text-center text-slate-500 dark:text-slate-400">
+              <CheckCircle2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 dark:text-emerald-400" />
+              <h3 className="text-base font-bold text-slate-800 dark:text-white">All Tracked Prompts Covered</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1">
                 Your brand appears in answer engine results for all tracked prompts in this filter.
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
                   <tr>
                     <th className="py-3.5 px-4">Priority</th>
                     <th className="py-3.5 px-4">Target Prompt</th>
@@ -236,20 +236,20 @@ export default function AeoPromptOpportunitiesPage() {
                     <th className="py-3.5 px-4 text-right">Optimize</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredOpportunities.map((op, idx) => (
-                    <tr key={idx} className="hover:bg-purple-50/30 transition">
+                    <tr key={idx} className="hover:bg-purple-50/30 dark:hover:bg-purple-950/20 transition">
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         {getPriorityBadge(op.priority)}
                       </td>
-                      <td className="py-3.5 px-4 font-bold text-slate-900 max-w-md">
+                      <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white max-w-md">
                         {op.prompt}
                       </td>
-                      <td className="py-3.5 px-4 whitespace-nowrap font-medium text-slate-700">
+                      <td className="py-3.5 px-4 whitespace-nowrap font-medium text-slate-700 dark:text-slate-300">
                         {op.category}
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 uppercase">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 uppercase">
                           {op.intent}
                         </span>
                       </td>
@@ -259,17 +259,17 @@ export default function AeoPromptOpportunitiesPage() {
                             {op.competitor_mentions.map((c, i) => (
                               <span
                                 key={i}
-                                className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200"
+                                className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60"
                               >
                                 {c}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          <span className="text-slate-400 text-[11px]">—</span>
+                          <span className="text-slate-400 dark:text-slate-500 text-[11px]">—</span>
                         )}
                       </td>
-                      <td className="py-3.5 px-4 text-slate-600 max-w-xs text-[11px]">
+                      <td className="py-3.5 px-4 text-slate-600 dark:text-slate-300 max-w-xs text-[11px]">
                         {op.recommended_action}
                       </td>
                       <td className="py-3.5 px-4 text-right whitespace-nowrap">

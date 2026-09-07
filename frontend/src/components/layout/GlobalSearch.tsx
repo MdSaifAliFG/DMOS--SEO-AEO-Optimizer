@@ -489,7 +489,7 @@ export const GlobalSearch: React.FC = () => {
     <div ref={containerRef} className="relative w-full">
       {/* Search Input Bar */}
       <div className="relative flex items-center group">
-        <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 group-focus-within:text-blue-600 absolute left-2.5 sm:left-3 pointer-events-none transition-colors" />
+        <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 group-focus-within:text-blue-600 dark:group-focus-within:text-blue-400 absolute left-2.5 sm:left-3 pointer-events-none transition-colors" />
         <input
           ref={inputRef}
           type="text"
@@ -502,7 +502,7 @@ export const GlobalSearch: React.FC = () => {
           onKeyDown={handleKeyDown}
           placeholder="Search platform..."
           aria-label="Global platform search"
-          className="w-full pl-8 sm:pl-9 pr-8 sm:pr-16 py-1.5 sm:py-2 text-xs text-slate-800 placeholder:text-slate-400 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-slate-200 focus:border-blue-500 rounded-xl transition-all outline-none focus:ring-2 focus:ring-blue-500/15 shadow-2xs"
+          className="w-full pl-8 sm:pl-9 pr-8 sm:pr-16 py-1.5 sm:py-2 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-slate-100/80 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 border border-slate-200 dark:border-slate-700/80 focus:border-blue-500 rounded-xl transition-all outline-none focus:ring-2 focus:ring-blue-500/15 shadow-2xs"
         />
 
         {/* Right side controls: Clear (X) or Shortcut badge */}
@@ -513,14 +513,14 @@ export const GlobalSearch: React.FC = () => {
                 setQuery("");
                 inputRef.current?.focus();
               }}
-              className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 transition-colors cursor-pointer"
+              className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors cursor-pointer"
               title="Clear search"
               aria-label="Clear search input"
             >
               <X className="w-3 h-3" />
             </button>
           ) : (
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono font-medium text-slate-400 bg-white border border-slate-200 rounded shadow-2xs select-none pointer-events-none">
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono font-medium text-slate-400 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded shadow-2xs select-none pointer-events-none">
               {isMac ? "⌘" : "Ctrl"} K
             </kbd>
           )}
@@ -529,13 +529,13 @@ export const GlobalSearch: React.FC = () => {
 
       {/* Dropdown Results Panel */}
       {isOpen && (
-        <div className="fixed sm:absolute left-3 right-3 sm:left-0 sm:right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 max-w-lg sm:max-w-none mx-auto">
+        <div className="fixed sm:absolute left-3 right-3 sm:left-0 sm:right-0 mt-2 bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 max-w-lg sm:max-w-none mx-auto">
           {/* Header info */}
-          <div className="px-3.5 py-2 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between text-[11px] text-slate-500">
-            <span className="font-semibold text-slate-700">
+          <div className="px-3.5 py-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/80 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">
               {query.trim() ? "Search Results" : "Quick Suggestions"}
             </span>
-            <span className="text-[10px] text-slate-400">
+            <span className="text-[10px] text-slate-400 dark:text-slate-500">
               {filteredItems.length} {filteredItems.length === 1 ? "result" : "results"}
             </span>
           </div>
@@ -543,7 +543,7 @@ export const GlobalSearch: React.FC = () => {
           {/* Results List */}
           <div
             ref={listRef}
-            className="max-h-80 overflow-y-auto divide-y divide-slate-50 p-1"
+            className="max-h-80 overflow-y-auto divide-y divide-slate-50 dark:divide-slate-800/60 p-1"
           >
             {filteredItems.length > 0 ? (
               filteredItems.map((item, index) => {
@@ -553,12 +553,12 @@ export const GlobalSearch: React.FC = () => {
                 // Category-based icon styling
                 const iconBgClass =
                   item.category === "SEO"
-                    ? "bg-blue-50 text-blue-600"
+                    ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400"
                     : item.category === "AEO"
-                      ? "bg-purple-50 text-purple-600"
+                      ? "bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400"
                       : item.category === "Actions"
-                        ? "bg-emerald-50 text-emerald-600"
-                        : "bg-slate-100 text-slate-600";
+                        ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400";
 
                 return (
                   <div
@@ -566,8 +566,8 @@ export const GlobalSearch: React.FC = () => {
                     onClick={() => handleSelectItem(item)}
                     onMouseEnter={() => setSelectedIndex(index)}
                     className={`flex items-center justify-between px-3 py-2 rounded-xl cursor-pointer transition-all ${isSelected
-                      ? "bg-blue-50/70 text-slate-900 shadow-2xs"
-                      : "hover:bg-slate-50 text-slate-700"
+                      ? "bg-blue-50/70 dark:bg-blue-950/40 text-slate-900 dark:text-white shadow-2xs"
+                      : "hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300"
                       }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -579,34 +579,34 @@ export const GlobalSearch: React.FC = () => {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <p
-                            className={`text-xs font-bold truncate ${isSelected ? "text-blue-700" : "text-slate-900"
+                            className={`text-xs font-bold truncate ${isSelected ? "text-blue-700 dark:text-blue-400" : "text-slate-900 dark:text-white"
                               }`}
                           >
                             {item.title}
                           </p>
                           {item.badge && (
                             <span
-                              className={`text-[9px] font-bold px-1.5 py-0.2 rounded border uppercase tracking-wider ${item.badgeColor || "bg-slate-100 text-slate-600 border-slate-200"
+                              className={`text-[9px] font-bold px-1.5 py-0.2 rounded border uppercase tracking-wider ${item.badgeColor || "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"
                                 }`}
                             >
                               {item.badge}
                             </span>
                           )}
                         </div>
-                        <p className="text-[11px] text-slate-500 line-clamp-1 leading-normal">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 leading-normal">
                           {item.description}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                      <span className="text-[10px] font-mono text-slate-400 hidden sm:inline">
+                      <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 hidden sm:inline">
                         {item.href}
                       </span>
                       <ArrowRight
                         className={`w-3.5 h-3.5 transition-transform ${isSelected
-                          ? "text-blue-600 translate-x-0.5"
-                          : "text-slate-300 opacity-0 group-hover:opacity-100"
+                          ? "text-blue-600 dark:text-blue-400 translate-x-0.5"
+                          : "text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100"
                           }`}
                       />
                     </div>
@@ -615,11 +615,11 @@ export const GlobalSearch: React.FC = () => {
               })
             ) : (
               <div className="py-8 px-4 text-center">
-                <Search className="w-6 h-6 text-slate-300 mx-auto mb-2" />
-                <p className="text-xs font-semibold text-slate-700">
+                <Search className="w-6 h-6 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
                   No matching results found
                 </p>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                   Try searching for keywords, audits, prompts, or pages.
                 </p>
               </div>
@@ -627,22 +627,22 @@ export const GlobalSearch: React.FC = () => {
           </div>
 
           {/* Footer Shortcuts hint */}
-          <div className="px-3.5 py-2 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 select-none">
+          <div className="px-3.5 py-2 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 select-none">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded font-mono">
+                <kbd className="px-1 py-0.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded font-mono text-slate-500 dark:text-slate-400">
                   ↑↓
                 </kbd>{" "}
                 navigate
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded font-mono">
+                <kbd className="px-1 py-0.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded font-mono text-slate-500 dark:text-slate-400">
                   ↵
                 </kbd>{" "}
                 select
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 bg-white border border-slate-200 rounded font-mono">
+                <kbd className="px-1 py-0.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded font-mono text-slate-500 dark:text-slate-400">
                   esc
                 </kbd>{" "}
                 close

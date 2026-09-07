@@ -38,15 +38,15 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "p-12 text-center rounded-xl bg-white border border-dashed border-slate-300 shadow-xs flex flex-col items-center justify-center max-w-lg mx-auto",
+        "p-12 text-center rounded-xl bg-white dark:bg-[#0f172a] border border-dashed border-slate-300 dark:border-slate-800 shadow-xs flex flex-col items-center justify-center max-w-lg mx-auto",
         className
       )}
     >
-      <div className="p-3.5 bg-slate-50 text-slate-500 rounded-xl mb-3.5 border border-slate-200">
+      <div className="p-3.5 bg-slate-50 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 rounded-xl mb-3.5 border border-slate-200 dark:border-slate-700">
         {renderIcon()}
       </div>
-      <h3 className="text-base font-bold text-slate-800 tracking-tight">{title}</h3>
-      <p className="text-xs text-slate-500 max-w-sm mt-1 mb-5 leading-relaxed">
+      <h3 className="text-base font-bold text-slate-800 dark:text-white tracking-tight">{title}</h3>
+      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-1 mb-5 leading-relaxed">
         {description}
       </p>
       {action ? (

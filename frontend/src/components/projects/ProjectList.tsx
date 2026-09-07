@@ -61,10 +61,10 @@ export const ProjectList: React.FC = () => {
       {/* Header controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-slate-100">
+          <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">
             Managed Projects
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             {total} {total === 1 ? "website" : "websites"} currently monitored
           </p>
         </div>
@@ -106,7 +106,7 @@ export const ProjectList: React.FC = () => {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="p-5 rounded-2xl bg-surface-900/60 border border-slate-800 space-y-4">
+            <div key={i} className="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 space-y-4">
               <div className="flex items-center gap-3">
                 <Skeleton className="w-10 h-10 rounded-xl" />
                 <div className="space-y-2 flex-1">

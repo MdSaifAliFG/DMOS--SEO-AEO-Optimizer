@@ -14,7 +14,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ children }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#090d16] text-slate-900 dark:text-slate-100 flex transition-colors duration-200">
       {/* Desktop Sidebar */}
       <Sidebar
         className="hidden lg:flex shrink-0"

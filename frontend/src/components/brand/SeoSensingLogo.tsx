@@ -83,17 +83,15 @@ export const SeoSensingBrand: React.FC<SeoSensingBrandProps> = ({
         <span
           suppressHydrationWarning
           className={cn(
-            "font-black text-lg tracking-tight leading-none whitespace-nowrap font-sans select-none",
-            isDark ? "text-white" : "text-slate-950"
+            "font-black text-lg tracking-tight leading-none whitespace-nowrap font-sans select-none text-slate-950 dark:text-white",
+            isDark && "text-white"
           )}
         >
           SEO
           <span
             className={cn(
-              "bg-gradient-to-r bg-clip-text text-transparent",
-              isDark
-                ? "from-blue-400 via-indigo-300 to-purple-400"
-                : "from-blue-600 via-indigo-600 to-purple-600"
+              "bg-gradient-to-r bg-clip-text text-transparent from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400",
+              isDark && "from-blue-400 via-indigo-300 to-purple-400"
             )}
           >
             Sensing

@@ -46,16 +46,16 @@ export const ScanLogsViewer: React.FC<ScanLogsViewerProps> = ({
   };
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs font-mono text-xs">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] overflow-hidden shadow-xs font-mono text-xs">
       {/* Header */}
-      <div className="px-3.5 sm:px-4 py-2.5 sm:py-3 bg-slate-50/90 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-slate-700">
-          <Terminal className="w-4 h-4 text-blue-600 shrink-0" />
-          <span className="font-semibold text-xs font-sans text-slate-800">
+      <div className="px-3.5 sm:px-4 py-2.5 sm:py-3 bg-slate-50/90 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+          <Terminal className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+          <span className="font-semibold text-xs font-sans text-slate-800 dark:text-white">
             Execution Telemetry & Engine Logs
           </span>
           {isStreaming && (
-            <span className="flex items-center gap-1 text-[10px] text-emerald-700 font-sans ml-2 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 font-bold">
+            <span className="flex items-center gap-1 text-[10px] text-emerald-700 dark:text-emerald-300 font-sans ml-2 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 font-bold">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
               LIVE
             </span>
@@ -65,7 +65,7 @@ export const ScanLogsViewer: React.FC<ScanLogsViewerProps> = ({
         <button
           onClick={handleCopyLogs}
           disabled={logs.length === 0}
-          className="flex items-center gap-1.5 text-[11px] text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors disabled:opacity-40 font-sans shadow-2xs font-medium cursor-pointer"
+          className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-40 font-sans shadow-2xs font-medium cursor-pointer"
         >
           {copied ? (
             <>

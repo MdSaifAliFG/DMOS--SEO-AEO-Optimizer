@@ -31,7 +31,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-xs font-semibold text-slate-300 uppercase tracking-wider"
+            className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider"
           >
             {label}
           </label>
@@ -47,7 +47,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             disabled={disabled}
             className={cn(
-              "w-full rounded-xl bg-surface-900/90 border border-slate-700/80 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 transition-all duration-200 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-50 disabled:cursor-not-allowed",
+              "w-full rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-200 focus:outline-none focus:border-primary-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-50 disabled:cursor-not-allowed",
               leftIcon && "pl-10",
               rightIcon && "pr-10",
               error && "border-rose-500 focus:border-rose-500 focus:ring-rose-500/20",
@@ -62,9 +62,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
         {error ? (
-          <p className="text-xs text-rose-400 mt-1">{error}</p>
+          <p className="text-xs text-rose-500 dark:text-rose-400 mt-1">{error}</p>
         ) : helperText ? (
-          <p className="text-xs text-slate-400 mt-1">{helperText}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{helperText}</p>
         ) : null}
       </div>
     );

@@ -273,29 +273,29 @@ export default function SeoActionsPage() {
     const p = (priority || "medium").toLowerCase();
     if (p === "critical") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-          <Flame className="w-3 h-3 text-rose-600" />
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
+          <Flame className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
           Critical
         </span>
       );
     }
     if (p === "high") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-          <AlertTriangle className="w-3 h-3 text-amber-600" />
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+          <AlertTriangle className="w-3 h-3 text-amber-600 dark:text-amber-400" />
           High
         </span>
       );
     }
     if (p === "medium") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200">
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-800">
           Medium
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
         Low
       </span>
     );
@@ -305,7 +305,7 @@ export default function SeoActionsPage() {
     const s = (status || "open").toLowerCase();
     if (s === "fixed" || s === "implemented") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
           <CheckCircle2 className="w-3 h-3" />
           Fixed
         </span>
@@ -313,23 +313,23 @@ export default function SeoActionsPage() {
     }
     if (s === "in_progress") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200">
-          <Clock className="w-3 h-3 animate-spin text-sky-600" />
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-800">
+          <Clock className="w-3 h-3 animate-spin text-sky-600 dark:text-sky-400" />
           In Progress
         </span>
       );
     }
     if (s === "ignored" || s === "dismissed") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
           <Ban className="w-3 h-3" />
           Ignored
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-        <AlertTriangle className="w-3 h-3 text-amber-600" />
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+        <AlertTriangle className="w-3 h-3 text-amber-600 dark:text-amber-400" />
         Open
       </span>
     );
@@ -339,18 +339,18 @@ export default function SeoActionsPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Top Banner */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <div className="p-2 rounded-xl bg-blue-50 border border-blue-100 text-blue-600">
+              <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/60 text-blue-600 dark:text-blue-400">
                 <Sparkles className="w-5 h-5" />
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">SEO Optimization & Action Center</h1>
-              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">SEO Optimization & Action Center</h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                 Action Workspace
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
               Turn technical audit findings into prioritized, high-impact tasks to recover organic search ranking and crawl health.
             </p>
           </div>
@@ -358,15 +358,15 @@ export default function SeoActionsPage() {
           {/* Project Switcher, Audit Selector & Export */}
           <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap sm:shrink-0">
             {projects.length > 0 && (
-              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 shadow-2xs">
-                <span className="text-xs font-semibold text-slate-500">Project:</span>
+              <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 shadow-2xs">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Project:</span>
                 <select
                   value={selectedProjectId}
                   onChange={(e) => setSelectedProjectId(e.target.value)}
-                  className="bg-transparent text-xs font-semibold text-slate-900 focus:outline-none cursor-pointer"
+                  className="bg-transparent text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
                 >
                   {projects.map((p) => (
-                    <option key={p.id} value={p.id} className="bg-white text-slate-900">
+                    <option key={p.id} value={p.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
                       {p.name} ({p.domain})
                     </option>
                   ))}
@@ -375,15 +375,15 @@ export default function SeoActionsPage() {
             )}
 
             {scans.length > 0 && (
-              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 shadow-2xs">
-                <span className="text-xs font-semibold text-slate-500">Scan:</span>
+              <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 shadow-2xs">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Scan:</span>
                 <select
                   value={selectedScanId}
                   onChange={(e) => setSelectedScanId(e.target.value)}
-                  className="bg-transparent text-xs font-semibold text-slate-900 focus:outline-none cursor-pointer"
+                  className="bg-transparent text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
                 >
                   {scans.map((s) => (
-                    <option key={s.id} value={s.id} className="bg-white text-slate-900">
+                    <option key={s.id} value={s.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
                       {new Date(s.created_at).toLocaleDateString()} — Score: {s.overall_score ?? "N/A"}
                     </option>
                   ))}
@@ -393,40 +393,40 @@ export default function SeoActionsPage() {
 
             <button
               onClick={handleExportCSV}
-              className="px-3.5 py-2 text-xs font-semibold bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl border border-slate-200 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-3.5 py-2 text-xs font-semibold bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl border border-slate-200 dark:border-slate-700 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
-              <Download className="w-3.5 h-3.5 text-slate-500" /> Export CSV
+              <Download className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" /> Export CSV
             </button>
           </div>
         </div>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7 gap-2.5 sm:gap-3 mb-2">
-          <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-slate-500 block">Total Actions</span>
-            <span className="text-2xl font-black text-slate-900 mt-1 block">{summary?.total_actions ?? "—"}</span>
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <span className="text-[11px] uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 block">Total Actions</span>
+            <span className="text-2xl font-black text-slate-900 dark:text-white mt-1 block">{summary?.total_actions ?? "—"}</span>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-rose-100 shadow-sm">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-rose-700 block">Critical</span>
-            <span className="text-2xl font-black text-rose-950 mt-1 block">{summary?.critical_actions ?? "—"}</span>
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-rose-100 dark:border-rose-900/40 shadow-sm">
+            <span className="text-[11px] uppercase tracking-wider font-bold text-rose-700 dark:text-rose-400 block">Critical</span>
+            <span className="text-2xl font-black text-rose-950 dark:text-rose-200 mt-1 block">{summary?.critical_actions ?? "—"}</span>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-amber-100 shadow-sm">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-amber-700 block">High Priority</span>
-            <span className="text-2xl font-black text-amber-950 mt-1 block">{summary?.high_priority_actions ?? "—"}</span>
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-amber-100 dark:border-amber-900/40 shadow-sm">
+            <span className="text-[11px] uppercase tracking-wider font-bold text-amber-700 dark:text-amber-400 block">High Priority</span>
+            <span className="text-2xl font-black text-amber-950 dark:text-amber-200 mt-1 block">{summary?.high_priority_actions ?? "—"}</span>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-sky-100 shadow-sm">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-sky-700 block">In Progress</span>
-            <span className="text-2xl font-black text-sky-950 mt-1 block">{summary?.in_progress_actions ?? "—"}</span>
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-sky-100 dark:border-sky-900/40 shadow-sm">
+            <span className="text-[11px] uppercase tracking-wider font-bold text-sky-700 dark:text-sky-400 block">In Progress</span>
+            <span className="text-2xl font-black text-sky-950 dark:text-sky-200 mt-1 block">{summary?.in_progress_actions ?? "—"}</span>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-emerald-700 block">Fixed</span>
-            <span className="text-2xl font-black text-emerald-950 mt-1 block">{summary?.fixed_actions ?? "—"}</span>
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 shadow-sm">
+            <span className="text-[11px] uppercase tracking-wider font-bold text-emerald-700 dark:text-emerald-400 block">Fixed</span>
+            <span className="text-2xl font-black text-emerald-950 dark:text-emerald-200 mt-1 block">{summary?.fixed_actions ?? "—"}</span>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-sky-100 shadow-sm">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-sky-700 block">Est. SEO Impact</span>
-            <span className="text-2xl font-black text-sky-950 mt-1 block">+{summary?.estimated_seo_impact ?? 0} pts</span>
+          <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-sky-100 dark:border-sky-900/40 shadow-sm">
+            <span className="text-[11px] uppercase tracking-wider font-bold text-sky-700 dark:text-sky-400 block">Est. SEO Impact</span>
+            <span className="text-2xl font-black text-sky-950 dark:text-sky-200 mt-1 block">+{summary?.estimated_seo_impact ?? 0} pts</span>
           </div>
-          <div className="bg-gradient-to-br from-sky-900 to-indigo-950 p-4 rounded-2xl text-white shadow-md">
+          <div className="bg-gradient-to-br from-sky-900 to-indigo-950 p-4 rounded-2xl text-white shadow-md border border-sky-800/50">
             <span className="text-[11px] uppercase tracking-wider font-bold text-sky-300 block">Potential Score</span>
             <div className="flex items-baseline gap-1 mt-1">
               <span className="text-2xl font-black text-white">{summary?.potential_seo_score ?? "—"}</span>
@@ -436,7 +436,7 @@ export default function SeoActionsPage() {
         </div>
 
         {/* Filters & Search Toolbar */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
             {["all", "open", "in_progress", "fixed", "ignored"].map((st) => (
               <button
@@ -444,8 +444,8 @@ export default function SeoActionsPage() {
                 onClick={() => setStatusFilter(st)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize transition ${
                   statusFilter === st
-                    ? "bg-sky-900 text-white shadow-sm"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    ? "bg-sky-900 dark:bg-sky-600 text-white shadow-sm"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                 }`}
               >
                 {st.replace("_", " ")}
@@ -458,26 +458,26 @@ export default function SeoActionsPage() {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-400"
             >
-              <option value="all">All Priorities</option>
-              <option value="critical">Critical</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
+              <option value="all" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">All Priorities</option>
+              <option value="critical" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Critical</option>
+              <option value="high" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">High</option>
+              <option value="medium" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Medium</option>
+              <option value="low" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Low</option>
             </select>
 
             {/* Category filter */}
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-400"
             >
-              <option value="all">All Categories</option>
-              <option value="technical">Technical SEO</option>
-              <option value="indexability">Indexability</option>
-              <option value="metadata">Metadata & Tags</option>
-              <option value="links">Links & Architecture</option>
+              <option value="all" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">All Categories</option>
+              <option value="technical" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Technical SEO</option>
+              <option value="indexability" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Indexability</option>
+              <option value="metadata" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Metadata & Tags</option>
+              <option value="links" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">Links & Architecture</option>
               <option value="content">Content Quality</option>
             </select>
 
@@ -489,7 +489,7 @@ export default function SeoActionsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search SEO actions..."
-                className="bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-xl pl-8 pr-3 py-1.5 w-48 sm:w-60 focus:outline-none focus:ring-2 focus:ring-sky-400"
+                className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-xs rounded-xl pl-8 pr-3 py-1.5 w-48 sm:w-60 focus:outline-none focus:ring-2 focus:ring-sky-400 placeholder:text-slate-400"
               />
             </div>
           </div>
@@ -497,8 +497,8 @@ export default function SeoActionsPage() {
 
         {/* Bulk Action Bar */}
         {selectedActionIds.length > 0 && (
-          <div className="bg-sky-50 border border-sky-200 p-3 rounded-xl mb-4 flex items-center justify-between gap-4">
-            <span className="text-xs font-bold text-sky-900">
+          <div className="bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 p-3 rounded-xl mb-4 flex items-center justify-between gap-4">
+            <span className="text-xs font-bold text-sky-900 dark:text-sky-300">
               {selectedActionIds.length} action(s) selected
             </span>
             <div className="flex items-center gap-2">
@@ -525,22 +525,22 @@ export default function SeoActionsPage() {
         )}
 
         {/* Main Action Table */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
           {loading ? (
             <div className="py-20 text-center text-slate-400">
-              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-sky-600" />
-              <p className="text-sm font-semibold">Loading SEO optimization actions...</p>
+              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-sky-600 dark:text-sky-400" />
+              <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Loading SEO optimization actions...</p>
             </div>
           ) : error ? (
-            <div className="py-20 text-center text-rose-600">
+            <div className="py-20 text-center text-rose-600 dark:text-rose-400">
               <AlertTriangle className="w-8 h-8 mx-auto mb-2" />
               <p className="text-sm font-semibold">{error}</p>
             </div>
           ) : actions.length === 0 ? (
-            <div className="py-20 text-center text-slate-500">
+            <div className="py-20 text-center text-slate-500 dark:text-slate-400">
               <CheckCircle2 className="w-10 h-10 mx-auto mb-3 text-emerald-500" />
-              <h3 className="text-base font-bold text-slate-800">No SEO actions found</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
+              <h3 className="text-base font-bold text-slate-800 dark:text-white">No SEO actions found</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 mb-4">
                 Run a full SEO audit to generate prioritized technical, metadata, and crawlability optimization tasks.
               </p>
               <Link
@@ -553,12 +553,12 @@ export default function SeoActionsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs min-w-[760px]">
-                <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                <thead className="bg-slate-50/80 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
                   <tr>
                     <th className="py-3 px-4 w-10">
-                      <button onClick={handleToggleSelectAll} className="text-slate-400 hover:text-slate-600">
+                      <button onClick={handleToggleSelectAll} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
                         {selectedActionIds.length === actions.length && actions.length > 0 ? (
-                          <CheckSquare className="w-4 h-4 text-sky-700" />
+                          <CheckSquare className="w-4 h-4 text-sky-700 dark:text-sky-400" />
                         ) : (
                           <Square className="w-4 h-4" />
                         )}
@@ -573,21 +573,21 @@ export default function SeoActionsPage() {
                     <th className="py-3 px-4 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {actions.map((act) => {
                     const isSelected = selectedActionIds.includes(act.id);
                     return (
                       <tr
                         key={act.id}
-                        className={`hover:bg-sky-50/40 transition cursor-pointer ${
-                          isSelected ? "bg-sky-50/60" : ""
+                        className={`hover:bg-sky-50/40 dark:hover:bg-slate-800/50 transition cursor-pointer ${
+                          isSelected ? "bg-sky-50/60 dark:bg-sky-950/40" : ""
                         }`}
                         onClick={() => handleOpenDrawer(act)}
                       >
                         <td className="py-3.5 px-4" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => handleToggleSelectOne(act.id)} className="text-slate-400 hover:text-slate-600">
+                          <button onClick={() => handleToggleSelectOne(act.id)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
                             {isSelected ? (
-                              <CheckSquare className="w-4 h-4 text-sky-700" />
+                              <CheckSquare className="w-4 h-4 text-sky-700 dark:text-sky-400" />
                             ) : (
                               <Square className="w-4 h-4" />
                             )}
@@ -597,17 +597,17 @@ export default function SeoActionsPage() {
                           {getPriorityBadge(act.priority)}
                         </td>
                         <td className="py-3.5 px-4">
-                          <div className="font-bold text-slate-900 line-clamp-1">{act.title}</div>
-                          <div className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">{act.why_it_matters}</div>
+                          <div className="font-bold text-slate-900 dark:text-white line-clamp-1">{act.title}</div>
+                          <div className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">{act.why_it_matters}</div>
                         </td>
-                        <td className="py-3.5 px-4 whitespace-nowrap font-medium text-slate-700 capitalize">
+                        <td className="py-3.5 px-4 whitespace-nowrap font-medium text-slate-700 dark:text-slate-300 capitalize">
                           {act.category}
                         </td>
-                        <td className="py-3.5 px-4 whitespace-nowrap font-semibold text-slate-800">
+                        <td className="py-3.5 px-4 whitespace-nowrap font-semibold text-slate-800 dark:text-slate-200">
                           {act.affected_pages_count || 0} pages
                         </td>
                         <td className="py-3.5 px-4 whitespace-nowrap">
-                          <span className="font-bold text-sky-700">+{act.estimated_impact} pts</span>
+                          <span className="font-bold text-sky-700 dark:text-sky-400">+{act.estimated_impact} pts</span>
                         </td>
                         <td className="py-3.5 px-4 whitespace-nowrap">
                           {getStatusBadge(act.status)}
@@ -615,7 +615,7 @@ export default function SeoActionsPage() {
                         <td className="py-3.5 px-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => handleOpenDrawer(act)}
-                            className="px-3 py-1 bg-slate-100 hover:bg-sky-100 text-slate-700 hover:text-sky-900 rounded-lg font-bold text-xs transition inline-flex items-center gap-1"
+                            className="px-3 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-sky-100 dark:hover:bg-sky-900/40 text-slate-700 dark:text-slate-300 hover:text-sky-900 dark:hover:text-sky-300 rounded-lg font-bold text-xs transition inline-flex items-center gap-1"
                           >
                             View
                             <ChevronRight className="w-3 h-3" />
@@ -633,24 +633,24 @@ export default function SeoActionsPage() {
 
       {/* Right-Side Action Detail Drawer */}
       {selectedAction && (
-        <div className="fixed inset-0 z-50 overflow-hidden flex justify-end bg-slate-900/40 backdrop-blur-xs transition-opacity animate-in fade-in duration-200">
-          <div className="w-full sm:max-w-xl md:max-w-2xl bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto border-l border-slate-200">
+        <div className="fixed inset-0 z-50 overflow-hidden flex justify-end bg-slate-900/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200">
+          <div className="w-full sm:max-w-xl md:max-w-2xl bg-white dark:bg-[#0f172a] h-full shadow-2xl flex flex-col justify-between overflow-y-auto border-l border-slate-200 dark:border-slate-800">
             {/* Drawer Header */}
             <div>
-              <div className="p-4 sm:p-6 bg-white border-b border-slate-200 flex items-start justify-between gap-4">
+              <div className="p-4 sm:p-6 bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-800 flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     {getPriorityBadge(selectedAction.priority)}
-                    <span className="text-[11px] text-blue-700 font-mono font-bold bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                    <span className="text-[11px] text-blue-700 dark:text-blue-300 font-mono font-bold bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-800">
                       {selectedAction.issue_code}
                     </span>
-                    <span className="text-xs text-slate-500 font-medium capitalize">• {selectedAction.category}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium capitalize">• {selectedAction.category}</span>
                   </div>
-                  <h2 className="text-xl font-bold text-slate-900 tracking-tight">{selectedAction.title}</h2>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">{selectedAction.title}</h2>
                 </div>
                 <button
                   onClick={handleCloseDrawer}
-                  className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition cursor-pointer"
+                  className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -659,16 +659,16 @@ export default function SeoActionsPage() {
               {/* Drawer Body */}
               <div className="p-6 space-y-6 text-sm">
                 {/* Score Potential Card */}
-                <div className="bg-gradient-to-r from-sky-50 via-blue-50 to-sky-100/50 p-4 rounded-xl border border-sky-200/80 flex items-center justify-between">
+                <div className="bg-gradient-to-r from-sky-50 via-blue-50 to-sky-100/50 dark:from-sky-950/40 dark:via-blue-950/30 dark:to-indigo-950/40 p-4 rounded-xl border border-sky-200/80 dark:border-sky-800/80 flex items-center justify-between">
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-sky-700 block">Recoverable SEO Potential</span>
-                    <div className="text-lg font-black text-sky-950 mt-0.5">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400 block">Recoverable SEO Potential</span>
+                    <div className="text-lg font-black text-sky-950 dark:text-sky-200 mt-0.5">
                       +{selectedAction.estimated_impact} Score Points
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-[11px] font-semibold text-slate-500 block">Effort Required</span>
-                    <span className="text-xs font-bold uppercase px-2 py-0.5 rounded bg-white text-slate-800 border border-slate-200 inline-block mt-0.5">
+                    <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block">Effort Required</span>
+                    <span className="text-xs font-bold uppercase px-2 py-0.5 rounded bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 inline-block mt-0.5">
                       {selectedAction.effort}
                     </span>
                   </div>
@@ -676,22 +676,22 @@ export default function SeoActionsPage() {
 
                 {/* Why This Matters */}
                 <div>
-                  <h4 className="text-xs uppercase tracking-wider font-bold text-slate-900 mb-2 flex items-center gap-1.5">
-                    <HelpCircle className="w-4 h-4 text-sky-600" />
+                  <h4 className="text-xs uppercase tracking-wider font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
+                    <HelpCircle className="w-4 h-4 text-sky-600 dark:text-sky-400" />
                     Why This Matters
                   </h4>
-                  <p className="text-slate-700 bg-slate-50 p-3.5 rounded-xl border border-slate-100 leading-relaxed text-xs">
+                  <p className="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 leading-relaxed text-xs">
                     {selectedAction.why_it_matters}
                   </p>
                 </div>
 
                 {/* How to Fix */}
                 <div>
-                  <h4 className="text-xs uppercase tracking-wider font-bold text-slate-900 mb-2 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-sky-600" />
+                  <h4 className="text-xs uppercase tracking-wider font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-sky-600 dark:text-sky-400" />
                     How to Fix
                   </h4>
-                  <p className="text-slate-700 bg-sky-50/50 p-3.5 rounded-xl border border-sky-100 leading-relaxed text-xs font-medium">
+                  <p className="text-slate-700 dark:text-slate-300 bg-sky-50/50 dark:bg-sky-950/30 p-3.5 rounded-xl border border-sky-100 dark:border-sky-900/50 leading-relaxed text-xs font-medium">
                     {selectedAction.how_to_fix}
                   </p>
                 </div>
@@ -700,21 +700,21 @@ export default function SeoActionsPage() {
                 {(selectedAction.current_state || selectedAction.recommended_state) && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {selectedAction.current_state && (
-                      <div className="bg-rose-50/50 p-3.5 rounded-xl border border-rose-100">
-                        <span className="text-[10px] uppercase font-bold text-rose-700 block mb-1">
+                      <div className="bg-rose-50/50 dark:bg-rose-950/30 p-3.5 rounded-xl border border-rose-100 dark:border-rose-900/50">
+                        <span className="text-[10px] uppercase font-bold text-rose-700 dark:text-rose-400 block mb-1">
                           Current Detected State
                         </span>
-                        <p className="text-xs text-slate-800 leading-snug font-mono">
+                        <p className="text-xs text-slate-800 dark:text-slate-200 leading-snug font-mono">
                           {selectedAction.current_state}
                         </p>
                       </div>
                     )}
                     {selectedAction.recommended_state && (
-                      <div className="bg-emerald-50/50 p-3.5 rounded-xl border border-emerald-100">
-                        <span className="text-[10px] uppercase font-bold text-emerald-700 block mb-1">
+                      <div className="bg-emerald-50/50 dark:bg-emerald-950/30 p-3.5 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+                        <span className="text-[10px] uppercase font-bold text-emerald-700 dark:text-emerald-400 block mb-1">
                           Recommended Optimized State
                         </span>
-                        <p className="text-xs text-slate-800 leading-snug font-mono">
+                        <p className="text-xs text-slate-800 dark:text-slate-200 leading-snug font-mono">
                           {selectedAction.recommended_state}
                         </p>
                       </div>
@@ -725,13 +725,13 @@ export default function SeoActionsPage() {
                 {/* Affected URLs Sample */}
                 {selectedAction.affected_urls && selectedAction.affected_urls.length > 0 && (
                   <div>
-                    <h4 className="text-xs uppercase tracking-wider font-bold text-slate-900 mb-2 flex items-center gap-1.5">
-                      <Globe className="w-4 h-4 text-slate-600" />
+                    <h4 className="text-xs uppercase tracking-wider font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
+                      <Globe className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                       Affected URLs Sample ({selectedAction.affected_pages_count} pages)
                     </h4>
-                    <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <div className="space-y-1.5 bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
                       {selectedAction.affected_urls.slice(0, 5).map((url, idx) => (
-                        <div key={idx} className="text-xs text-sky-900 font-mono truncate flex items-center gap-1.5">
+                        <div key={idx} className="text-xs text-sky-900 dark:text-sky-300 font-mono truncate flex items-center gap-1.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0" />
                           <a href={url} target="_blank" rel="noopener noreferrer" className="hover:underline truncate">
                             {url}
@@ -744,8 +744,8 @@ export default function SeoActionsPage() {
 
                 {/* Notes Section */}
                 <div>
-                  <h4 className="text-xs uppercase tracking-wider font-bold text-slate-900 mb-2 flex items-center gap-1.5">
-                    <FileText className="w-4 h-4 text-slate-600" />
+                  <h4 className="text-xs uppercase tracking-wider font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1.5">
+                    <FileText className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                     Sprint Notes & Tracking
                   </h4>
                   <textarea
@@ -753,13 +753,13 @@ export default function SeoActionsPage() {
                     value={actionNotes}
                     onChange={(e) => setActionNotes(e.target.value)}
                     placeholder="Add implementation notes, ticket IDs, or sprint links..."
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-400"
+                    className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-400 placeholder:text-slate-400"
                   />
                   <div className="flex justify-end mt-2">
                     <button
                       onClick={handleSaveNotes}
                       disabled={isSavingNotes}
-                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition disabled:opacity-50"
+                      className="px-3 py-1.5 bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 text-white rounded-lg text-xs font-bold transition disabled:opacity-50"
                     >
                       {isSavingNotes ? "Saving..." : "Save Notes"}
                     </button>
@@ -771,8 +771,8 @@ export default function SeoActionsPage() {
                   <div
                     className={`p-4 rounded-xl border text-xs leading-relaxed ${
                       verifyResult.is_fixed
-                        ? "bg-emerald-50 border-emerald-200 text-emerald-900"
-                        : "bg-amber-50 border-amber-200 text-amber-900"
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-300"
+                        : "bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-300"
                     }`}
                   >
                     <div className="font-bold mb-0.5">
@@ -785,7 +785,7 @@ export default function SeoActionsPage() {
             </div>
 
             {/* Drawer Footer Actions */}
-            <div className="p-5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3">
+            <div className="p-5 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleStatusChange(selectedAction.id, "in_progress")}
@@ -801,7 +801,7 @@ export default function SeoActionsPage() {
                 </button>
                 <button
                   onClick={() => handleStatusChange(selectedAction.id, "ignored")}
-                  className="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-medium transition"
+                  className="px-3 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-medium transition"
                 >
                   Ignore
                 </button>

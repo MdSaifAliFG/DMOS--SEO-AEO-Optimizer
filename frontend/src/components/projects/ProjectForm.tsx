@@ -86,8 +86,8 @@ export const ProjectForm: React.FC = () => {
           </Button>
         </Link>
         <div>
-          <h1 className="text-xl font-bold text-slate-100">Add New Website</h1>
-          <p className="text-xs text-slate-400">
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white">Add New Website</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Register a web property for Phase 1 scan orchestration and lifecycle monitoring
           </p>
         </div>
@@ -97,8 +97,8 @@ export const ProjectForm: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Main info */}
           <div className="space-y-4">
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-              <Globe className="w-4 h-4 text-primary-400" />
+            <h3 className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <Globe className="w-4 h-4 text-primary-500 dark:text-primary-400" />
               Website Information
             </h3>
 
@@ -126,7 +126,7 @@ export const ProjectForm: React.FC = () => {
             />
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                 Description (Optional)
               </label>
               <textarea
@@ -134,32 +134,32 @@ export const ProjectForm: React.FC = () => {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Brief notes about this website or organization..."
                 rows={3}
-                className="w-full rounded-xl bg-surface-900/90 border border-slate-700/80 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 transition-all duration-200 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
+                className="w-full rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-200 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
               />
             </div>
           </div>
 
           {/* Crawler Configuration */}
-          <div className="pt-4 border-t border-slate-800 space-y-4">
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-cyan-400" />
+          <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-4">
+            <h3 className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <Sliders className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
               Scan Configuration (Phase 1 Ready)
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                   Crawl Depth
                 </label>
                 <select
                   value={crawlDepth}
                   onChange={(e) => setCrawlDepth(Number(e.target.value))}
-                  className="w-full rounded-xl bg-surface-900/90 border border-slate-700/80 px-4 py-2.5 text-sm text-slate-100 transition-all focus:outline-none focus:border-primary-500"
+                  className="w-full rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm text-slate-800 dark:text-white transition-all focus:outline-none focus:border-primary-500"
                 >
-                  <option value={1}>1 Level (Homepage Only)</option>
-                  <option value={2}>2 Levels (Direct Links)</option>
-                  <option value={3}>3 Levels (Standard Crawl)</option>
-                  <option value={5}>5 Levels (Deep Crawl)</option>
+                  <option value={1} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">1 Level (Homepage Only)</option>
+                  <option value={2} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">2 Levels (Direct Links)</option>
+                  <option value={3} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">3 Levels (Standard Crawl)</option>
+                  <option value={5} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">5 Levels (Deep Crawl)</option>
                 </select>
               </div>
 
@@ -173,7 +173,7 @@ export const ProjectForm: React.FC = () => {
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
             <Link href="/projects">
               <Button type="button" variant="outline" disabled={isLoading}>
                 Cancel

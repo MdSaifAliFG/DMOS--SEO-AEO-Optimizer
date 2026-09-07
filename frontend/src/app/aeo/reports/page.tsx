@@ -75,23 +75,23 @@ export default function AeoReportsPage() {
     <DashboardShell>
       <div className="space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <FileBarChart className="w-5 h-5 text-purple-600" />
-              <h2 className="text-base font-bold text-slate-900">AEO Intelligence Reports ({projects.length})</h2>
+              <FileBarChart className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">AEO Intelligence Reports ({projects.length})</h2>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Generate executive-ready audit reports, brand prominence summaries, and CSV data exports.
             </p>
           </div>
         </div>
 
         {/* Reports Table */}
-        <Card className="border-slate-200 bg-white overflow-hidden">
+        <Card className="border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase">
                 <tr>
                   <th className="py-3 px-5">Brand Name</th>
                   <th className="py-3 px-4">Domain</th>
@@ -102,10 +102,10 @@ export default function AeoReportsPage() {
                   <th className="py-3 px-5 text-right whitespace-nowrap min-w-[320px]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-200">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={7} className="py-16 text-center text-slate-400">
+                    <td colSpan={7} className="py-16 text-center text-slate-400 dark:text-slate-500">
                       <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-purple-600 border-t-transparent" />
                       <p className="mt-2 text-xs">Loading AEO reports...</p>
                     </td>
@@ -115,8 +115,8 @@ export default function AeoReportsPage() {
                     <td colSpan={7} className="py-16 text-center">
                       <div className="max-w-sm mx-auto space-y-3">
                         <FileBarChart className="w-8 h-8 text-purple-400 mx-auto" />
-                        <p className="text-sm font-semibold text-slate-800">No AEO Projects Available</p>
-                        <p className="text-xs text-slate-400">Create an AEO project to generate comprehensive intelligence reports.</p>
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">No AEO Projects Available</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500">Create an AEO project to generate comprehensive intelligence reports.</p>
                         <Link href="/aeo/projects">
                           <Button size="sm" variant="primary" className="bg-purple-600 text-white">
                             Go to AEO Projects
@@ -127,30 +127,30 @@ export default function AeoReportsPage() {
                   </tr>
                 ) : (
                   projects.map((proj) => (
-                    <tr key={proj.id} className="hover:bg-purple-50/20 transition-colors">
-                      <td className="py-3.5 px-5 font-bold text-slate-900 whitespace-nowrap">
+                    <tr key={proj.id} className="hover:bg-purple-50/20 dark:hover:bg-purple-950/20 transition-colors">
+                      <td className="py-3.5 px-5 font-bold text-slate-900 dark:text-white whitespace-nowrap">
                         {proj.name}
                       </td>
 
-                      <td className="py-3.5 px-4 font-mono text-[11px] text-slate-600 whitespace-nowrap">
+                      <td className="py-3.5 px-4 font-mono text-[11px] text-slate-600 dark:text-slate-400 whitespace-nowrap">
                         {proj.domain}
                       </td>
 
                       <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                        <span className="font-bold text-purple-950 px-2.5 py-1 bg-purple-50 rounded-full border border-purple-200">
+                        <span className="font-bold text-purple-950 dark:text-purple-200 px-2.5 py-1 bg-purple-50 dark:bg-purple-950/50 rounded-full border border-purple-200 dark:border-purple-800/60">
                           {proj.aeo_score !== null && proj.aeo_score !== undefined ? `${proj.aeo_score}/100` : "Untested"}
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 text-center font-bold text-slate-800 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-center font-bold text-slate-800 dark:text-slate-200 whitespace-nowrap">
                         {proj.questions_count}
                       </td>
 
-                      <td className="py-3.5 px-4 text-center font-bold text-purple-700 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-center font-bold text-purple-700 dark:text-purple-400 whitespace-nowrap">
                         {proj.citations_count}
                       </td>
 
-                      <td className="py-3.5 px-4 text-slate-400 text-[11px] whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-slate-400 dark:text-slate-500 text-[11px] whitespace-nowrap">
                         {proj.last_analyzed_at ? formatTimeAgo(proj.last_analyzed_at) : "Never"}
                       </td>
 
@@ -158,9 +158,9 @@ export default function AeoReportsPage() {
                         <div className="flex items-center justify-end gap-2 flex-nowrap">
                           <button
                             onClick={() => handleExportCsv(proj.id, proj.name)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-xs transition whitespace-nowrap"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-xs transition whitespace-nowrap"
                           >
-                            <Download className="w-3.5 h-3.5 text-slate-500" />
+                            <Download className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                             Queries CSV
                           </button>
 
@@ -169,9 +169,9 @@ export default function AeoReportsPage() {
                               const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
                               window.open(`${backendUrl}/aeo/actions/${proj.id}/export-csv`, "_blank");
                             }}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-purple-200 bg-purple-50/70 hover:bg-purple-100 text-purple-800 text-xs font-semibold shadow-xs transition whitespace-nowrap"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-purple-200 dark:border-purple-800/60 bg-purple-50/70 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/50 text-purple-800 dark:text-purple-300 text-xs font-semibold shadow-xs transition whitespace-nowrap"
                           >
-                            <Download className="w-3.5 h-3.5 text-purple-600" />
+                            <Download className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                             Actions CSV
                           </button>
 
@@ -181,17 +181,17 @@ export default function AeoReportsPage() {
                               window.open(`${backendUrl}/aeo/trends/${proj.id}?range=all`, "_blank");
                               success("Telemetry Export", `Exporting monitoring timeline for ${proj.name}`);
                             }}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-800 text-xs font-semibold shadow-xs transition whitespace-nowrap"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-800/60 bg-indigo-50/70 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-800 dark:text-indigo-300 text-xs font-semibold shadow-xs transition whitespace-nowrap"
                           >
-                            <Download className="w-3.5 h-3.5 text-indigo-600" />
+                            <Download className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                             Telemetry JSON
                           </button>
 
                           <Link
                             href="/aeo/intelligence"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 text-xs font-semibold shadow-xs transition whitespace-nowrap"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-purple-200 dark:border-purple-800/60 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/50 text-xs font-semibold shadow-xs transition whitespace-nowrap"
                           >
-                            <Brain className="w-3.5 h-3.5 text-purple-600" />
+                            <Brain className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                             Intelligence
                           </Link>
 
@@ -215,18 +215,18 @@ export default function AeoReportsPage() {
         {/* Modal: Comprehensive Report Viewer */}
         {activeReportProject && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <div className="bg-white rounded-2xl p-6 max-w-3xl w-full max-h-[85vh] overflow-y-auto shadow-2xl border border-slate-200 space-y-6">
-              <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-4">
+            <div className="bg-white dark:bg-[#0f172a] rounded-2xl p-6 max-w-3xl w-full max-h-[85vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-800 space-y-6">
+              <div className="flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800 uppercase">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 uppercase">
                       AEO Intelligence Audit
                     </span>
                     {activeReportProject.generated_at && (
-                      <span className="text-xs text-slate-400">Generated {formatDate(activeReportProject.generated_at)}</span>
+                      <span className="text-xs text-slate-400 dark:text-slate-500">Generated {formatDate(activeReportProject.generated_at)}</span>
                     )}
                   </div>
-                  <h2 className="text-lg font-bold text-slate-900">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                     {activeReportProject.project?.name || "Project Report"} ({activeReportProject.project?.domain || ""})
                   </h2>
                 </div>
@@ -234,7 +234,7 @@ export default function AeoReportsPage() {
                   <Button size="sm" variant="outline" onClick={() => window.print()} leftIcon={<Printer className="w-3.5 h-3.5" />}>
                     Print
                   </Button>
-                  <button onClick={() => setActiveReportProject(null)} className="text-slate-400 hover:text-slate-600">
+                  <button onClick={() => setActiveReportProject(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
@@ -242,27 +242,27 @@ export default function AeoReportsPage() {
 
               {/* Score Breakdown Summary */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                <div className="p-3 bg-purple-50 rounded-xl border border-purple-100">
-                  <span className="text-[10px] uppercase font-bold text-purple-700 block">Overall Score</span>
-                  <span className="text-2xl font-black text-purple-950">
+                <div className="p-3 bg-purple-50 dark:bg-purple-950/40 rounded-xl border border-purple-100 dark:border-purple-800/60">
+                  <span className="text-[10px] uppercase font-bold text-purple-700 dark:text-purple-300 block">Overall Score</span>
+                  <span className="text-2xl font-black text-purple-950 dark:text-purple-100">
                     {activeReportProject.scores?.overall_score ?? activeReportProject.project?.aeo_score ?? "—"}/100
                   </span>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <span className="text-[10px] uppercase font-semibold text-slate-500 block">Mention Rate</span>
-                  <span className="text-xl font-bold text-slate-800">
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <span className="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 block">Mention Rate</span>
+                  <span className="text-xl font-bold text-slate-800 dark:text-slate-100">
                     {activeReportProject.scores?.mention_score ?? activeReportProject.visibility?.mention_score ?? 0}%
                   </span>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <span className="text-[10px] uppercase font-semibold text-slate-500 block">Citation Share</span>
-                  <span className="text-xl font-bold text-slate-800">
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <span className="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 block">Citation Share</span>
+                  <span className="text-xl font-bold text-slate-800 dark:text-slate-100">
                     {activeReportProject.scores?.citation_score ?? activeReportProject.visibility?.citation_score ?? 0}%
                   </span>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <span className="text-[10px] uppercase font-semibold text-slate-500 block">Query Coverage</span>
-                  <span className="text-xl font-bold text-slate-800">
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <span className="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 block">Query Coverage</span>
+                  <span className="text-xl font-bold text-slate-800 dark:text-slate-100">
                     {activeReportProject.scores?.coverage_score ?? activeReportProject.visibility?.coverage_score ?? 0}%
                   </span>
                 </div>
@@ -270,30 +270,30 @@ export default function AeoReportsPage() {
 
               {/* Top Citations */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Top Cited Source Domains</h4>
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Top Cited Source Domains</h4>
                 {activeReportProject.top_citations && activeReportProject.top_citations.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {activeReportProject.top_citations.map((c: any, i: number) => (
-                      <div key={i} className="p-2.5 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
-                        <span className="font-semibold text-slate-800">{c.domain}</span>
-                        <span className="text-[11px] text-purple-700 font-bold">{c.count} links</span>
+                      <div key={i} className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">{c.domain}</span>
+                        <span className="text-[11px] text-purple-700 dark:text-purple-400 font-bold">{c.count} links</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-400 py-3 text-center bg-slate-50 rounded-lg">No citation sources recorded yet.</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 py-3 text-center bg-slate-50 dark:bg-slate-900/60 rounded-lg">No citation sources recorded yet.</p>
                 )}
               </div>
 
               {/* Competitor Voice Share */}
               {activeReportProject.competitors && activeReportProject.competitors.length > 0 && (
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Competitor Presence</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Competitor Presence</h4>
                   <div className="space-y-2">
                     {activeReportProject.competitors.map((comp: any, i: number) => (
-                      <div key={i} className="p-2.5 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
-                        <span className="font-semibold text-slate-800">{comp.name || comp}</span>
-                        <span className="text-slate-500">{comp.mentions || 0} mentions</span>
+                      <div key={i} className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">{comp.name || comp}</span>
+                        <span className="text-slate-500 dark:text-slate-400">{comp.mentions || 0} mentions</span>
                       </div>
                     ))}
                   </div>
