@@ -79,20 +79,20 @@ class HTMLPageParser:
 
         # 2. Meta Description
         meta_desc_tag = soup.find("meta", attrs={"name": re.compile(r"^description$", re.I)})
-        meta_description = meta_desc_tag.get("content", "").strip() if meta_desc_tag else None
+        meta_description = str(meta_desc_tag.get("content") or "").strip() if meta_desc_tag else None
         if meta_description == "":
             meta_description = None
 
         # 3. Canonical URL
         canonical_tag = soup.find("link", attrs={"rel": re.compile(r"^canonical$", re.I)})
-        raw_canonical = canonical_tag.get("href", "").strip() if canonical_tag else None
+        raw_canonical = str(canonical_tag.get("href") or "").strip() if canonical_tag else None
         canonical_url = None
         if raw_canonical:
             canonical_url = urljoin(current_url, raw_canonical)
 
         # 4. Robots Directives
         robots_tag = soup.find("meta", attrs={"name": re.compile(r"^(robots|googlebot)$", re.I)})
-        robots_directive = robots_tag.get("content", "").strip().lower() if robots_tag else None
+        robots_directive = str(robots_tag.get("content") or "").strip().lower() if robots_tag else None
 
         x_robots_tag = None
         for h_key, h_val in headers.items():
@@ -109,7 +109,7 @@ class HTMLPageParser:
 
         # 5. Language
         html_tag = soup.find("html")
-        language = html_tag.get("lang", "").strip() if html_tag else None
+        language = str(html_tag.get("lang") or "").strip() if html_tag else None
         if not language:
             language = None
 
@@ -139,7 +139,7 @@ class HTMLPageParser:
         mixed_content_resources: List[str] = []
 
         for img in soup.find_all("img"):
-            src = img.get("src", "").strip()
+            src = str(img.get("src") or "").strip()
             if not src:
                 continue
             abs_src = urljoin(current_url, src)
@@ -150,16 +150,18 @@ class HTMLPageParser:
 
             # Check alt: None means missing, "" means empty decorative
             raw_alt = img.get("alt")
-            alt_val = raw_alt.strip() if raw_alt is not None else None
+            alt_val = str(raw_alt).strip() if raw_alt is not None else None
 
             # Parse width/height if available
             width = None
             height = None
             try:
-                if img.get("width"):
-                    width = int(re.sub(r"\D", "", img.get("width")))
-                if img.get("height"):
-                    height = int(re.sub(r"\D", "", img.get("height")))
+                raw_w = img.get("width")
+                if raw_w:
+                    width = int(re.sub(r"\D", "", str(raw_w)))
+                raw_h = img.get("height")
+                if raw_h:
+                    height = int(re.sub(r"\D", "", str(raw_h)))
             except Exception:
                 pass
 
@@ -174,16 +176,16 @@ class HTMLPageParser:
         # Check script / link mixed content
         if is_page_https:
             for tag in soup.find_all(["script", "link"]):
-                src = tag.get("src") or tag.get("href")
-                if src:
-                    abs_res = urljoin(current_url, src.strip())
+                tag_src = tag.get("src") or tag.get("href")
+                if tag_src:
+                    abs_res = urljoin(current_url, str(tag_src).strip())
                     if abs_res.startswith("http://") and abs_res not in mixed_content_resources:
                         mixed_content_resources.append(abs_res)
 
         # 9. Links
         links: List[Dict[str, Any]] = []
         for a_tag in soup.find_all("a", href=True):
-            raw_href = a_tag.get("href", "").strip()
+            raw_href = str(a_tag.get("href") or "").strip()
             if not raw_href or raw_href.startswith("#") or raw_href.startswith("javascript:") or raw_href.startswith("mailto:") or raw_href.startswith("tel:"):
                 continue
 
@@ -193,8 +195,8 @@ class HTMLPageParser:
                 continue
 
             anchor_text = a_tag.get_text().strip()
-            rel = a_tag.get("rel", [])
-            rel_str = " ".join(rel).lower() if isinstance(rel, list) else str(rel).lower()
+            rel = a_tag.get("rel")
+            rel_str = " ".join(rel).lower() if isinstance(rel, list) else str(rel or "").lower()
             is_follow = "nofollow" not in rel_str
 
             is_internal = is_internal_url(norm_target, project_domain)
@@ -210,16 +212,16 @@ class HTMLPageParser:
         # 10. Open Graph Metadata
         open_graph: Dict[str, Any] = {}
         for og in soup.find_all("meta", property=re.compile(r"^og:", re.I)):
-            prop = og.get("property", "").lower()
-            val = og.get("content", "").strip()
+            prop = str(og.get("property") or "").lower()
+            val = str(og.get("content") or "").strip()
             if prop and val:
                 open_graph[prop] = val
 
         # 11. Twitter Card Metadata
         twitter_card: Dict[str, Any] = {}
         for tw in soup.find_all("meta", attrs={"name": re.compile(r"^twitter:", re.I)}):
-            name = tw.get("name", "").lower()
-            val = tw.get("content", "").strip()
+            name = str(tw.get("name") or "").lower()
+            val = str(tw.get("content") or "").strip()
             if name and val:
                 twitter_card[name] = val
 

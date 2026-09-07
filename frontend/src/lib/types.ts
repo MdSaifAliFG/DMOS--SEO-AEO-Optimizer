@@ -1162,3 +1162,523 @@ export interface AeoEntityMovementItem {
   trend: string;
 }
 
+// ==========================================
+// PHASE 8: GEO (Generative Engine Optimization) TYPES
+// ==========================================
+
+export interface GeoProject {
+  id: string;
+  user_id?: string | null;
+  name: string;
+  domain: string;
+  brand_name?: string | null;
+  brand_aliases: string[];
+  description?: string | null;
+  industry?: string | null;
+  sub_industry?: string | null;
+  target_audience?: string | null;
+  target_locations: string[];
+  target_languages: string[];
+  products: string[];
+  services: string[];
+  primary_topics: string[];
+  competitors: Array<{ name: string; domain?: string; aliases?: string[] }>;
+  social_profiles: Record<string, string>;
+  logo_url?: string | null;
+  status: "active" | "paused" | "archived";
+
+  geo_score?: number | null;
+  visibility_score?: number | null;
+  mention_score?: number | null;
+  recommendation_score?: number | null;
+  entity_score?: number | null;
+  citation_score?: number | null;
+  content_score?: number | null;
+  authority_score?: number | null;
+  technical_score?: number | null;
+  consistency_score?: number | null;
+
+  score_label?: string | null;
+  confidence?: string | null;
+  data_coverage?: number | null;
+
+  last_analyzed_at?: string | null;
+  questions_count?: number;
+  answers_count?: number;
+  citations_count?: number;
+  entities_count?: number;
+  issues_count?: number;
+  recommendations_count?: number;
+  settings: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GeoProjectListResponse {
+  projects: GeoProject[];
+  total: number;
+}
+
+export interface GeoProjectCreateInput {
+  name: string;
+  domain: string;
+  brand_name?: string;
+  brand_aliases?: string[];
+  description?: string;
+  industry?: string;
+  sub_industry?: string;
+  target_audience?: string;
+  target_locations?: string[];
+  target_languages?: string[];
+  products?: string[];
+  services?: string[];
+  primary_topics?: string[];
+  competitors?: Array<{ name: string; domain?: string; aliases?: string[] }>;
+  social_profiles?: Record<string, string>;
+  logo_url?: string;
+}
+
+export interface GeoProjectUpdateInput {
+  name?: string;
+  domain?: string;
+  brand_name?: string;
+  brand_aliases?: string[];
+  description?: string;
+  industry?: string;
+  sub_industry?: string;
+  target_audience?: string;
+  target_locations?: string[];
+  target_languages?: string[];
+  products?: string[];
+  services?: string[];
+  primary_topics?: string[];
+  competitors?: Array<{ name: string; domain?: string; aliases?: string[] }>;
+  social_profiles?: Record<string, string>;
+  logo_url?: string;
+  status?: "active" | "paused" | "archived";
+}
+
+export interface GeoBrandProfile {
+  id: string;
+  project_id: string;
+  brand_name: string;
+  legal_name?: string | null;
+  aliases: string[];
+  short_description?: string | null;
+  long_description?: string | null;
+  industry?: string | null;
+  category?: string | null;
+  products: string[];
+  services: string[];
+  use_cases: string[];
+  target_users: string[];
+  locations: string[];
+  pricing_model?: string | null;
+  key_features: string[];
+  differentiators: string[];
+  competitors: string[];
+  social_links: Record<string, string>;
+  official_urls: string[];
+  support_url?: string | null;
+  documentation_url?: string | null;
+  contact_url?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GeoBrandProfileUpdateInput {
+  brand_name?: string;
+  legal_name?: string;
+  aliases?: string[];
+  short_description?: string;
+  long_description?: string;
+  industry?: string;
+  category?: string;
+  products?: string[];
+  services?: string[];
+  use_cases?: string[];
+  target_users?: string[];
+  locations?: string[];
+  pricing_model?: string;
+  key_features?: string[];
+  differentiators?: string[];
+  competitors?: string[];
+  social_links?: Record<string, string>;
+  official_urls?: string[];
+  support_url?: string;
+  documentation_url?: string;
+  contact_url?: string;
+}
+
+export interface GeoQuestion {
+  id: string;
+  project_id: string;
+  question: string;
+  category: string;
+  intent: string;
+  priority: string;
+  search_type: string;
+  target_entity?: string | null;
+  target_product?: string | null;
+  target_service?: string | null;
+  is_active: boolean;
+  brand_mentioned: boolean;
+  recommended: boolean;
+  best_position?: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GeoQuestionListResponse {
+  questions: GeoQuestion[];
+  total: number;
+}
+
+export interface GeoAnswer {
+  id: string;
+  project_id: string;
+  question_id: string;
+  provider: string;
+  model?: string | null;
+  answer_text: string;
+  latency_ms?: number | null;
+  token_usage: Record<string, number>;
+  request_id?: string | null;
+
+  brand_mentioned: boolean;
+  brand_mention_type: string;
+  brand_position?: number | null;
+  recommendation_position?: number | null;
+  recommended: boolean;
+  recommendation_strength: string;
+  sentiment: string;
+  confidence: number;
+
+  competitor_mentions: Array<{ name: string; position?: number; recommended?: boolean }>;
+  competitor_positions: Record<string, number>;
+
+  citation_count: number;
+  own_domain_citations: number;
+  competitor_citations: number;
+  third_party_citations: number;
+  raw_citations: Array<{ url: string; domain?: string; title?: string }>;
+  created_at: string;
+}
+
+export interface GeoAnswerListResponse {
+  answers: GeoAnswer[];
+  total: number;
+}
+
+export interface GeoCitation {
+  id: string;
+  project_id: string;
+  answer_id?: string | null;
+  url: string;
+  domain: string;
+  source_type: string;
+  title?: string | null;
+  brand_related: boolean;
+  competitor_related: boolean;
+  authority_score?: number | null;
+  authority_status: string;
+  citation_position: number;
+  created_at: string;
+}
+
+export interface GeoCitationListResponse {
+  citations: GeoCitation[];
+  total: number;
+  own_citation_rate: number;
+  competitor_citation_rate: number;
+  third_party_citation_rate: number;
+  citation_diversity: number;
+}
+
+export interface GeoEntity {
+  id: string;
+  project_id: string;
+  name: string;
+  entity_type: string;
+  description?: string | null;
+  aliases: string[];
+  parent_entity?: string | null;
+  related_entities: string[];
+  related_topics: string[];
+  products: string[];
+  services: string[];
+  competitors: string[];
+  source: string;
+  confidence: number;
+  consistency_status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GeoEntityListResponse {
+  entities: GeoEntity[];
+  total: number;
+  consistency_score: number;
+}
+
+export interface GeoCompetitorItem {
+  name: string;
+  domain?: string | null;
+  mention_rate: number;
+  recommendation_rate: number;
+  average_position?: number | null;
+  citation_rate: number;
+  share_of_voice: number;
+  geo_gap: number;
+  trend: "gaining" | "losing" | "stable";
+}
+
+export interface GeoCompetitorResponse {
+  project_id: string;
+  brand_name: string;
+  brand_share_of_voice: number;
+  brand_mention_rate: number;
+  brand_recommendation_rate: number;
+  competitors: GeoCompetitorItem[];
+}
+
+export interface GeoIssue {
+  id: string;
+  project_id: string;
+  issue_code: string;
+  category: string;
+  title: string;
+  description: string;
+  severity: "critical" | "high" | "medium" | "low" | "info";
+  priority_score: number;
+  affected_urls: string[];
+  affected_questions: string[];
+  evidence: Record<string, unknown>;
+  status: "open" | "in_progress" | "resolved" | "ignored";
+  created_at: string;
+  updated_at: string;
+  resolved_at?: string | null;
+}
+
+export interface GeoIssueListResponse {
+  issues: GeoIssue[];
+  total: number;
+}
+
+export interface GeoRecommendation {
+  id: string;
+  project_id: string;
+  recommendation_code: string;
+  title: string;
+  description: string;
+  category: string;
+  priority_score: number;
+  priority_level: "critical" | "high" | "medium" | "low";
+  why_it_matters: string;
+  how_to_fix: string;
+  implementation_steps: string[];
+  affected_prompt_count: number;
+  affected_answer_count: number;
+  affected_urls: string[];
+  estimated_impact: number;
+  potential_score: number;
+  verification_status: "unverified" | "pending" | "verified" | "failed" | "partial";
+  status: "open" | "in_progress" | "completed" | "ignored";
+  notes?: string | null;
+  resolved_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GeoRecommendationListResponse {
+  recommendations: GeoRecommendation[];
+  total: number;
+}
+
+export interface GeoActionSummary {
+  project_id: string;
+  total_actions: number;
+  open_actions: number;
+  in_progress_actions: number;
+  completed_actions: number;
+  verified_actions: number;
+  ignored_actions: number;
+  average_priority_score: number;
+  potential_total_gain: number;
+}
+
+export interface GeoDashboardData {
+  project: GeoProject;
+  brand_profile?: GeoBrandProfile | null;
+  geo_score?: number | null;
+  score_label?: string | null;
+  confidence: string;
+  data_coverage: number;
+
+  visibility_score?: number | null;
+  recommendation_score?: number | null;
+  citation_score?: number | null;
+  entity_score?: number | null;
+  content_score?: number | null;
+  technical_score?: number | null;
+  authority_score?: number | null;
+  consistency_score?: number | null;
+
+  mention_rate: number;
+  recommendation_rate: number;
+  own_citation_rate: number;
+  share_of_voice: number;
+
+  provider_breakdown: Array<{
+    key: string;
+    name: string;
+    status: string;
+    is_configured: boolean;
+    supports_search: boolean;
+    supports_citations: boolean;
+  }>;
+  competitor_share_of_voice: GeoCompetitorItem[];
+  citation_sources: Array<{ domain: string; count: number }>;
+  top_issues: GeoIssue[];
+  top_recommendations: GeoRecommendation[];
+  recent_history: Array<Record<string, unknown>>;
+}
+
+export interface GeoVisibilityData {
+  project_id: string;
+  current_geo_score?: number | null;
+  mention_rate: number;
+  recommendation_rate: number;
+  citation_rate: number;
+  share_of_voice: number;
+  providers: Array<{
+    provider: string;
+    status: string;
+    has_data: boolean;
+    total_queries: number;
+    mention_rate: number;
+    recommendation_rate: number;
+  }>;
+  snapshots_count: number;
+}
+
+export interface GeoHistoryData {
+  project_id: string;
+  snapshots: Array<{
+    id: string;
+    provider: string;
+    geo_score?: number | null;
+    mention_rate: number;
+    recommendation_rate: number;
+    citation_rate: number;
+    share_of_voice: number;
+    created_at?: string | null;
+  }>;
+  change_events: Array<{
+    id: string;
+    event_type: string;
+    severity: string;
+    before_value?: string | null;
+    after_value?: string | null;
+    delta?: number | null;
+    description: string;
+    detected_at?: string | null;
+  }>;
+  optimization_history: Array<{
+    id: string;
+    action: string;
+    before_score?: number | null;
+    after_score?: number | null;
+    delta?: number | null;
+    verified: boolean;
+    timestamp?: string | null;
+  }>;
+}
+
+export interface GeoMonitoringSchedule {
+  id: string;
+  project_id: string;
+  frequency: "daily" | "weekly" | "monthly" | "manual";
+  enabled: boolean;
+  providers: string[];
+  question_limit: number;
+  last_run?: string | null;
+  next_run?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GeoAlert {
+  id: string;
+  project_id: string;
+  alert_type: string;
+  title: string;
+  description: string;
+  severity: "critical" | "high" | "medium" | "low";
+  status: "new" | "acknowledged" | "resolved";
+  provider?: string | null;
+  detected_at: string;
+}
+
+export interface GeoOptimizeResult {
+  tool: string;
+  title: string;
+  direct_answer?: string | null;
+  suggested_headings: string[];
+  missing_facts: string[];
+  recommended_structure: string[];
+  supporting_evidence: string[];
+  internal_links: string[];
+  external_authorities: string[];
+  schema_markup?: Record<string, unknown> | null;
+  commercial_readiness_score?: number | null;
+  expected_impact: string;
+}
+
+export interface GeoReport {
+  project_id: string;
+  generated_at: string;
+  executive_summary: string;
+  geo_score?: number | null;
+  score_label?: string | null;
+  ai_visibility: number;
+  recommendation_visibility: number;
+  citation_health: number;
+  entity_clarity: number;
+  content_extractability: number;
+  technical_accessibility: number;
+  top_strengths: string[];
+  top_weaknesses: string[];
+  top_competitors: Array<Record<string, unknown>>;
+  top_sources: Array<Record<string, unknown>>;
+  top_recommendations: Array<Record<string, unknown>>;
+}
+
+export interface GeoAnalysisJob {
+  id: string;
+  project_id: string;
+  status: "queued" | "running" | "completed" | "partial" | "failed";
+  progress: number;
+  current_step: string;
+  providers: string[];
+  results_summary: Record<string, unknown>;
+  error_message?: string | null;
+  started_at?: string | null;
+  completed_at?: string | null;
+  created_at: string;
+}
+
+export interface UnifiedSearchIntelligence {
+  project_id: string;
+  brand_name: string;
+  domain: string;
+  seo_score?: number | null;
+  aeo_score?: number | null;
+  geo_score?: number | null;
+  unified_score?: number | null;
+  formula: string;
+  has_sufficient_data: boolean;
+  executive_brief: string;
+}
+
+

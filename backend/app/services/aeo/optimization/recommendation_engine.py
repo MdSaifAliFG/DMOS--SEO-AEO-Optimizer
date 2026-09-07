@@ -363,7 +363,9 @@ class AEORecommendationEngine:
         synced: List[AeoRecommendation] = []
 
         for g in generated_recs:
-            code = g.get("recommendation_code") or g.get("title")
+            code = str(g.get("recommendation_code") or g.get("title") or "")
+            if not code:
+                continue
             existing = existing_map.get(code)
 
             if existing:

@@ -139,7 +139,7 @@ class AEOIntelligenceEngine:
             })
 
         # Sort by share of voice descending
-        competitors_tracked.sort(key=lambda x: x["share_of_voice"], reverse=True)
+        competitors_tracked.sort(key=lambda x: float(str(x.get("share_of_voice") or 0)), reverse=True)
         highest_sov = competitors_tracked[0]["name"] if competitors_tracked else None
 
         # Build comparison chart data
@@ -589,13 +589,13 @@ class AEOIntelligenceEngine:
         for e in entities:
             results.append({
                 "id": e.id,
-                "name": e.name,
+                "name": e.entity_name,
                 "entity_type": e.entity_type,
-                "confidence_score": e.confidence_score,
-                "frequency": e.frequency,
+                "confidence_score": e.visibility_rate,
+                "frequency": e.mentions_count,
                 "associated_concepts": e.associated_concepts or [],
-                "trend": "strong" if e.frequency >= 3 else "moderate",
+                "trend": "strong" if e.mentions_count >= 3 else "moderate",
             })
 
-        results.sort(key=lambda x: x["frequency"], reverse=True)
+        results.sort(key=lambda x: int(str(x.get("frequency") or 0)), reverse=True)
         return results

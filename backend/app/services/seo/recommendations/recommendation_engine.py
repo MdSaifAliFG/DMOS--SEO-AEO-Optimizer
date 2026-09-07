@@ -46,7 +46,7 @@ class RecommendationEngine:
         )
         existing = existing_res.scalars().all()
         if existing:
-            return existing
+            return list(existing)
 
         # 2. Fetch all issues for this scan
         issues_res = await db.execute(
@@ -144,7 +144,7 @@ class RecommendationEngine:
             .where(SeoRecommendation.scan_id == scan_id)
             .order_by(desc(SeoRecommendation.priority_score))
         )
-        return res.scalars().all()
+        return list(res.scalars().all())
 
     @staticmethod
     async def get_actions(
@@ -351,7 +351,7 @@ class RecommendationEngine:
         else:
             parser = HTMLPageParser()
             base_dom = urlparse(target_url).netloc
-            parsed_data = parser.parse(html=fetch_res.text, url=target_url, base_domain=base_dom)
+            parsed_data = parser.parse(html_content=fetch_res.text, current_url=target_url, project_domain=base_dom)
 
             if issue_code == "missing_canonical":
                 is_fixed = bool(parsed_data.canonical_url)

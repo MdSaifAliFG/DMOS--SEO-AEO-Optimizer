@@ -44,8 +44,8 @@ export default function OverviewPage() {
           </div>
         </div>
 
-        {/* 2 Primary Module Launch Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        {/* 3 Primary Module Launch Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           {/* Module 1: SEO Optimization */}
           <Card className="p-5 sm:p-7 border-slate-200 bg-white dark:bg-[#0f172a] dark:border-slate-800 shadow-xs rounded-2xl flex flex-col justify-between space-y-6 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all">
             <div className="space-y-4">
@@ -54,7 +54,7 @@ export default function OverviewPage() {
                   <Globe className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-400 dark:border-blue-800/60">
-                  Active Engine
+                  Technical Search
                 </span>
               </div>
 
@@ -77,7 +77,7 @@ export default function OverviewPage() {
               <span className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate">/seo/dashboard</span>
               <Link href="/seo/dashboard" className="shrink-0">
                 <Button variant="primary" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
-                  Open SEO Module
+                  Open SEO
                 </Button>
               </Link>
             </div>
@@ -91,7 +91,7 @@ export default function OverviewPage() {
                   <Bot className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-950/60 dark:text-purple-400 dark:border-purple-800/60">
-                  AI Answer Engine
+                  Answer Visibility
                 </span>
               </div>
 
@@ -114,7 +114,44 @@ export default function OverviewPage() {
               <span className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate">/aeo/dashboard</span>
               <Link href="/aeo/dashboard" className="shrink-0">
                 <Button variant="aeo" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
-                  Open AEO Module
+                  Open AEO
+                </Button>
+              </Link>
+            </div>
+          </Card>
+
+          {/* Module 3: GEO Optimization (Phase 8) */}
+          <Card className="p-5 sm:p-7 border-slate-200 bg-white dark:bg-[#0f172a] dark:border-slate-800 shadow-xs rounded-2xl flex flex-col justify-between space-y-6 hover:border-amber-300 dark:hover:border-amber-500/50 transition-all">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-500 flex items-center justify-center text-white shadow-md shadow-amber-500/20">
+                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
+                </div>
+                <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/60">
+                  Generative Engine
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">GEO Optimization</h3>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  Generative Search Optimization measuring AI recommendations, entity consistency, crawler access, and commercial buyer discovery.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-300 font-medium pt-2 border-t border-slate-100 dark:border-slate-800">
+                <span>• 8-Factor GEO Score</span>
+                <span>• Recommendation Rate %</span>
+                <span>• 18 Discovery Categories</span>
+                <span>• 40+ Deterministic Rules</span>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate">/geo/dashboard</span>
+              <Link href="/geo/dashboard" className="shrink-0">
+                <Button className="bg-amber-500 hover:bg-amber-600 text-white shadow-xs" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
+                  Open GEO
                 </Button>
               </Link>
             </div>
@@ -124,3 +161,4 @@ export default function OverviewPage() {
     </DashboardShell>
   );
 }
+

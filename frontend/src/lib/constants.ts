@@ -8,14 +8,15 @@ export interface NavItem {
   href: string;
   icon: string;
   badge?: string;
-  badgeVariant?: "default" | "success" | "warning" | "neutral" | "primary" | "aeo";
+  badgeVariant?: "default" | "success" | "warning" | "neutral" | "primary" | "aeo" | "geo";
 }
 
 export interface NavGroup {
   groupName: string;
-  groupKey: "overview" | "seo" | "aeo" | "system" | string;
+  groupKey: "overview" | "seo" | "aeo" | "geo" | "system" | string;
   items: NavItem[];
 }
+
 
 export const NAVIGATION_CONFIG: NavGroup[] = [
   {
@@ -166,9 +167,78 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
     ],
   },
   {
+    groupName: "GEO Optimization",
+    groupKey: "geo",
+    items: [
+      {
+        title: "Dashboard",
+        href: "/geo/dashboard",
+        icon: "BarChart3",
+      },
+      {
+        title: "Action Center",
+        href: "/geo/actions",
+        icon: "ListTodo",
+        badge: "Actions",
+        badgeVariant: "geo",
+      },
+      {
+        title: "Projects",
+        href: "/geo/projects",
+        icon: "FolderKanban",
+      },
+      {
+        title: "Questions",
+        href: "/geo/questions",
+        icon: "HelpCircle",
+      },
+      {
+        title: "Generative Engine",
+        href: "/geo/answers",
+        icon: "Cpu",
+      },
+      {
+        title: "Visibility",
+        href: "/geo/visibility",
+        icon: "Eye",
+      },
+      {
+        title: "Content Studio",
+        href: "/geo/optimization/content",
+        icon: "Sparkles",
+      },
+      {
+        title: "Entities",
+        href: "/geo/entities",
+        icon: "Boxes",
+      },
+      {
+        title: "Citations",
+        href: "/geo/citations",
+        icon: "Quote",
+      },
+      {
+        title: "Competitors",
+        href: "/geo/competitors",
+        icon: "Users",
+      },
+      {
+        title: "Optimization History",
+        href: "/geo/history",
+        icon: "History",
+      },
+      {
+        title: "Reports",
+        href: "/geo/reports",
+        icon: "FileBarChart",
+      },
+    ],
+  },
+  {
     groupName: "System",
     groupKey: "system",
     items: [
+
       {
         title: "Integrations",
         href: "/integrations",

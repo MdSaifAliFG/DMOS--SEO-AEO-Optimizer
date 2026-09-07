@@ -912,7 +912,7 @@ class AeoService:
                 message = f"Unresolved: {uncovered_cnt} prompts remain uncovered in latest analysis."
 
         elif "CITE" in code:
-            own_cits = sum(1 for c in (project.citations or []) if c.is_own_domain)
+            own_cits = sum(1 for c in (project.citations or []) if c.citation_type == "own_domain")
             if own_cits > 0 and (project.citation_score or 0) >= 60:
                 resolved = True
                 message = "Verified: Own domain citations detected with healthy citation score."

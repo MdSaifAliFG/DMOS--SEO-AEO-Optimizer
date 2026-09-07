@@ -182,6 +182,7 @@ export const Sidebar: React.FC<{
         {NAVIGATION_CONFIG.map((group, gIdx) => {
           const isAeoGroup = group.groupKey === "aeo";
           const isSeoGroup = group.groupKey === "seo";
+          const isGeoGroup = group.groupKey === "geo";
           const isGroupCollapsed = Boolean(collapsedGroups[group.groupKey]);
 
           return (
@@ -198,9 +199,11 @@ export const Sidebar: React.FC<{
                         "text-[10px] font-bold uppercase tracking-wider",
                         isAeoGroup
                           ? "text-purple-700 dark:text-purple-400"
-                          : isSeoGroup
-                            ? "text-sky-700 dark:text-sky-400"
-                            : "text-slate-500 dark:text-slate-400"
+                          : isGeoGroup
+                            ? "text-amber-700 dark:text-amber-400"
+                            : isSeoGroup
+                              ? "text-sky-700 dark:text-sky-400"
+                              : "text-slate-500 dark:text-slate-400"
                       )}
                     >
                       {group.groupName}
@@ -208,6 +211,11 @@ export const Sidebar: React.FC<{
                     {isAeoGroup && (
                       <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60">
                         AI
+                      </span>
+                    )}
+                    {isGeoGroup && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
+                        GEO
                       </span>
                     )}
                     {isSeoGroup && (
@@ -233,15 +241,19 @@ export const Sidebar: React.FC<{
 
                     const activeStyles = isAeoGroup
                       ? "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-semibold border border-purple-200 dark:border-purple-800/60 shadow-xs"
-                      : isSeoGroup
-                        ? "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 font-semibold border border-sky-200/90 dark:border-sky-800/60 shadow-xs"
-                        : "bg-slate-100 dark:bg-slate-800/80 text-slate-900 dark:text-white font-semibold border border-slate-200 dark:border-slate-700/80 shadow-xs";
+                      : isGeoGroup
+                        ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-semibold border border-amber-200 dark:border-amber-800/60 shadow-xs"
+                        : isSeoGroup
+                          ? "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 font-semibold border border-sky-200/90 dark:border-sky-800/60 shadow-xs"
+                          : "bg-slate-100 dark:bg-slate-800/80 text-slate-900 dark:text-white font-semibold border border-slate-200 dark:border-slate-700/80 shadow-xs";
 
                     const hoverStyles = isAeoGroup
                       ? "text-slate-600 dark:text-slate-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50/50 dark:hover:bg-purple-950/30"
-                      : isSeoGroup
-                        ? "text-slate-600 dark:text-slate-400 hover:text-sky-700 dark:hover:text-sky-300 hover:bg-sky-50/60 dark:hover:bg-sky-950/30"
-                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50";
+                      : isGeoGroup
+                        ? "text-slate-600 dark:text-slate-400 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-50/50 dark:hover:bg-amber-950/30"
+                        : isSeoGroup
+                          ? "text-slate-600 dark:text-slate-400 hover:text-sky-700 dark:hover:text-sky-300 hover:bg-sky-50/60 dark:hover:bg-sky-950/30"
+                          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50";
 
                     return (
                       <Link
@@ -261,7 +273,9 @@ export const Sidebar: React.FC<{
                               active
                                 ? isAeoGroup
                                   ? "text-purple-600 dark:text-purple-400"
-                                  : "text-blue-600 dark:text-blue-400"
+                                  : isGeoGroup
+                                    ? "text-amber-600 dark:text-amber-400"
+                                    : "text-blue-600 dark:text-blue-400"
                                 : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
                             )}
                           >
@@ -271,7 +285,16 @@ export const Sidebar: React.FC<{
                         </div>
 
                         {!isCollapsed && item.badge && (
-                          <span className="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                          <span
+                            className={cn(
+                              "text-[10px] px-1.5 py-0.2 rounded font-semibold border",
+                              item.badgeVariant === "geo"
+                                ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/60"
+                                : item.badgeVariant === "aeo"
+                                  ? "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800/60"
+                                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700"
+                            )}
+                          >
                             {item.badge}
                           </span>
                         )}
@@ -282,6 +305,7 @@ export const Sidebar: React.FC<{
               )}
             </div>
           );
+
         })}
       </div>
 

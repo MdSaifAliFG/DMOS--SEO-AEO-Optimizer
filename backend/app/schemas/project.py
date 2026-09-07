@@ -21,8 +21,8 @@ def normalize_domain(v: str) -> str:
 class ProjectBase(BaseModel):
     name: str = Field(..., min_length=2, max_length=255, description="Project or organization name")
     domain: str = Field(..., min_length=3, max_length=255, description="Root website domain (e.g. example.com or https://example.com)")
-    website_url: Optional[str] = Field(None, description="Normalized root website URL")
-    description: Optional[str] = Field(None, max_length=1000, description="Optional project description")
+    website_url: Optional[str] = Field(default=None, description="Normalized root website URL")
+    description: Optional[str] = Field(default=None, max_length=1000, description="Optional project description")
     settings: Optional[Dict[str, Any]] = Field(
         default_factory=lambda: {
             "crawl_limit": 100,

@@ -138,7 +138,7 @@ async def get_scan_issues(
     severity: Optional[str] = Query(None, description="Filter by severity (critical, high, medium, low, info)"),
     category: Optional[str] = Query(None, description="Filter by category (technical, indexability, metadata, links)"),
     issue_code: Optional[str] = Query(None, description="Filter by specific issue code"),
-    status: Optional[str] = Query(None, description="Filter by issue status"),
+    issue_status: Optional[str] = Query(None, alias="status", description="Filter by issue status"),
     db: AsyncSession = Depends(get_db),
 ) -> SeoIssueListResponse:
     """Fetch paginated list of technical SEO issues detected by the rule engine."""
@@ -157,5 +157,5 @@ async def get_scan_issues(
         severity=severity,
         category=category,
         issue_code=issue_code,
-        status=status,
+        status=issue_status,
     )

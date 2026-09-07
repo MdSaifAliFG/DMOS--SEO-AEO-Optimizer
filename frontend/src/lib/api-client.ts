@@ -66,7 +66,37 @@ import {
   DescriptionOptimizationResponse,
   ContentOptimizationResponse,
   InternalLinksOptimizationResponse,
+  GeoProject,
+  GeoProjectListResponse,
+  GeoProjectCreateInput,
+  GeoProjectUpdateInput,
+  GeoBrandProfile,
+  GeoBrandProfileUpdateInput,
+  GeoQuestion,
+  GeoQuestionListResponse,
+  GeoAnswer,
+  GeoAnswerListResponse,
+  GeoCitation,
+  GeoCitationListResponse,
+  GeoEntity,
+  GeoEntityListResponse,
+  GeoCompetitorResponse,
+  GeoIssue,
+  GeoIssueListResponse,
+  GeoRecommendation,
+  GeoRecommendationListResponse,
+  GeoActionSummary,
+  GeoDashboardData,
+  GeoVisibilityData,
+  GeoHistoryData,
+  GeoMonitoringSchedule,
+  GeoAlert,
+  GeoOptimizeResult,
+  GeoReport,
+  GeoAnalysisJob,
+  UnifiedSearchIntelligence,
 } from "./types";
+
 
 class ApiClient {
   private baseUrl: string;
@@ -855,7 +885,300 @@ class ApiClient {
       }
     );
   }
+
+  // ==========================================
+  // GEO (Generative Engine Optimization) APIs
+  // ==========================================
+
+  async getGeoProjects(): Promise<GeoProjectListResponse> {
+    return this.request<GeoProjectListResponse>("/geo/projects");
+  }
+
+  async getGeoProject(id: string): Promise<GeoProject> {
+    return this.request<GeoProject>(`/geo/projects/${id}`);
+  }
+
+  async createGeoProject(input: GeoProjectCreateInput): Promise<GeoProject> {
+    return this.request<GeoProject>("/geo/projects", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async updateGeoProject(id: string, input: GeoProjectUpdateInput): Promise<GeoProject> {
+    return this.request<GeoProject>(`/geo/projects/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async deleteGeoProject(id: string): Promise<void> {
+    return this.request<void>(`/geo/projects/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  async getGeoBrandProfile(projectId: string): Promise<GeoBrandProfile> {
+    return this.request<GeoBrandProfile>(`/geo/projects/${projectId}/brand-profile`);
+  }
+
+  async updateGeoBrandProfile(projectId: string, input: GeoBrandProfileUpdateInput): Promise<GeoBrandProfile> {
+    return this.request<GeoBrandProfile>(`/geo/projects/${projectId}/brand-profile`, {
+      method: "PUT",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async triggerGeoAnalysis(input: {
+    project_id: string;
+    providers?: string[];
+    crawling_enabled?: boolean;
+    question_count?: number;
+  }): Promise<GeoAnalysisJob> {
+    return this.request<GeoAnalysisJob>("/geo/analyze", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async getGeoAnalysisStatus(analysisId: string): Promise<GeoAnalysisJob> {
+    return this.request<GeoAnalysisJob>(`/geo/analysis/${analysisId}`);
+  }
+
+  async getGeoDashboard(projectId: string): Promise<GeoDashboardData> {
+    return this.request<GeoDashboardData>(`/geo/dashboard/${projectId}`);
+  }
+
+  async getGeoQuestions(
+    projectId: string,
+    params?: { category?: string; intent?: string; search?: string }
+  ): Promise<GeoQuestionListResponse> {
+    const searchParams = new URLSearchParams({ project_id: projectId });
+    if (params?.category) searchParams.append("category", params.category);
+    if (params?.intent) searchParams.append("intent", params.intent);
+    if (params?.search) searchParams.append("search", params.search);
+    return this.request<GeoQuestionListResponse>(`/geo/questions?${searchParams.toString()}`);
+  }
+
+  async generateGeoQuestions(
+    projectId: string,
+    categories?: string[],
+    countPerCategory: number = 1
+  ): Promise<GeoQuestion[]> {
+    return this.request<GeoQuestion[]>("/geo/questions/generate", {
+      method: "POST",
+      body: JSON.stringify({
+        project_id: projectId,
+        categories,
+        count_per_category: countPerCategory,
+      }),
+    });
+  }
+
+  async getGeoAnswers(
+    projectId: string,
+    params?: { provider?: string; recommended_only?: boolean }
+  ): Promise<GeoAnswerListResponse> {
+    const searchParams = new URLSearchParams({ project_id: projectId });
+    if (params?.provider) searchParams.append("provider", params.provider);
+    if (params?.recommended_only) searchParams.append("recommended_only", "true");
+    return this.request<GeoAnswerListResponse>(`/geo/answers?${searchParams.toString()}`);
+  }
+
+  async getGeoAnswer(id: string): Promise<GeoAnswer> {
+    return this.request<GeoAnswer>(`/geo/answers/${id}`);
+  }
+
+  async getGeoCitations(
+    projectId: string,
+    sourceType?: string
+  ): Promise<GeoCitationListResponse> {
+    const searchParams = new URLSearchParams({ project_id: projectId });
+    if (sourceType) searchParams.append("source_type", sourceType);
+    return this.request<GeoCitationListResponse>(`/geo/citations?${searchParams.toString()}`);
+  }
+
+  async getGeoEntities(
+    projectId: string,
+    entityType?: string
+  ): Promise<GeoEntityListResponse> {
+    const searchParams = new URLSearchParams({ project_id: projectId });
+    if (entityType) searchParams.append("entity_type", entityType);
+    return this.request<GeoEntityListResponse>(`/geo/entities?${searchParams.toString()}`);
+  }
+
+  async getGeoCompetitors(projectId: string): Promise<GeoCompetitorResponse> {
+    return this.request<GeoCompetitorResponse>(`/geo/competitors/${projectId}`);
+  }
+
+  async getGeoVisibility(projectId: string): Promise<GeoVisibilityData> {
+    return this.request<GeoVisibilityData>(`/geo/visibility/${projectId}`);
+  }
+
+  async getGeoHistory(projectId: string): Promise<GeoHistoryData> {
+    return this.request<GeoHistoryData>(`/geo/history/${projectId}`);
+  }
+
+  async getGeoIssues(
+    projectId: string,
+    params?: { severity?: string; category?: string; status?: string }
+  ): Promise<GeoIssueListResponse> {
+    const searchParams = new URLSearchParams({ project_id: projectId });
+    if (params?.severity) searchParams.append("severity", params.severity);
+    if (params?.category) searchParams.append("category", params.category);
+    if (params?.status) searchParams.append("status", params.status);
+    return this.request<GeoIssueListResponse>(`/geo/issues?${searchParams.toString()}`);
+  }
+
+  getGeoIssuesCsvExportUrl(projectId: string): string {
+    return `${this.baseUrl}/geo/issues/${projectId}/export-csv`;
+  }
+
+  async getGeoActions(
+    projectId: string,
+    params?: { status?: string; priority_level?: string }
+  ): Promise<GeoRecommendationListResponse> {
+    const searchParams = new URLSearchParams({ project_id: projectId });
+    if (params?.status) searchParams.append("status", params.status);
+    if (params?.priority_level) searchParams.append("priority_level", params.priority_level);
+    return this.request<GeoRecommendationListResponse>(`/geo/actions?${searchParams.toString()}`);
+  }
+
+  async getGeoAction(id: string): Promise<GeoRecommendation> {
+    return this.request<GeoRecommendation>(`/geo/actions/${id}`);
+  }
+
+  async updateGeoAction(
+    id: string,
+    input: { status?: string; notes?: string }
+  ): Promise<GeoRecommendation> {
+    return this.request<GeoRecommendation>(`/geo/actions/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async verifyGeoAction(id: string): Promise<GeoRecommendation> {
+    return this.request<GeoRecommendation>(`/geo/actions/${id}/verify`, {
+      method: "POST",
+    });
+  }
+
+  async ignoreGeoAction(id: string): Promise<GeoRecommendation> {
+    return this.request<GeoRecommendation>(`/geo/actions/${id}/ignore`, {
+      method: "POST",
+    });
+  }
+
+  async bulkUpdateGeoActions(
+    projectId: string,
+    recommendationIds: string[],
+    action: "complete" | "ignore" | "verify" | "start"
+  ): Promise<{ updated: number }> {
+    return this.request<{ updated: number }>(`/geo/actions/bulk?project_id=${projectId}`, {
+      method: "POST",
+      body: JSON.stringify({ recommendation_ids: recommendationIds, action }),
+    });
+  }
+
+  async getGeoActionsSummary(projectId: string): Promise<GeoActionSummary> {
+    return this.request<GeoActionSummary>(`/geo/actions/summary/${projectId}`);
+  }
+
+  async optimizeGeoContent(input: {
+    project_id: string;
+    topic: string;
+    content_type?: string;
+    existing_content?: string;
+  }): Promise<GeoOptimizeResult> {
+    return this.request<GeoOptimizeResult>("/geo/optimize/content", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async optimizeGeoDirectAnswer(input: {
+    project_id: string;
+    question: string;
+    context?: string;
+    target_word_count?: number;
+  }): Promise<GeoOptimizeResult> {
+    return this.request<GeoOptimizeResult>("/geo/optimize/answer", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async optimizeGeoEntity(input: {
+    project_id: string;
+    entity_name: string;
+    entity_type?: string;
+  }): Promise<GeoOptimizeResult> {
+    return this.request<GeoOptimizeResult>("/geo/optimize/entity", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async optimizeGeoComparison(input: {
+    project_id: string;
+    competitor_name: string;
+    category?: string;
+  }): Promise<GeoOptimizeResult> {
+    return this.request<GeoOptimizeResult>("/geo/optimize/comparison", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async optimizeGeoCommercial(input: {
+    project_id: string;
+    pricing_page_url?: string;
+    product_tier?: string;
+  }): Promise<GeoOptimizeResult> {
+    return this.request<GeoOptimizeResult>("/geo/optimize/commercial", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async getGeoMonitoringSchedule(projectId: string): Promise<GeoMonitoringSchedule> {
+    return this.request<GeoMonitoringSchedule>(`/geo/monitoring/${projectId}`);
+  }
+
+  async updateGeoMonitoringSchedule(
+    projectId: string,
+    input: Partial<GeoMonitoringSchedule>
+  ): Promise<GeoMonitoringSchedule> {
+    return this.request<GeoMonitoringSchedule>(`/geo/monitoring/${projectId}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async getGeoAlerts(projectId: string): Promise<GeoAlert[]> {
+    return this.request<GeoAlert[]>(`/geo/alerts?project_id=${projectId}`);
+  }
+
+  async getGeoReport(projectId: string): Promise<GeoReport> {
+    return this.request<GeoReport>(`/geo/reports/${projectId}`);
+  }
+
+  async generateGeoReport(input: {
+    project_id: string;
+    format?: string;
+  }): Promise<GeoReport> {
+    return this.request<GeoReport>("/geo/reports", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async getUnifiedSearchIntelligence(projectId: string): Promise<UnifiedSearchIntelligence> {
+    return this.request<UnifiedSearchIntelligence>(`/geo/unified-intelligence/${projectId}`);
+  }
 }
+
 
 export const api = new ApiClient();
 

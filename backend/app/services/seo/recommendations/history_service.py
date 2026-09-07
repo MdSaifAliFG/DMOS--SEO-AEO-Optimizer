@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 import logging
-from typing import List, Optional
+from typing import Any, List, Optional, Sequence
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -56,7 +56,7 @@ class OptimizationHistoryService:
         curr_issues = curr_issues_res.scalars().all()
         curr_issues_codes = {(i.issue_code, i.title) for i in curr_issues}
 
-        prev_issues = []
+        prev_issues: Any = []
         if prev_scan:
             prev_issues_res = await db.execute(select(SeoIssue).where(SeoIssue.scan_id == prev_scan.id))
             prev_issues = prev_issues_res.scalars().all()
@@ -87,9 +87,9 @@ class OptimizationHistoryService:
             for cp in curr_pages:
                 if cp.url in prev_pages_map:
                     pp = prev_pages_map[cp.url]
-                    if (cp.overall_score or 0) > (pp.overall_score or 0):
+                    if cp.status_code == 200 and pp.status_code != 200:
                         pages_improved += 1
-                    elif (cp.overall_score or 0) < (pp.overall_score or 0):
+                    elif cp.status_code != 200 and pp.status_code == 200:
                         pages_declined += 1
 
         # Category score deltas

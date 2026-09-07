@@ -550,7 +550,7 @@ export default function AeoProjectDetailPage({
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Link href="/aeo/settings/monitoring">
+                  <Link href="/settings?tab=aeo">
                     <Button size="sm" variant="outline" className="border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 bg-white dark:bg-slate-800 text-xs">
                       Configure Schedule
                     </Button>

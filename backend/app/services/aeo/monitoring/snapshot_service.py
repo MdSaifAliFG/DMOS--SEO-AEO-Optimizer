@@ -88,7 +88,7 @@ class AEOSnapshotService:
             citation_rate = round((own_citations / max(1, citations_count) * 100), 1) if citations_count > 0 else 0.0
 
             # Positions
-            positions = [a.rank_position for a in eng_answers if a.brand_mentioned and a.rank_position]
+            positions = [a.brand_position for a in eng_answers if a.brand_mentioned and a.brand_position]
             average_position = round(sum(positions) / len(positions), 1) if positions else None
 
             # Calculate engine specific score (0-100)
@@ -148,11 +148,12 @@ class AEOSnapshotService:
 
         # Scan answers for competitor mentions
         for ans in answers:
-            mentioned_list = ans.competitors_mentioned or []
-            for comp in mentioned_list:
-                comp_name = str(comp).strip()
-                if comp_name:
-                    comp_mentions[comp_name] = comp_mentions.get(comp_name, 0) + 1
+            mentioned_list = ans.competitor_mentions or []
+            for comp_entry in mentioned_list:
+                c_name = comp_entry.get("name") if isinstance(comp_entry, dict) else str(comp_entry)
+                c_name = str(c_name).strip() if c_name else ""
+                if c_name:
+                    comp_mentions[c_name] = comp_mentions.get(c_name, 0) + 1
 
         # Scan citations for competitor sources
         for cit in citations:
@@ -165,15 +166,15 @@ class AEOSnapshotService:
         total_market_mentions = brand_mentions + sum(comp_mentions.values())
 
         created_count = 0
-        for comp in all_competitors:
-            m_count = comp_mentions.get(comp, 0)
-            c_count = comp_citations.get(comp, 0)
+        for comp_name in all_competitors:
+            m_count = comp_mentions.get(comp_name, 0)
+            c_count = comp_citations.get(comp_name, 0)
             sov = round((m_count / total_market_mentions * 100), 1) if total_market_mentions > 0 else 0.0
 
             snapshot = AeoCompetitorSnapshot(
                 project_id=project.id,
                 analysis_id=analysis.id,
-                competitor=comp,
+                competitor=comp_name,
                 provider=None,  # overall across engines
                 mention_count=m_count,
                 citation_count=c_count,
@@ -217,7 +218,7 @@ class AEOSnapshotService:
                     c.citation_type == AeoCitationType.OWN_DOMAIN.value and (c.engine or "").lower() == eng
                     for c in q_cits
                 )
-                position = a.rank_position or pos_map.get(f"{q.id}:{eng}")
+                position = a.brand_position or pos_map.get(f"{q.id}:{eng}")
 
                 # Score per prompt: 60 pts if mentioned, +20 if citation, +20 for top position
                 v_score = 0

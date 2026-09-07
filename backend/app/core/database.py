@@ -190,8 +190,8 @@ async def init_db() -> None:
             from app.models.project import Project
             from app.services.crawler.url_normalizer import get_root_domain
 
-            res = await session.execute(select(Project))
-            projects = res.scalars().all()
+            proj_res = await session.execute(select(Project))
+            projects = proj_res.scalars().all()
             for p in projects:
                 if p.domain and ("://" in p.domain or "/" in p.domain or p.domain.startswith("www.")):
                     cleaned = get_root_domain(p.domain)

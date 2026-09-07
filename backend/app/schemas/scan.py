@@ -17,7 +17,7 @@ class ScanCreate(BaseModel):
         description="Audit scan type: full_audit, technical_seo, or quick_scan"
     )
     target_url: Optional[str] = Field(
-        None,
+        default=None,
         max_length=1024,
         description="Optional custom start URL. Defaults to https://{project.domain}"
     )

@@ -90,7 +90,7 @@ class MockTestProvider(AEOAnswerProvider):
         t0 = time.perf_counter()
         clean_brand = brand_name or domain
         competitors = (context or {}).get("competitors", [])
-        comp_names = [c.get("name") for c in competitors if isinstance(c, dict) and c.get("name")]
+        comp_names: List[str] = [str(c.get("name")) for c in competitors if isinstance(c, dict) and c.get("name")]
 
         # Generate a realistic, deterministic response containing the brand and context
         comp_str = f", along with {', '.join(comp_names[:2])}" if comp_names else ""
@@ -392,6 +392,7 @@ class AEOProviderRegistry:
     @staticmethod
     def get_provider(engine_id: str, allow_mock: bool = False) -> AEOAnswerProvider:
         engine_id = engine_id.lower().strip()
+        provider: AEOAnswerProvider
         if engine_id in ("chatgpt", "openai"):
             provider = OpenAIAnswerProvider()
             if not provider.is_configured() and allow_mock:

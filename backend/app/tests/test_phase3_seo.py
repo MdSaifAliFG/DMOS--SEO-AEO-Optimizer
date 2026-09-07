@@ -47,6 +47,7 @@ def test_domain_normalization_and_project_schema():
         settings={"crawl_limit": 50, "respect_robots": True},
     )
     assert p.domain == "example.com"
+    assert p.settings is not None
     assert p.settings["crawl_limit"] == 50
 
 

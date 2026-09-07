@@ -374,9 +374,9 @@ class AEOAnalysisRunner:
                     project=project,
                     analysis=analysis,
                     answers=collected_answers,
-                    citations=all_raw_citations,
+                    citations=list(project.citations or []),
                     questions=active_questions,
-                    detected_positions=detected_positions,
+                    detected_positions=None,
                 )
             except Exception as mon_err:
                 logger.warning(f"[AEO Runner] Non-fatal error during monitoring post-processing: {mon_err}")
