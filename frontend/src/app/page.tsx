@@ -5,22 +5,23 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { WhatElseSection } from "@/components/landing/WhatElseSection";
 import { PathToSuccessSection } from "@/components/landing/PathToSuccessSection";
 import { SEOAEOSection } from "@/components/landing/SEOAEOSection";
+import { QuickScanSection } from "@/components/landing/QuickScanSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
 export const metadata: Metadata = {
-  title: "SeoSensing — Unleash the Power of Smarter SEO & AEO",
+  title: "SeoSensing — Unleash the Power of Smarter SEO, AEO & GEO",
   description:
-    "Stop all the guessing... Scan your website and see what is holding it back from showing in top results on Google, Bing, and AI answer engines.",
+    "Stop all the guessing... Scan your website and see what is holding it back from showing in top results on Google, Bing, AI answer engines, and generative search models.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "SeoSensing — Unleash the Power of Smarter SEO & AEO",
+    title: "SeoSensing — Unleash the Power of Smarter SEO, AEO & GEO",
     description:
-      "Scan your website, evaluate technical SEO rules, and monitor AI answer engine citations in one unified platform.",
+      "Scan your website, evaluate technical SEO rules, monitor AI answer citations, and optimize generative discovery (GEO) in one unified platform.",
     url: "https://seosensing.internal",
     siteName: "SeoSensing",
     locale: "en_US",
@@ -28,9 +29,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "SeoSensing — SEO & AEO Platform",
+    title: "SeoSensing — SEO, AEO & GEO Platform",
     description:
-      "Next-generation website crawler and AI Answer Engine Optimization platform.",
+      "Next-generation website crawler, AI Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) platform.",
   },
   robots: {
     index: true,
@@ -48,7 +49,7 @@ export default function LandingPage() {
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Web",
         "description":
-          "Unified SEO crawling, technical website auditing, and AEO Answer Engine Optimization platform.",
+          "Unified SEO crawling, technical website auditing, AI Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) platform.",
         "offers": {
           "@type": "Offer",
           "price": "0",
@@ -69,7 +70,16 @@ export default function LandingPage() {
             "acceptedAnswer": {
               "@type": "Answer",
               "text":
-                "SeoSensing is an all-in-one AI Search & SEO Sensing Operating System that brings automated technical SEO auditing, crawling, and AI-powered Answer Engine Optimization (AEO) into one unified workspace.",
+                "SeoSensing is an all-in-one SEO, AEO & GEO Operating System that brings automated technical SEO auditing, crawling, AI answer citations, and generative search optimization into one unified workspace.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "What is GEO (Generative Engine Optimization)?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text":
+                "GEO focuses on optimizing brand visibility, recommendation rate, citation authority, and entity consistency across generative AI models like ChatGPT Search, Perplexity Sonar, Google Gemini, and Claude Search.",
             },
           },
           {
@@ -98,30 +108,33 @@ export default function LandingPage() {
       <LandingNavbar />
 
       {/* Main Marketing Flow */}
-      <main className="flex-1">
-        {/* Section 1: Hero Section (Image 1) */}
+      <main className="flex-1 flex flex-col">
+        {/* 1. Hero Section with Side-by-Side Angled Product Collage */}
         <HeroSection />
 
-        {/* Section 2: What Else Does SEO Tool Scan Do (Image 2) */}
-        <WhatElseSection />
+        {/* 2. Quick Scan Demo — Live Results Preview */}
+        <QuickScanSection />
 
-        {/* Section 3: A Path to Online Success (Image 3) */}
-        <PathToSuccessSection />
-
-        {/* Section 4: One Platform, Two Engines (SEO vs AEO) */}
+        {/* 3. Three Optimization Engines: SEO, AEO & GEO Master Grid */}
         <SEOAEOSection />
 
-        {/* Section 5: Choose a Perfect Plan (Image 4) */}
+        {/* 4. The Path to Search Success: 4 Sequential Steps */}
+        <PathToSuccessSection />
+
+        {/* 4. What Else You Can Do: Secondary Feature Bento Grid */}
+        <WhatElseSection />
+
+        {/* 5. Transparent Self-Serve Pricing Tiers */}
         <PricingSection />
 
-        {/* Section 6: Frequently Asked Questions (Image 5) */}
+        {/* 6. Frequently Asked Questions with Visual Support Pill Collage */}
         <FAQSection />
 
-        {/* Section 7: Final Conversion CTA */}
+        {/* 7. Final High-Conversion Blue CTA Strip */}
         <FinalCTA />
       </main>
 
-      {/* Footer */}
+      {/* Global Comprehensive Landing Footer */}
       <LandingFooter />
     </div>
   );

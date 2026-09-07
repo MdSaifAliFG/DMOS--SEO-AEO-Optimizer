@@ -24,14 +24,24 @@ export const FAQSection: React.FC = () => {
         "AEO focuses on improving how your content can be understood, cited, and surfaced in generative AI-powered answer experiences like ChatGPT, Perplexity, Gemini, and Google AI Overviews.",
     },
     {
+      question: "What is GEO (Generative Engine Optimization)?",
+      answer:
+        "GEO focuses on optimizing how generative AI search models (ChatGPT Search, Perplexity, Google Gemini, and Claude) recommend, cite, and position your brand during user prompt queries.",
+    },
+    {
+      question: "How does SeoSensing unite SEO, AEO, and GEO?",
+      answer:
+        "SeoSensing combines deterministic BFS website crawling (SEO), AI answer engine citation monitoring (AEO), and 8-factor generative discovery scoring with 42 deterministic rules (GEO) in one cohesive workspace.",
+    },
+    {
       question: "Can I audit my website?",
       answer:
         "Yes. SeoSensing provides automated BFS website crawling and deep technical SEO analysis through its SEO module, diagnosing indexability, status codes, HTML tags, and internal link structure.",
     },
     {
-      question: "Does SeoSensing support AEO?",
+      question: "Does SeoSensing support AEO and GEO?",
       answer:
-        "SeoSensing includes a dedicated AEO module designed for answer-engine visibility, knowledge graph entity tracking, buyer prompt analysis, and source citation extraction.",
+        "Yes. SeoSensing includes dedicated AEO and GEO modules designed for answer-engine visibility, 42 deterministic optimization rules, knowledge graph entity tracking, buyer intent questions, and source citation extraction.",
     },
     {
       question: "Do I need technical SEO knowledge?",

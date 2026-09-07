@@ -40,28 +40,28 @@ export const HeroSection: React.FC = () => {
           <div className="lg:col-span-6 space-y-5 sm:space-y-6 2xl:space-y-8 text-left">
             {/* Small Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 2xl:px-4 py-1 2xl:py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs 2xl:text-sm font-bold tracking-wide">
-              <Sparkles className="w-3.5 h-3.5 2xl:w-4 2xl:h-4" />
-              <span>AI Search & SEO Sensing Operating System</span>
+              <Sparkles className="w-3.5 h-3.5 2xl:w-4 2xl:h-4 text-amber-400" />
+              <span>SEO, AEO &amp; GEO Sensing Operating System</span>
             </div>
 
             {/* Main Bold Heading */}
             <h1 className="text-3xl sm:text-5xl lg:text-[54px] 2xl:text-6xl 3xl:text-7xl 4k:text-[82px] font-black tracking-tight leading-[1.08] text-white font-sans">
               Unleash the power <br />
-              of smarter <span className="text-white">SEO & AEO</span>
+              of smarter <span className="text-white">SEO, AEO &amp; GEO</span>
             </h1>
 
             {/* Subtitle */}
             <p className="text-xs sm:text-sm 2xl:text-base 3xl:text-lg text-slate-300 max-w-lg 2xl:max-w-2xl 3xl:max-w-3xl leading-relaxed font-normal">
-              Stop guessing what is holding your website back. SeoSensing crawls, analyzes, and helps you optimize your website for traditional search engines and AI-powered answer engines.
+              Stop guessing what is holding your website back. SeoSensing crawls, analyzes, and helps you optimize your brand for traditional search engines, AI answer engines, and generative discovery (GEO).
             </p>
 
             {/* Side-by-Side Pill CTA Buttons */}
             <div className="flex flex-wrap items-center gap-3.5 2xl:gap-5 pt-1">
-              <Link href={isAuthenticated ? "/overview" : "/login"}>
+              <a href="#quick-scan">
                 <button className="px-7 sm:px-8 2xl:px-10 py-3.5 2xl:py-4.5 rounded-full bg-[#1D63FF] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm 2xl:text-base tracking-wide shadow-xl shadow-blue-600/40 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer">
                   Try free audit
                 </button>
-              </Link>
+              </a>
 
               <Link href={isAuthenticated ? "/overview" : "/login"}>
                 <button className="px-7 sm:px-8 2xl:px-10 py-3.5 2xl:py-4.5 rounded-full bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs sm:text-sm 2xl:text-base tracking-wide shadow-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer">
@@ -70,23 +70,32 @@ export const HeroSection: React.FC = () => {
               </Link>
             </div>
 
-            {/* 2 Bottom Stat Highlights tailored to SeoSensing */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 2xl:gap-8 pt-5 2xl:pt-8 border-t border-white/15">
+            {/* 3 Bottom Stat Highlights tailored to SeoSensing: SEO, AEO, and GEO */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 2xl:gap-6 pt-5 2xl:pt-8 border-t border-white/15">
               <div className="space-y-1 2xl:space-y-2">
-                <h3 className="text-xl sm:text-2xl 2xl:text-3xl font-black text-white tracking-tight font-sans">
+                <h3 className="text-lg sm:text-xl 2xl:text-2xl font-black text-white tracking-tight font-sans">
                   Deterministic
                 </h3>
-                <p className="text-xs 2xl:text-sm text-slate-400 leading-relaxed max-w-[220px] 2xl:max-w-[300px]">
-                  Real BFS website crawler, status code inspections, and 4-pillar technical SEO scoring.
+                <p className="text-xs 2xl:text-sm text-slate-400 leading-relaxed">
+                  Real BFS website crawler &amp; 4-pillar technical SEO scoring.
                 </p>
               </div>
 
               <div className="space-y-1 2xl:space-y-2">
-                <h3 className="text-xl sm:text-2xl 2xl:text-3xl font-black text-white tracking-tight font-sans">
-                  SEO + AEO
+                <h3 className="text-lg sm:text-xl 2xl:text-2xl font-black text-white tracking-tight font-sans">
+                  AEO Engine
                 </h3>
-                <p className="text-xs 2xl:text-sm text-slate-400 leading-relaxed max-w-[220px] 2xl:max-w-[300px]">
-                  Track search crawl health alongside ChatGPT, Perplexity, and Gemini answer engine citations.
+                <p className="text-xs 2xl:text-sm text-slate-400 leading-relaxed">
+                  Track ChatGPT, Perplexity, and Gemini citations.
+                </p>
+              </div>
+
+              <div className="space-y-1 2xl:space-y-2">
+                <h3 className="text-lg sm:text-xl 2xl:text-2xl font-black text-amber-400 tracking-tight font-sans">
+                  GEO Optimization
+                </h3>
+                <p className="text-xs 2xl:text-sm text-slate-400 leading-relaxed">
+                  8-factor score, entity consistency &amp; cross-engine parity.
                 </p>
               </div>
             </div>
@@ -96,7 +105,7 @@ export const HeroSection: React.FC = () => {
           <div className="lg:col-span-6 relative flex justify-center lg:justify-end overflow-visible">
             <div className="relative w-full max-w-[480px] sm:max-w-[520px] 2xl:max-w-[640px] 3xl:max-w-[720px] select-none scale-[0.84] sm:scale-95 lg:scale-100 2xl:scale-115 3xl:scale-125 origin-center sm:origin-top-right 2xl:origin-center transform -rotate-[12deg] hover:-rotate-[8deg] transition-transform duration-500">
               <div className="grid grid-cols-2 gap-4 sm:gap-5 items-start">
-                
+
                 {/* Column 1 (Left Tilted Column) */}
                 <div className="space-y-4">
                   {/* Card 1A: SEO Audit Navigation Menu Card */}
@@ -116,6 +125,10 @@ export const HeroSection: React.FC = () => {
                       <div className="flex items-center gap-2 px-2 py-1 text-slate-400">
                         <Bot className="w-3.5 h-3.5 text-purple-600" />
                         <span>AEO Engines</span>
+                      </div>
+                      <div className="flex items-center gap-2 px-2 py-1 text-slate-400">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                        <span>GEO Engine</span>
                       </div>
                       <div className="flex items-center gap-2 px-2 py-1 text-slate-400">
                         <Layers className="w-3.5 h-3.5" />
@@ -167,7 +180,7 @@ export const HeroSection: React.FC = () => {
                   <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-3xl p-4 sm:p-5 text-white shadow-2xl relative overflow-hidden space-y-1">
                     <div className="absolute -right-3 -bottom-3 w-16 h-16 rounded-full border border-white/20 pointer-events-none" />
                     <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full border border-white/10 pointer-events-none" />
-                    
+
                     <span className="text-[11px] text-blue-100 font-semibold block">Crawled Pages</span>
                     <span className="text-2xl sm:text-3xl font-black tracking-tight block font-mono">2,640</span>
                     <div className="pt-1 flex items-center gap-1 text-[10px] text-blue-100 font-medium">
@@ -193,9 +206,8 @@ export const HeroSection: React.FC = () => {
                       {[88, 92, 98, 85, 96, 90, 100, 94].map((h, i) => (
                         <div key={i} className="flex-1 flex flex-col justify-end h-full">
                           <div
-                            className={`w-full rounded-full ${
-                              i % 2 === 0 ? "bg-[#1D63FF]" : "bg-blue-300"
-                            }`}
+                            className={`w-full rounded-full ${i % 2 === 0 ? "bg-[#1D63FF]" : "bg-blue-300"
+                              }`}
                             style={{ height: `${h}%` }}
                           />
                         </div>
@@ -211,6 +223,17 @@ export const HeroSection: React.FC = () => {
                     <div className="text-[9px] leading-tight truncate">
                       <span className="font-bold text-slate-900 block truncate">Perplexity AI Citation #1</span>
                       <span className="text-slate-400">perplexity.ai/search</span>
+                    </div>
+                  </div>
+
+                  {/* Card 2C-GEO: 8-Factor GEO Score Strip */}
+                  <div className="bg-white rounded-full px-4 py-2 shadow-2xl shadow-black/60 flex items-center gap-2 border border-amber-200/80">
+                    <div className="w-5 h-5 rounded-full bg-amber-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">
+                      <Sparkles className="w-3 h-3 text-white" />
+                    </div>
+                    <div className="text-[9px] leading-tight truncate">
+                      <span className="font-bold text-slate-900 block truncate">8-Factor GEO Score: 92/100</span>
+                      <span className="text-amber-600 font-semibold font-mono">4-Engine Parity Active</span>
                     </div>
                   </div>
 

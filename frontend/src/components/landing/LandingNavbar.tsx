@@ -21,7 +21,7 @@ export const LandingNavbar: React.FC = () => {
 
   const navLinks = [
     { label: "Home", href: "#hero" },
-    { label: "About us", href: "#path-to-success" },
+    { label: "Quick Scan", href: "#quick-scan" },
     { label: "Services", href: "#services" },
     { label: "Pricing", href: "#pricing" },
     { label: "FAQ's", href: "#faq" },
@@ -61,11 +61,11 @@ export const LandingNavbar: React.FC = () => {
         <div className="hidden md:flex items-center gap-3 2xl:gap-4">
           <Link href={isAuthenticated ? "/overview" : "/login"}>
             <button className="px-5 2xl:px-7 py-2 2xl:py-2.5 rounded-lg 2xl:rounded-xl border border-white/80 text-white text-xs 2xl:text-sm font-semibold hover:bg-white/10 transition-all duration-150 cursor-pointer">
-              Scan your website
+              {isAuthenticated ? "Dashboard" : "Sign in"}
             </button>
           </Link>
 
-          <Link href={isAuthenticated ? "/overview" : "/login"}>
+          <Link href={isAuthenticated ? "/settings" : "/signup"}>
             <button className="px-5 2xl:px-7 py-2 2xl:py-2.5 rounded-lg 2xl:rounded-xl bg-white text-slate-950 text-xs 2xl:text-sm font-bold hover:bg-slate-100 transition-all duration-150 shadow-md cursor-pointer">
               Upgrade
             </button>
@@ -100,17 +100,17 @@ export const LandingNavbar: React.FC = () => {
 
           <div className="pt-4 border-t border-slate-800 flex flex-col gap-2.5">
             <Link
-              href={isAuthenticated ? "/seo/dashboard" : "/login"}
+              href={isAuthenticated ? "/overview" : "/login"}
               onClick={() => setMobileMenuOpen(false)}
               className="w-full"
             >
               <button className="w-full py-2.5 rounded-lg border border-white/80 text-white text-xs font-semibold">
-                Scan your website
+                {isAuthenticated ? "Dashboard" : "Sign in"}
               </button>
             </Link>
 
             <Link
-              href={isAuthenticated ? "/seo/dashboard" : "/login"}
+              href={isAuthenticated ? "/settings" : "/signup"}
               onClick={() => setMobileMenuOpen(false)}
               className="w-full"
             >

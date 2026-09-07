@@ -11,18 +11,18 @@ export const LandingFooter: React.FC = () => {
       <div className="max-w-7xl 2xl:max-w-[1680px] 3xl:max-w-[1920px] 4k:max-w-[2240px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 relative z-10 space-y-14 2xl:space-y-20">
 
         {/* Middle Section: Footer Navigation Links */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-10 2xl:gap-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-8 2xl:gap-12">
           {/* Col 1: Brand Info (2 cols) */}
           <div className="space-y-4 2xl:space-y-6 md:col-span-2">
             <Link href="/" className="inline-flex items-center gap-2.5 group">
               <SeoSensingLogo size={36} className="2xl:scale-110 3xl:scale-120" />
               <span className="text-xl 2xl:text-2xl 3xl:text-3xl font-black tracking-tight text-white font-sans">
-                SEO<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Sensing</span>
+                SEO<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-amber-400 bg-clip-text text-transparent">Sensing</span>
               </span>
             </Link>
 
             <p className="text-slate-400 text-xs 2xl:text-sm 3xl:text-base leading-relaxed max-w-sm 2xl:max-w-md">
-              AI Search & SEO Sensing Operating System. Unified intelligence platform engineered for deterministic technical SEO crawling and AI Answer Engine Optimization (AEO).
+              AI Search &amp; SEO Sensing Operating System. Unified intelligence platform engineered for deterministic technical SEO crawling, AI Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO).
             </p>
 
             {/* Social Media Links with Authentic Brand Colors */}
@@ -163,7 +163,39 @@ export const LandingFooter: React.FC = () => {
             </ul>
           </div>
 
-          {/* Col 4: Platform & Company */}
+          {/* Col 4: GEO Optimization */}
+          <div className="space-y-3 2xl:space-y-4">
+            <h4 className="text-xs 2xl:text-sm font-bold text-amber-400 uppercase tracking-wider">GEO Engine</h4>
+            <ul className="space-y-2 2xl:space-y-3 text-xs 2xl:text-sm">
+              <li>
+                <Link href="/geo/dashboard" className="hover:text-amber-300 transition-colors">
+                  GEO Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link href="/geo/actions" className="hover:text-amber-300 transition-colors">
+                  Action Center
+                </Link>
+              </li>
+              <li>
+                <Link href="/geo/visibility" className="hover:text-amber-300 transition-colors">
+                  AI Parity Matrix
+                </Link>
+              </li>
+              <li>
+                <Link href="/geo/optimization/content" className="hover:text-amber-300 transition-colors">
+                  Optimization Studios
+                </Link>
+              </li>
+              <li>
+                <Link href="/geo/reports" className="hover:text-amber-300 transition-colors">
+                  Executive Reports
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 5: Platform & Company */}
           <div className="space-y-3 2xl:space-y-4">
             <h4 className="text-xs 2xl:text-sm font-bold text-white uppercase tracking-wider">Company</h4>
             <ul className="space-y-2 2xl:space-y-3 text-xs 2xl:text-sm">
