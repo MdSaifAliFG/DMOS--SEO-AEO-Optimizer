@@ -320,7 +320,10 @@ class AEOIntelligenceEngine:
         freshness_label = "No Data"
         freshness_score = 0
         if project.last_analyzed_at:
-            days_ago = (now - project.last_analyzed_at).total_seconds() / 86400
+            last_analyzed = project.last_analyzed_at
+            if last_analyzed.tzinfo is None:
+                last_analyzed = last_analyzed.replace(tzinfo=timezone.utc)
+            days_ago = (now - last_analyzed).total_seconds() / 86400
             if days_ago <= 7:
                 freshness_label = "Fresh"
                 freshness_score = 100

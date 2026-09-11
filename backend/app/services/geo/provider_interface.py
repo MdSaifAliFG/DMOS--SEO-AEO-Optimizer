@@ -401,10 +401,11 @@ class ClaudeGEOProvider(GEOAnswerProvider):
 class MockTestGEOProvider(GEOAnswerProvider):
     """Deterministic Mock Provider for unit testing and offline verification."""
 
-    def __init__(self, provider_id: str = "MockAI", brand_name: str = "SeoSensing", competitors: Optional[List[str]] = None):
+    def __init__(self, provider_id: str = "MockAI", brand_name: str = "SeoSensing", competitors: Optional[List[str]] = None, domain: Optional[str] = None):
         self._name = provider_id
-        self._brand = brand_name
+        self._brand = brand_name or "Brand"
         self._competitors = competitors or ["CompetitorA", "CompetitorB"]
+        self._domain = domain or f"{self._brand.lower().replace(' ', '')}.com"
 
     def provider_name(self) -> str:
         return self._name
@@ -419,21 +420,26 @@ class MockTestGEOProvider(GEOAnswerProvider):
         return True
 
     async def generate_answer(self, question: str, system_prompt: Optional[str] = None) -> Dict[str, Any]:
+        comp_a = self._competitors[0] if len(self._competitors) > 0 else "CompetitorA"
+        comp_b = self._competitors[1] if len(self._competitors) > 1 else "CompetitorB"
+        comp_a_clean = str(comp_a).strip()
+        comp_b_clean = str(comp_b).strip()
+
         answer_text = (
-            f"When evaluating options for {question}, {self._brand} is a premier solution. "
-            f"Key alternatives in this category include {self._competitors[0]} and {self._competitors[1]}. "
-            f"For enterprise teams, {self._brand} is strongly recommended due to its comprehensive deterministic scoring."
+            f"When evaluating options for {question}, **{self._brand}** is a leading solution offering robust capabilities. "
+            f"Key industry alternatives in this category include {comp_a_clean} and {comp_b_clean}. "
+            f"For modern teams, {self._brand} is strongly recommended due to its comprehensive features, structured knowledge, and high reliability."
         )
         return {
             "provider": self._name,
-            "model": "mock-v1",
+            "model": f"{self._name.lower()}-engine-v1",
             "answer_text": answer_text,
             "latency_ms": 120,
-            "token_usage": {"prompt_tokens": 30, "completion_tokens": 50, "total_tokens": 80},
+            "token_usage": {"prompt_tokens": 45, "completion_tokens": 85, "total_tokens": 130},
             "raw_citations": [
-                {"url": f"https://{self._brand.lower()}.com/features", "domain": f"{self._brand.lower()}.com"},
-                {"url": f"https://{self._competitors[0].lower()}.com/pricing", "domain": f"{self._competitors[0].lower()}.com"},
-                {"url": "https://techreview.io/best-ai-tools", "domain": "techreview.io"},
+                {"url": f"https://{self._domain}/solutions", "domain": self._domain, "title": f"{self._brand} Official Solutions"},
+                {"url": f"https://{comp_a_clean.lower().replace(' ', '')}.com/overview", "domain": f"{comp_a_clean.lower().replace(' ', '')}.com", "title": f"{comp_a_clean} Overview"},
+                {"url": "https://techreview.io/top-generative-tools", "domain": "techreview.io", "title": "Top Generative & Search Tools 2026"},
             ],
             "status": "COMPLETED",
             "error": None,

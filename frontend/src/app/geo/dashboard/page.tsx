@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/Button";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { GeoDashboardData, GeoProject } from "@/lib/types";
+import { GeoDashboardData, GeoProject, GeoAnalysisJob } from "@/lib/types";
 import { api } from "@/lib/api-client";
 import { useToast } from "@/hooks/useToast";
 
@@ -38,6 +38,7 @@ export default function GeoDashboardPage() {
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisJob, setAnalysisJob] = useState<GeoAnalysisJob | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   // New project form
@@ -91,15 +92,38 @@ export default function GeoDashboardPage() {
     if (!selectedProjectId) return;
     setIsAnalyzing(true);
     try {
-      await api.triggerGeoAnalysis({ project_id: selectedProjectId });
-      success("GEO analysis started. Gathering generative signals...");
-      setTimeout(() => {
-        handleProjectChange(selectedProjectId);
-        setIsAnalyzing(false);
-      }, 4000);
-    } catch (err) {
-      error("Failed to start analysis.");
+      const job = await api.triggerGeoAnalysis({ project_id: selectedProjectId });
+      setAnalysisJob(job);
+      success("GEO analysis started. Gathering live generative signals across engines...");
+
+      const pollInterval = setInterval(async () => {
+        try {
+          const status = await api.getGeoAnalysisStatus(job.id);
+          setAnalysisJob(status);
+          if (
+            status.status === "completed" ||
+            status.status === "partial" ||
+            status.status === "failed"
+          ) {
+            clearInterval(pollInterval);
+            setIsAnalyzing(false);
+            if (status.status === "failed") {
+              error("GEO analysis failed", status.error_message || "Execution error");
+            } else {
+              success("GEO Analysis Complete", "Generative presence, citations, and scores updated.");
+              await handleProjectChange(selectedProjectId);
+            }
+            setTimeout(() => setAnalysisJob(null), 4000);
+          }
+        } catch {
+          clearInterval(pollInterval);
+          setIsAnalyzing(false);
+        }
+      }, 900);
+    } catch (err: any) {
+      error("Failed to start analysis.", err.message);
       setIsAnalyzing(false);
+      setAnalysisJob(null);
     }
   };
 
@@ -197,6 +221,33 @@ export default function GeoDashboardPage() {
             )}
           </div>
         </div>
+
+        {/* Live Analysis Progress Card */}
+        {analysisJob && (
+          <Card className="p-4 bg-gradient-to-r from-amber-500/10 via-amber-600/5 to-slate-900 border-amber-500/30 text-slate-900 dark:text-white shadow-lg animate-in fade-in duration-300">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                </span>
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                  Live GEO Scan &amp; Generative Intelligence Engine
+                </span>
+              </div>
+              <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
+                {analysisJob.progress}% — {analysisJob.current_step}
+              </span>
+            </div>
+
+            <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-amber-500 to-amber-400 h-2 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${Math.max(5, analysisJob.progress)}%` }}
+              ></div>
+            </div>
+          </Card>
+        )}
 
         {/* Empty state if no projects */}
         {projects.length === 0 ? (

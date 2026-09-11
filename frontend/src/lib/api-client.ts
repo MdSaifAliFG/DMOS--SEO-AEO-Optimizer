@@ -66,6 +66,9 @@ import {
   DescriptionOptimizationResponse,
   ContentOptimizationResponse,
   InternalLinksOptimizationResponse,
+  SEOKeywordsResponse,
+  SEOLinksResponse,
+  SEOTechnicalDiagnostics,
   GeoProject,
   GeoProjectListResponse,
   GeoProjectCreateInput,
@@ -300,6 +303,60 @@ class ApiClient {
 
     const qs = query.toString() ? `?${query.toString()}` : "";
     return this.request<SEOIssueListResponse>(`/scans/${scanId}/issues${qs}`);
+  }
+
+  async getSeoKeywords(params?: {
+    project_id?: string;
+    scan_id?: string;
+    limit?: number;
+  }): Promise<SEOKeywordsResponse> {
+    const query = new URLSearchParams();
+    if (params?.project_id) query.set("project_id", params.project_id);
+    if (params?.scan_id) query.set("scan_id", params.scan_id);
+    if (params?.limit !== undefined) query.set("limit", params.limit.toString());
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    return this.request<SEOKeywordsResponse>(`/seo/keywords${qs}`);
+  }
+
+  async extractSeoKeywords(input: {
+    project_id?: string;
+    scan_id?: string;
+    limit?: number;
+  }): Promise<SEOKeywordsResponse> {
+    return this.request<SEOKeywordsResponse>("/seo/keywords/extract", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async getSeoLinks(params?: {
+    project_id?: string;
+    scan_id?: string;
+    link_type?: string;
+    search?: string;
+    skip?: number;
+    limit?: number;
+  }): Promise<SEOLinksResponse> {
+    const query = new URLSearchParams();
+    if (params?.project_id) query.set("project_id", params.project_id);
+    if (params?.scan_id) query.set("scan_id", params.scan_id);
+    if (params?.link_type) query.set("link_type", params.link_type);
+    if (params?.search) query.set("search", params.search);
+    if (params?.skip !== undefined) query.set("skip", params.skip.toString());
+    if (params?.limit !== undefined) query.set("limit", params.limit.toString());
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    return this.request<SEOLinksResponse>(`/seo/links${qs}`);
+  }
+
+  async getSeoTechnicalDiagnostics(params?: {
+    project_id?: string;
+    scan_id?: string;
+  }): Promise<SEOTechnicalDiagnostics> {
+    const query = new URLSearchParams();
+    if (params?.project_id) query.set("project_id", params.project_id);
+    if (params?.scan_id) query.set("scan_id", params.scan_id);
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    return this.request<SEOTechnicalDiagnostics>(`/seo/technical/diagnostics${qs}`);
   }
 
   // ==========================================

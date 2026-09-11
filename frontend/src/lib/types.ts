@@ -269,6 +269,48 @@ export interface SEOKeyword {
   target_url?: string;
   position?: number;
   change?: number;
+  frequency?: number;
+}
+
+export interface SEOKeywordsResponse {
+  keywords: SEOKeyword[];
+  total: number;
+}
+
+export interface SEOLinkItem {
+  id: string;
+  source_url: string;
+  target_url: string;
+  anchor_text?: string | null;
+  link_type: string;
+  is_internal: boolean;
+  is_follow: boolean;
+  status_code?: number;
+}
+
+export interface SEOLinksResponse {
+  links: SEOLinkItem[];
+  total: number;
+  internal_count: number;
+  external_count: number;
+  broken_count: number;
+}
+
+export interface TechnicalDiagnosticCheck {
+  name: string;
+  status: "pass" | "warn" | "fail";
+  badge: string;
+  details: string;
+  recommendation?: string | null;
+}
+
+export interface SEOTechnicalDiagnostics {
+  technical_score: number;
+  indexability_score: number;
+  discovered_pages: number;
+  skipped_pages: number;
+  infrastructure_checks: TechnicalDiagnosticCheck[];
+  indexability_checks: TechnicalDiagnosticCheck[];
 }
 
 // --- AEO Optimization Types ---

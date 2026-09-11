@@ -7,7 +7,7 @@ from app.core.database import get_db
 from app.models.project import Project
 from app.models.scan import Scan, ScanStatus
 from app.models.seo_issue import IssueSeverity, SeoIssue
-from app.models.seo_page import SeoPage
+from app.models.seo_page import SeoPage, SeoPageLink
 from app.schemas.project import ProjectCreate, ProjectListResponse, ProjectResponse, ProjectUpdate
 from app.schemas.scan import ScanCancelResponse, ScanCreate, ScanListResponse, ScanResponse
 from app.schemas.seo import (
@@ -18,9 +18,69 @@ from app.schemas.seo import (
 )
 from app.services.project_service import ProjectService
 from app.services.scan_service import ScanService
+from app.services.seo.keyword_service import KeywordService
 from app.services.seo.scoring import get_score_label
 
 router = APIRouter(prefix="/seo", tags=["SEO Optimization"])
+
+
+class SeoKeywordItem(BaseModel):
+    id: str
+    keyword: str
+    intent: str
+    search_volume: int
+    difficulty: int
+    target_url: str
+    position: int
+    change: int
+    frequency: Optional[int] = 1
+
+
+class SeoKeywordListResponse(BaseModel):
+    keywords: List[SeoKeywordItem]
+    total: int
+
+
+class KeywordExtractRequest(BaseModel):
+    project_id: Optional[str] = None
+    scan_id: Optional[str] = None
+    limit: Optional[int] = 50
+
+
+class SeoLinkItem(BaseModel):
+    id: str
+    source_url: str
+    target_url: str
+    anchor_text: Optional[str] = None
+    link_type: str
+    is_internal: bool
+    is_follow: bool
+    status_code: Optional[int] = 200
+
+
+class SeoLinkListResponse(BaseModel):
+    links: List[SeoLinkItem]
+    total: int
+    internal_count: int
+    external_count: int
+    broken_count: int
+
+
+class TechnicalDiagnosticItem(BaseModel):
+    name: str
+    status: str  # "pass" | "warn" | "fail"
+    badge: str
+    details: str
+    recommendation: Optional[str] = None
+
+
+class SeoTechnicalDiagnosticsResponse(BaseModel):
+    technical_score: int
+    indexability_score: int
+    discovered_pages: int
+    skipped_pages: int
+    infrastructure_checks: List[TechnicalDiagnosticItem]
+    indexability_checks: List[TechnicalDiagnosticItem]
 
 
 class SeoDashboardSummaryResponse(BaseModel):
@@ -181,3 +241,322 @@ async def get_seo_project(
     if not project:
         raise HTTPException(status_code=404, detail="SEO Project not found")
     return ProjectService.map_to_response(project)
+
+
+# ─────────────────────────────────────────────
+# REAL-TIME KEYWORDS ENDPOINTS
+# ─────────────────────────────────────────────
+@router.get("/keywords", response_model=SeoKeywordListResponse, summary="Get real-time extracted SEO keywords")
+async def get_seo_keywords(
+    project_id: Optional[str] = Query(None),
+    scan_id: Optional[str] = Query(None),
+    limit: int = Query(50, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+) -> SeoKeywordListResponse:
+    target_scan_id = scan_id
+
+    if not target_scan_id and project_id:
+        # Find latest completed scan for project
+        res = await db.execute(
+            select(Scan)
+            .where(Scan.project_id == project_id, Scan.status == ScanStatus.COMPLETED.value)
+            .order_by(desc(Scan.completed_at))
+            .limit(1)
+        )
+        latest = res.scalar_one_or_none()
+        if latest:
+            target_scan_id = latest.id
+
+    if not target_scan_id:
+        # Fallback to absolute latest completed scan
+        res = await db.execute(
+            select(Scan)
+            .where(Scan.status == ScanStatus.COMPLETED.value)
+            .order_by(desc(Scan.completed_at))
+            .limit(1)
+        )
+        latest = res.scalar_one_or_none()
+        if latest:
+            target_scan_id = latest.id
+
+    if not target_scan_id:
+        return SeoKeywordListResponse(keywords=[], total=0)
+
+    keywords_data = await KeywordService.extract_keywords_from_pages(db, target_scan_id, limit=limit)
+    items = [SeoKeywordItem(**k) for k in keywords_data]
+    return SeoKeywordListResponse(keywords=items, total=len(items))
+
+
+@router.post("/keywords/extract", response_model=SeoKeywordListResponse, summary="Extract keywords from crawl")
+async def extract_seo_keywords(
+    data: KeywordExtractRequest,
+    db: AsyncSession = Depends(get_db),
+) -> SeoKeywordListResponse:
+    target_scan_id = data.scan_id
+    if not target_scan_id and data.project_id:
+        res = await db.execute(
+            select(Scan)
+            .where(Scan.project_id == data.project_id, Scan.status == ScanStatus.COMPLETED.value)
+            .order_by(desc(Scan.completed_at))
+            .limit(1)
+        )
+        latest = res.scalar_one_or_none()
+        if latest:
+            target_scan_id = latest.id
+
+    if not target_scan_id:
+        raise HTTPException(status_code=404, detail="No completed scan found to extract keywords from")
+
+    limit = data.limit or 50
+    keywords_data = await KeywordService.extract_keywords_from_pages(db, target_scan_id, limit=limit)
+    items = [SeoKeywordItem(**k) for k in keywords_data]
+    return SeoKeywordListResponse(keywords=items, total=len(items))
+
+
+# ─────────────────────────────────────────────
+# REAL-TIME LINKS ENDPOINTS
+# ─────────────────────────────────────────────
+@router.get("/links", response_model=SeoLinkListResponse, summary="Get real-time crawled page links")
+async def get_seo_links(
+    project_id: Optional[str] = Query(None),
+    scan_id: Optional[str] = Query(None),
+    link_type: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=200),
+    db: AsyncSession = Depends(get_db),
+) -> SeoLinkListResponse:
+    target_scan_id = scan_id
+
+    if not target_scan_id and project_id:
+        res = await db.execute(
+            select(Scan)
+            .where(Scan.project_id == project_id, Scan.status == ScanStatus.COMPLETED.value)
+            .order_by(desc(Scan.completed_at))
+            .limit(1)
+        )
+        latest = res.scalar_one_or_none()
+        if latest:
+            target_scan_id = latest.id
+
+    if not target_scan_id:
+        res = await db.execute(
+            select(Scan)
+            .where(Scan.status == ScanStatus.COMPLETED.value)
+            .order_by(desc(Scan.completed_at))
+            .limit(1)
+        )
+        latest = res.scalar_one_or_none()
+        if latest:
+            target_scan_id = latest.id
+
+    if not target_scan_id:
+        return SeoLinkListResponse(links=[], total=0, internal_count=0, external_count=0, broken_count=0)
+
+    # Base query: join SeoPageLink with SeoPage to filter by scan_id and get source url
+    query = (
+        select(SeoPageLink, SeoPage.url.label("source_page_url"))
+        .join(SeoPage, SeoPageLink.page_id == SeoPage.id)
+        .where(SeoPage.scan_id == target_scan_id)
+    )
+
+    if link_type and link_type != "all":
+        is_int = (link_type == "internal")
+        query = query.where(SeoPageLink.is_internal == is_int)
+
+    if search:
+        s_term = f"%{search}%"
+        query = query.where(
+            (SeoPageLink.target_url.ilike(s_term)) |
+            (SeoPageLink.anchor_text.ilike(s_term)) |
+            (SeoPage.url.ilike(s_term))
+        )
+
+    # Fetch total and items
+    total_res = await db.execute(
+        select(func.count(SeoPageLink.id))
+        .join(SeoPage, SeoPageLink.page_id == SeoPage.id)
+        .where(SeoPage.scan_id == target_scan_id)
+    )
+    total_all = total_res.scalar() or 0
+
+    int_res = await db.execute(
+        select(func.count(SeoPageLink.id))
+        .join(SeoPage, SeoPageLink.page_id == SeoPage.id)
+        .where(SeoPage.scan_id == target_scan_id, SeoPageLink.is_internal == True)
+    )
+    internal_count = int_res.scalar() or 0
+
+    ext_res = await db.execute(
+        select(func.count(SeoPageLink.id))
+        .join(SeoPage, SeoPageLink.page_id == SeoPage.id)
+        .where(SeoPage.scan_id == target_scan_id, SeoPageLink.is_internal == False)
+    )
+    external_count = ext_res.scalar() or 0
+
+    broken_res = await db.execute(
+        select(func.count(SeoPageLink.id))
+        .join(SeoPage, SeoPageLink.page_id == SeoPage.id)
+        .where(SeoPage.scan_id == target_scan_id, SeoPageLink.status_code >= 400)
+    )
+    broken_count = broken_res.scalar() or 0
+
+    query = query.offset(skip).limit(limit)
+    rows = (await db.execute(query)).all()
+
+    items = []
+    for link, src_url in rows:
+        items.append(
+            SeoLinkItem(
+                id=link.id,
+                source_url=src_url,
+                target_url=link.target_url,
+                anchor_text=link.anchor_text,
+                link_type=link.link_type,
+                is_internal=link.is_internal,
+                is_follow=link.is_follow,
+                status_code=link.status_code or 200,
+            )
+        )
+
+    return SeoLinkListResponse(
+        links=items,
+        total=total_all,
+        internal_count=internal_count,
+        external_count=external_count,
+        broken_count=broken_count,
+    )
+
+
+# ─────────────────────────────────────────────
+# REAL-TIME TECHNICAL DIAGNOSTICS ENDPOINT
+# ─────────────────────────────────────────────
+@router.get("/technical/diagnostics", response_model=SeoTechnicalDiagnosticsResponse, summary="Get live technical SEO diagnostics")
+async def get_seo_technical_diagnostics(
+    project_id: Optional[str] = Query(None),
+    scan_id: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db),
+) -> SeoTechnicalDiagnosticsResponse:
+    target_scan_id = scan_id
+
+    if not target_scan_id and project_id:
+        res = await db.execute(
+            select(Scan)
+            .where(Scan.project_id == project_id, Scan.status == ScanStatus.COMPLETED.value)
+            .order_by(desc(Scan.completed_at))
+            .limit(1)
+        )
+        latest = res.scalar_one_or_none()
+        if latest:
+            target_scan_id = latest.id
+
+    if not target_scan_id:
+        res = await db.execute(
+            select(Scan)
+            .where(Scan.status == ScanStatus.COMPLETED.value)
+            .order_by(desc(Scan.completed_at))
+            .limit(1)
+        )
+        latest = res.scalar_one_or_none()
+        if latest:
+            target_scan_id = latest.id
+
+    if not target_scan_id:
+        return SeoTechnicalDiagnosticsResponse(
+            technical_score=0,
+            indexability_score=0,
+            discovered_pages=0,
+            skipped_pages=0,
+            infrastructure_checks=[],
+            indexability_checks=[],
+        )
+
+    scan_res = await db.execute(select(Scan).where(Scan.id == target_scan_id))
+    scan = scan_res.scalar_one_or_none()
+
+    # Get issues for this scan
+    issues_res = await db.execute(select(SeoIssue).where(SeoIssue.scan_id == target_scan_id))
+    issues = issues_res.scalars().all()
+    issue_codes = {i.issue_code: i for i in issues}
+
+    # Count pages
+    pages_res = await db.execute(select(func.count(SeoPage.id)).where(SeoPage.scan_id == target_scan_id))
+    crawled_count = pages_res.scalar() or 0
+
+    noindex_res = await db.execute(
+        select(func.count(SeoPage.id)).where(SeoPage.scan_id == target_scan_id, SeoPage.is_indexable == False)
+    )
+    noindex_count = noindex_res.scalar() or 0
+
+    # Build real checks
+    # 1. HTTPS / SSL
+    has_ssl_issue = "insecure_http" in issue_codes or "ssl_invalid" in issue_codes
+    ssl_check = TechnicalDiagnosticItem(
+        name="HTTPS & SSL Protocol",
+        status="fail" if has_ssl_issue else "pass",
+        badge="Insecure" if has_ssl_issue else "Secure",
+        details="Traffic is secured with valid SSL/TLS certificate" if not has_ssl_issue else "Insecure HTTP connections detected",
+        recommendation=None if not has_ssl_issue else "Enforce 301 redirect to HTTPS for all routes",
+    )
+
+    # 2. Robots.txt
+    has_robots_issue = "robots_txt_missing" in issue_codes or "robots_blocking_all" in issue_codes
+    robots_check = TechnicalDiagnosticItem(
+        name="Robots.txt Availability",
+        status="warn" if has_robots_issue else "pass",
+        badge="Missing" if has_robots_issue else "Valid",
+        details="Valid robots.txt detected, permitting crawler access" if not has_robots_issue else "Robots.txt file missing or blocking crawlers",
+        recommendation=None if not has_robots_issue else "Deploy a valid robots.txt file specifying sitemap and allowed crawler agents",
+    )
+
+    # 3. XML Sitemap
+    has_sitemap_issue = "sitemap_missing" in issue_codes or "sitemap_error" in issue_codes
+    sitemap_check = TechnicalDiagnosticItem(
+        name="XML Sitemap Discovery",
+        status="warn" if has_sitemap_issue else "pass",
+        badge="Missing" if has_sitemap_issue else "Present",
+        details="XML Sitemap referenced and crawlable" if not has_sitemap_issue else "XML Sitemap not declared in robots.txt or returned 404",
+        recommendation=None if not has_sitemap_issue else "Generate and declare sitemap.xml in robots.txt and submit to Google Search Console",
+    )
+
+    # 4. Canonical URL Consistency
+    has_canonical_issue = "canonical_missing" in issue_codes or "canonical_mismatch" in issue_codes
+    canonical_check = TechnicalDiagnosticItem(
+        name="Canonical URL Consistency",
+        status="warn" if has_canonical_issue else "pass",
+        badge="Issues Found" if has_canonical_issue else "Consistent",
+        details="Self-referencing canonical tags correctly defined" if not has_canonical_issue else "Missing or conflicting canonical tags found",
+        recommendation=None if not has_canonical_issue else "Specify canonical link tags on every indexable page to prevent duplicate content",
+    )
+
+    # 5. Noindex Directives
+    noindex_check = TechnicalDiagnosticItem(
+        name="Noindex Directives Check",
+        status="pass" if noindex_count == 0 else "warn",
+        badge="All Indexable" if noindex_count == 0 else f"{noindex_count} Noindexed",
+        details=f"All {crawled_count} crawled pages are fully indexable" if noindex_count == 0 else f"{noindex_count} pages have noindex directives",
+        recommendation=None if noindex_count == 0 else "Verify that important marketing pages do not accidentally have noindex meta tags",
+    )
+
+    # 6. HTTP Security Headers
+    has_sec_issue = any(c in issue_codes for c in ["no_hsts", "no_csp", "no_x_content_type_options"])
+    sec_check = TechnicalDiagnosticItem(
+        name="HTTP Security Headers",
+        status="warn" if has_sec_issue else "pass",
+        badge="Warning" if has_sec_issue else "Protected",
+        details="HSTS and Content-Security-Policy headers active" if not has_sec_issue else "Missing recommended security headers (HSTS, CSP, X-Frame-Options)",
+        recommendation=None if not has_sec_issue else "Configure Strict-Transport-Security and X-Content-Type-Options in web server",
+    )
+
+    tech_score = scan.technical_score if scan and scan.technical_score is not None else 75
+    idx_score = scan.indexability_score if scan and scan.indexability_score is not None else 80
+
+    return SeoTechnicalDiagnosticsResponse(
+        technical_score=tech_score,
+        indexability_score=idx_score,
+        discovered_pages=scan.pages_discovered if scan else crawled_count,
+        skipped_pages=scan.pages_skipped if scan else 0,
+        infrastructure_checks=[ssl_check, robots_check, sitemap_check],
+        indexability_checks=[canonical_check, noindex_check, sec_check],
+    )
+

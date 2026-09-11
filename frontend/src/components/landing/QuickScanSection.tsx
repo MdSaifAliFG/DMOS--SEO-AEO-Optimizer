@@ -524,7 +524,7 @@ export const QuickScanSection: React.FC = () => {
 
           {/* Trust strip */}
           <div className="flex flex-wrap items-center justify-center gap-4 mt-4 text-[11px] text-slate-400 font-medium">
-            {["33+ Checks", "No Signup Required", "Free Forever", "Results in Seconds", "2,000+ Sites Analyzed"].map((t) => (
+            {["260+ Checks", "No Signup Required", "Free Forever", "Results in Seconds", "2,000+ Sites Analyzed"].map((t) => (
               <span key={t} className="flex items-center gap-1">
                 <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                 {t}
@@ -930,7 +930,7 @@ export const QuickScanSection: React.FC = () => {
                       >
                         Scan another →
                       </button>
-                      <Link href={isAuthenticated ? "/seo/projects" : "/login"}>
+                      <Link href={isAuthenticated ? "/seo/projects" : "/signup"}>
                         <button className="px-5 py-2.5 rounded-xl bg-[#1D63FF] hover:bg-blue-600 text-white font-bold text-xs shadow-md shadow-blue-600/30 flex items-center gap-1.5 transition-all cursor-pointer">
                           <span>Get Full Audit</span>
                           <ArrowRight className="w-3.5 h-3.5" />

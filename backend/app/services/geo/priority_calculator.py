@@ -42,12 +42,16 @@ class GEOPriorityCalculator:
         diff_score = diff_map.get(implementation_difficulty.lower(), 6)
 
         total_score = min(100, max(0, sev_score + scope_score + gap_score + bv_score + diff_score))
+        if severity.lower() == "critical" and total_score < 80:
+            total_score = max(total_score, 85)
+        elif severity.lower() == "high" and total_score < 65:
+            total_score = max(total_score, 70)
 
-        if total_score >= 90:
+        if total_score >= 80:
             level = "critical"
-        elif total_score >= 70:
+        elif total_score >= 60:
             level = "high"
-        elif total_score >= 40:
+        elif total_score >= 35:
             level = "medium"
         else:
             level = "low"

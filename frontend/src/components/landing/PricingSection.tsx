@@ -128,7 +128,7 @@ export const PricingSection: React.FC = () => {
               </div>
 
               <div className="pt-6 2xl:pt-8 border-t border-blue-400/40 flex flex-wrap items-center justify-between gap-4">
-                <Link href={isAuthenticated ? "/seo/dashboard" : "/login"}>
+                <Link href={isAuthenticated ? "/settings" : "/signup"}>
                   <button className="px-7 2xl:px-9 py-3 2xl:py-4 rounded-full bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs 2xl:text-sm shadow-xl transition-all cursor-pointer">
                     Upgrade to Premium
                   </button>

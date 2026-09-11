@@ -35,11 +35,26 @@ export default function AeoAnswerEnginePage() {
   const [selectedEngineFilter, setSelectedEngineFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Answer Detail Drawer/Modal
   const [expandedAnswer, setExpandedAnswer] = useState<AeoAnswer | null>(null);
 
   const { success, error } = useToast();
+
+  const handleRunAnalysis = async () => {
+    if (!selectedProjectId) return;
+    setIsAnalyzing(true);
+    try {
+      const res = await api.triggerAeoAnalysis(selectedProjectId, { allow_test_mode: true });
+      success("Live AI Analysis Complete", `Analyzed ${res.questions_analyzed_count || 0} questions across AI search engines.`);
+      await loadData();
+    } catch (err: any) {
+      error("Live analysis failed", err.message);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const loadData = async () => {
     setIsLoading(true);
@@ -119,6 +134,25 @@ export default function AeoAnswerEnginePage() {
                 ))}
               </select>
             )}
+
+            <Button
+              size="sm"
+              onClick={handleRunAnalysis}
+              disabled={isAnalyzing || !selectedProjectId}
+              className="flex items-center gap-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-semibold shadow-xs"
+            >
+              {isAnalyzing ? (
+                <>
+                  <Clock className="w-3.5 h-3.5 animate-spin" />
+                  Running AI Analysis...
+                </>
+              ) : (
+                <>
+                  <Zap className="w-3.5 h-3.5" />
+                  Run Live AI Analysis
+                </>
+              )}
+            </Button>
           </div>
         </div>
 

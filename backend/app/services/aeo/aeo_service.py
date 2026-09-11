@@ -357,16 +357,18 @@ class AeoService:
         if not project:
             raise ValueError(f"Project '{project_id}' not found.")
 
+        existing_texts = {q.question_text.lower() for q in (project.questions or [])}
+        pool_limit = max(100, len(existing_texts) + max_questions + 20)
+
         generated = QuestionGeneratorEngine.generate_questions(
             brand_name=project.name,
             domain=project.domain,
             industry=project.industry,
             target_audience=project.target_audience,
             competitors=project.competitors,
-            max_questions=max_questions,
+            max_questions=pool_limit,
         )
 
-        existing_texts = {q.question_text.lower() for q in (project.questions or [])}
         created = []
         for g in generated:
             if g["question_text"].lower() not in existing_texts:
@@ -380,6 +382,9 @@ class AeoService:
                 )
                 db.add(q_obj)
                 created.append(q_obj)
+                existing_texts.add(g["question_text"].lower())
+                if len(created) >= max_questions:
+                    break
 
         if created:
             await db.commit()

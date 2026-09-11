@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 import logging
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.database import init_db
@@ -88,6 +88,17 @@ async def health():
         "service": "seosensing-api",
         "version": settings.VERSION,
     }
+
+
+# Convenience redirects for root-level documentation paths
+@app.get("/docs", include_in_schema=False)
+async def redirect_docs():
+    return RedirectResponse(url=f"{settings.API_V1_STR}/docs")
+
+
+@app.get("/openapi.json", include_in_schema=False)
+async def redirect_openapi():
+    return RedirectResponse(url=f"{settings.API_V1_STR}/openapi.json")
 
 
 # Include API v1 router
