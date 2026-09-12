@@ -53,6 +53,15 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "dmos-phase-1-super-secret-key-change-in-production"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
 
+    # SMTP Email Config (Brevo)
+    SMTP_HOST: str = "smtp-relay.brevo.com"
+    SMTP_PORT: int = 587
+    SMTP_SECURE: bool = False
+    SMTP_USER: str = ""
+    SMTP_PASS: str = ""
+    SMTP_FROM: str = "dm@fortunehestia.in"
+    SMTP_FROM_NAME: str = "The Fortune Group"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

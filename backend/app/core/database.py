@@ -1,7 +1,16 @@
+import sys
+import asyncio
 import logging
 import os
 import tempfile
 from typing import AsyncGenerator
+
+if sys.platform == "win32":
+    try:
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    except Exception:
+        pass
+
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -84,6 +93,7 @@ engine = create_async_engine(
     database_url,
     echo=settings.DEBUG,
     future=True,
+    pool_pre_ping=True,
     connect_args=connect_args,
 )
 
@@ -159,6 +169,11 @@ async def init_db() -> None:
             ("aeo_recommendations", "affected_urls", "JSON DEFAULT '[]'"),
             ("aeo_recommendations", "implementation_steps", "JSON DEFAULT '[]'"),
             ("aeo_recommendations", "verification_status", "VARCHAR(50) DEFAULT 'unverified'"),
+            ("users", "hashed_password", "VARCHAR(255)"),
+            ("users", "failed_login_attempts", "INTEGER DEFAULT 0"),
+            ("users", "locked_until", "DATETIME"),
+            ("password_resets", "failed_attempts", "INTEGER DEFAULT 0"),
+            ("password_resets", "locked_until", "DATETIME"),
             ("aeo_recommendations", "notes", "TEXT"),
             ("aeo_recommendations", "resolved_at", "DATETIME"),
         ]
@@ -172,12 +187,20 @@ async def init_db() -> None:
                         res = await conn.execute(text(f"PRAGMA table_info({table})"))
                         table_columns_cache[table] = {r[1] for r in res.fetchall()}
                     else:
-                        table_columns_cache[table] = set()
+                        res = await conn.execute(
+                            text("SELECT column_name FROM information_schema.columns WHERE table_name = :tbl"),
+                            {"tbl": table}
+                        )
+                        table_columns_cache[table] = {r[0] for r in res.fetchall()}
 
                 if col in table_columns_cache[table]:
                     continue
 
-                await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}"))
+                col_type_sql = col_type
+                if "sqlite" not in database_url:
+                    col_type_sql = col_type_sql.replace("DATETIME", "TIMESTAMP WITH TIME ZONE").replace("BOOLEAN DEFAULT 0", "BOOLEAN DEFAULT FALSE")
+
+                await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type_sql}"))
                 table_columns_cache[table].add(col)
             except Exception:
                 # Table not created yet or column cannot be added

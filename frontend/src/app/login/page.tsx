@@ -7,37 +7,46 @@ import {
   ArrowRight,
   Lock,
   Mail,
-  Sparkles,
   ShieldCheck,
   CheckCircle2,
   Activity,
   Bot,
   Eye,
   EyeOff,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { SeoSensingLogo } from "@/components/brand/SeoSensingLogo";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { loginWithCredentials } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    login(email || "admin@seosensing.internal", "Enterprise Member");
-    window.location.href = "/overview";
-  };
+    setErrorMessage(null);
 
-  const handleDemoAccess = (e: React.MouseEvent) => {
-    e.preventDefault();
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail || !password) {
+      setErrorMessage("Please enter your work email and password.");
+      return;
+    }
+
     setIsLoading(true);
-    login("demo@seosensing.internal", "Enterprise Demo User");
-    window.location.href = "/overview";
+    try {
+      await loginWithCredentials(cleanEmail, password);
+      window.location.href = "/overview";
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Invalid email or password.";
+      setErrorMessage(msg);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -107,6 +116,14 @@ export default function LoginPage() {
             </p>
           </div>
 
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-2.5 text-xs text-red-500 dark:text-red-400 animate-in fade-in duration-200">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+              <div className="flex-1 font-medium leading-relaxed">{errorMessage}</div>
+            </div>
+          )}
+
           {/* Login Form */}
           <form onSubmit={handleLogin} className="space-y-3.5 pt-1">
             <div className="space-y-1.5">
@@ -127,9 +144,12 @@ export default function LoginPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Password</label>
-                <span className="text-[11px] text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-semibold cursor-pointer">
+                <Link
+                  href="/forgot-password"
+                  className="text-[11px] text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-semibold cursor-pointer hover:underline transition-colors"
+                >
                   Forgot?
-                </span>
+                </Link>
               </div>
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -160,25 +180,6 @@ export default function LoginPage() {
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
-
-          {/* Divider */}
-          <div className="relative flex items-center justify-center my-3">
-            <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-            <span className="bg-white dark:bg-[#0f172a] px-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider relative z-10">
-              or explore demo
-            </span>
-          </div>
-
-          {/* One-Click Instant Access */}
-          <button
-            type="button"
-            onClick={handleDemoAccess}
-            disabled={isLoading}
-            className="w-full py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/60 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-            <span>Instant Demo Access (No Password)</span>
-          </button>
 
           {/* Link to Sign Up */}
           <div className="pt-1 text-center">

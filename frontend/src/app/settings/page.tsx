@@ -1,7 +1,8 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import {
   Settings,
   Sliders,
@@ -24,6 +25,9 @@ import {
   HelpCircle,
   ExternalLink,
   Search,
+  Zap,
+  Activity,
+  Server,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
@@ -32,6 +36,8 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { api } from "@/lib/api-client";
 import { useToast } from "@/hooks/useToast";
+import { API_BASE_URL } from "@/lib/constants";
+import { useAuth } from "@/lib/auth";
 import {
   Project,
   AeoProject,
@@ -42,10 +48,52 @@ import {
 
 type SettingsTab = "general" | "seo" | "aeo" | "geo" | "notifications";
 
+interface SystemHealthDiagnostics {
+  database_status: string;
+  database_latency_ms: number;
+  seo_engine: {
+    name: string;
+    status: string;
+    is_healthy: boolean;
+    active_rules_or_features: string;
+    latency_ms?: number;
+    details?: Record<string, any>;
+  };
+  aeo_engine: {
+    name: string;
+    status: string;
+    is_healthy: boolean;
+    active_rules_or_features: string;
+    latency_ms?: number;
+    details?: Record<string, any>;
+  };
+  geo_engine: {
+    name: string;
+    status: string;
+    is_healthy: boolean;
+    active_rules_or_features: string;
+    latency_ms?: number;
+    details?: Record<string, any>;
+  };
+  smtp_relay: {
+    status: string;
+    relay_host: string;
+    sender_address: string;
+    sender_name: string;
+    security: string;
+  };
+  total_projects: number;
+  total_scans_completed: number;
+  server_time: string;
+  uptime_status: string;
+}
+
 function GlobalSettingsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab = (searchParams.get("tab") as SettingsTab) || "general";
+
+  const { user } = useAuth();
 
   const [activeTab, setActiveTab] = useState<SettingsTab>(
     ["general", "seo", "aeo", "geo", "notifications"].includes(initialTab)
@@ -53,7 +101,7 @@ function GlobalSettingsContent() {
       : "general"
   );
 
-  const { success, error } = useToast();
+  const { success, error, info } = useToast();
 
   // Sync tab with URL
   const handleTabChange = (tab: SettingsTab) => {
@@ -62,21 +110,103 @@ function GlobalSettingsContent() {
   };
 
   // ----------------------------------------------------
-  // GENERAL TAB STATE
+  // PLATFORM HEALTH & DIAGNOSTICS
+  // ----------------------------------------------------
+  const [healthDiagnostics, setHealthDiagnostics] = useState<SystemHealthDiagnostics | null>(null);
+  const [isLoadingHealth, setIsLoadingHealth] = useState(false);
+
+  const fetchHealthDiagnostics = useCallback(async () => {
+    setIsLoadingHealth(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/settings/health-diagnostics`);
+      if (res.ok) {
+        const data = await res.json();
+        setHealthDiagnostics(data);
+      }
+    } catch {
+      // Fallback
+    } finally {
+      setIsLoadingHealth(false);
+    }
+  }, []);
+
+  // ----------------------------------------------------
+  // GENERAL TAB STATE & PERSISTENCE
   // ----------------------------------------------------
   const [workspaceName, setWorkspaceName] = useState("Enterprise Global Growth");
-  const [ownerEmail] = useState("admin@seosensing-enterprise.internal");
+  const [ownerEmail, setOwnerEmail] = useState(user?.email || "");
   const [timezone, setTimezone] = useState("UTC (GMT+00:00)");
   const [defaultLanguage, setDefaultLanguage] = useState("en-US");
+  const [isLoadingGeneral, setIsLoadingGeneral] = useState(true);
   const [isSavingGeneral, setIsSavingGeneral] = useState(false);
 
-  const handleSaveGeneral = (e: React.FormEvent) => {
+  const loadGeneralSettings = useCallback(async () => {
+    setIsLoadingGeneral(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/settings`);
+      if (res.ok) {
+        const data = await res.json();
+        setWorkspaceName(data.workspace_name || "Enterprise Global Growth");
+        
+        const activeEmail = user?.email || (typeof window !== "undefined" ? JSON.parse(localStorage.getItem("seosensing_auth_session") || "{}")?.email : "");
+        const resolvedEmail = data.owner_email && !["admin@seosensing-enterprise.internal", "admin@seosensing.internal"].includes(data.owner_email)
+          ? data.owner_email
+          : (activeEmail || "");
+        
+        setOwnerEmail(resolvedEmail);
+        setTimezone(data.timezone || "UTC (GMT+00:00)");
+        setDefaultLanguage(data.default_language || "en-US");
+        if (data.notification_preferences) {
+          setNotifySeoComplete(Boolean(data.notification_preferences.notify_seo_complete));
+          setNotifyAeoShift(Boolean(data.notification_preferences.notify_aeo_shift));
+          setNotifyGeoAlert(Boolean(data.notification_preferences.notify_geo_alert));
+          setNotifyWeeklyDigest(Boolean(data.notification_preferences.notify_weekly_digest));
+        }
+      }
+    } catch (err: unknown) {
+      console.warn("Could not load backend system settings", err);
+    } finally {
+      setIsLoadingGeneral(false);
+    }
+  }, [user?.email]);
+
+  useEffect(() => {
+    loadGeneralSettings();
+    fetchHealthDiagnostics();
+  }, [loadGeneralSettings, fetchHealthDiagnostics]);
+
+  const handleSaveGeneral = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSavingGeneral(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/settings/workspace`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workspace_name: workspaceName,
+          owner_email: ownerEmail.trim().toLowerCase(),
+          timezone,
+          default_language: defaultLanguage,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to update workspace settings");
+      }
+
+      const data = await res.json();
+      setWorkspaceName(data.workspace_name);
+      setOwnerEmail(data.owner_email);
+      setTimezone(data.timezone);
+      setDefaultLanguage(data.default_language);
+      success("Workspace Settings Saved", "Global enterprise profile updated successfully.");
+      fetchHealthDiagnostics();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to update settings";
+      error("Save Error", msg);
+    } finally {
       setIsSavingGeneral(false);
-      success("Workspace Settings Saved", "Global workspace profile updated successfully.");
-    }, 400);
+    }
   };
 
   // ----------------------------------------------------
@@ -110,8 +240,8 @@ function GlobalSettingsContent() {
           if (s.follow_external_links !== undefined) setFollowExternal(Boolean(s.follow_external_links));
           if (s.include_subdomains !== undefined) setIncludeSubdomains(Boolean(s.include_subdomains));
         }
-      } catch (err: any) {
-        // Fallback gracefully if none
+      } catch {
+        // Fallback gracefully
       } finally {
         setIsLoadingSeo(false);
       }
@@ -149,9 +279,27 @@ function GlobalSettingsContent() {
           },
         });
       }
+
+      // Also persist to global crawler policy defaults
+      await fetch(`${API_BASE_URL}/settings/crawler`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          max_crawl_pages: parseInt(maxCrawlPages, 10) || 100,
+          crawl_delay_ms: parseInt(crawlDelayMs, 10) || 250,
+          concurrent_workers: parseInt(concurrentWorkers, 10) || 5,
+          respect_robots: respectRobots,
+          follow_external: followExternal,
+          include_subdomains: includeSubdomains,
+          critical_threshold: parseInt(criticalThreshold, 10) || 5,
+          score_alert_threshold: parseInt(scoreAlertThreshold, 10) || 70,
+        }),
+      });
+
       success("SEO Settings Saved", "Crawler defaults and audit thresholds updated successfully.");
-    } catch (err: any) {
-      error("Failed to save SEO settings", err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to save SEO settings";
+      error("Save Error", msg);
     } finally {
       setIsSavingSeo(false);
     }
@@ -183,7 +331,7 @@ function GlobalSettingsContent() {
         if (list.length > 0) {
           setSelectedAeoProjectId(list[0].id);
         }
-      } catch (err: any) {
+      } catch {
         // Fallback
       } finally {
         setIsLoadingAeo(false);
@@ -192,7 +340,7 @@ function GlobalSettingsContent() {
     loadAeoProjects();
   }, []);
 
-  const loadAeoSchedule = async (projId: string) => {
+  const loadAeoSchedule = useCallback(async (projId: string) => {
     if (!projId) return;
     setIsLoadingAeo(true);
     try {
@@ -206,24 +354,23 @@ function GlobalSettingsContent() {
         setAeoCompetitorGainThreshold(data.alert_thresholds.competitor_gain ?? 10);
         setAeoMentionLossThreshold(data.alert_thresholds.mention_loss ?? 15);
       }
-    } catch (err: any) {
-      // Create clean default schedule view
+    } catch {
       setAeoSchedule(null);
     } finally {
       setIsLoadingAeo(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (selectedAeoProjectId) {
       loadAeoSchedule(selectedAeoProjectId);
     }
-  }, [selectedAeoProjectId]);
+  }, [selectedAeoProjectId, loadAeoSchedule]);
 
   const handleAeoEngineToggle = (eng: string) => {
     if (aeoEngines.includes(eng)) {
       if (aeoEngines.length === 1) {
-        error("At least one engine must be selected.");
+        error("Validation", "At least one engine must be selected.");
         return;
       }
       setAeoEngines(aeoEngines.filter((e) => e !== eng));
@@ -235,7 +382,7 @@ function GlobalSettingsContent() {
   const handleSaveAeo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedAeoProjectId) {
-      error("Please select an AEO project first.");
+      error("Validation", "Please select an AEO project first.");
       return;
     }
     setIsSavingAeo(true);
@@ -252,8 +399,9 @@ function GlobalSettingsContent() {
       });
       setAeoSchedule(updated);
       success("AEO Monitoring Saved", "Answer engine monitoring schedule and thresholds updated.");
-    } catch (err: any) {
-      error("Failed to save AEO settings", err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to save AEO settings";
+      error("Save Error", msg);
     } finally {
       setIsSavingAeo(false);
     }
@@ -269,8 +417,9 @@ function GlobalSettingsContent() {
         `Dispatched AEO check across ${res.questions_analyzed_count || 0} query spaces.`
       );
       loadAeoSchedule(selectedAeoProjectId);
-    } catch (err: any) {
-      error("Cycle Execution Error", err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Cycle Execution Error";
+      error("Execution Error", msg);
     } finally {
       setIsRunningAeoCycle(false);
     }
@@ -281,8 +430,6 @@ function GlobalSettingsContent() {
   // ----------------------------------------------------
   const [geoProjects, setGeoProjects] = useState<GeoProject[]>([]);
   const [selectedGeoProjectId, setSelectedGeoProjectId] = useState<string>("");
-  const [currentGeoProject, setCurrentGeoProject] = useState<GeoProject | null>(null);
-  const [geoBrandProfile, setGeoBrandProfile] = useState<GeoBrandProfile | null>(null);
   const [geoBrandName, setGeoBrandName] = useState("");
   const [geoDomain, setGeoDomain] = useState("");
   const [geoIndustry, setGeoIndustry] = useState("");
@@ -295,6 +442,31 @@ function GlobalSettingsContent() {
   const [isLoadingGeo, setIsLoadingGeo] = useState(false);
   const [isSavingGeo, setIsSavingGeo] = useState(false);
 
+  const fetchGeoProjectData = useCallback(async (projectId: string) => {
+    if (!projectId) return;
+    setIsLoadingGeo(true);
+    try {
+      const [proj] = await Promise.all([
+        api.getGeoProject(projectId),
+        api.getGeoBrandProfile(projectId).catch(() => null),
+      ]);
+
+      setGeoBrandName(proj.brand_name || proj.name);
+      setGeoDomain(proj.domain);
+      setGeoIndustry(proj.industry || "");
+      setGeoDescription(proj.description || "");
+      setGeoTargetAudience(proj.target_audience || "");
+      setGeoAliases((proj.brand_aliases || []).join(", "));
+      setGeoProducts((proj.products || []).join(", "));
+      setGeoServices((proj.services || []).join(", "));
+      setGeoCompetitors(proj.competitors || []);
+    } catch {
+      error("Load Error", "Failed to load GEO project settings.");
+    } finally {
+      setIsLoadingGeo(false);
+    }
+  }, [error]);
+
   useEffect(() => {
     async function loadGeoProjects() {
       setIsLoadingGeo(true);
@@ -306,41 +478,14 @@ function GlobalSettingsContent() {
           setSelectedGeoProjectId(list[0].id);
           fetchGeoProjectData(list[0].id);
         }
-      } catch (err: any) {
+      } catch {
         // Fallback
       } finally {
         setIsLoadingGeo(false);
       }
     }
     loadGeoProjects();
-  }, []);
-
-  const fetchGeoProjectData = async (projectId: string) => {
-    if (!projectId) return;
-    setIsLoadingGeo(true);
-    try {
-      const [proj, bp] = await Promise.all([
-        api.getGeoProject(projectId),
-        api.getGeoBrandProfile(projectId).catch(() => null),
-      ]);
-      setCurrentGeoProject(proj);
-      setGeoBrandProfile(bp);
-
-      setGeoBrandName(proj.brand_name || proj.name);
-      setGeoDomain(proj.domain);
-      setGeoIndustry(proj.industry || "");
-      setGeoDescription(proj.description || "");
-      setGeoTargetAudience(proj.target_audience || "");
-      setGeoAliases((proj.brand_aliases || []).join(", "));
-      setGeoProducts((proj.products || []).join(", "));
-      setGeoServices((proj.services || []).join(", "));
-      setGeoCompetitors(proj.competitors || []);
-    } catch (err: any) {
-      error("Failed to load GEO project settings.");
-    } finally {
-      setIsLoadingGeo(false);
-    }
-  };
+  }, [fetchGeoProjectData]);
 
   const handleGeoProjectChange = (projId: string) => {
     setSelectedGeoProjectId(projId);
@@ -364,7 +509,7 @@ function GlobalSettingsContent() {
   const handleSaveGeo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedGeoProjectId) {
-      error("Please select a GEO project first.");
+      error("Validation", "Please select a GEO project first.");
       return;
     }
     setIsSavingGeo(true);
@@ -386,15 +531,16 @@ function GlobalSettingsContent() {
 
       success("GEO Settings Saved", "Brand profile, entities, and competitor monitoring configuration updated.");
       fetchGeoProjectData(selectedGeoProjectId);
-    } catch (err: any) {
-      error("Failed to save GEO settings", err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to save GEO settings";
+      error("Save Error", msg);
     } finally {
       setIsSavingGeo(false);
     }
   };
 
   // ----------------------------------------------------
-  // NOTIFICATIONS TAB STATE
+  // NOTIFICATIONS TAB STATE & PERSISTENCE
   // ----------------------------------------------------
   const [notifySeoComplete, setNotifySeoComplete] = useState(true);
   const [notifyAeoShift, setNotifyAeoShift] = useState(true);
@@ -402,31 +548,63 @@ function GlobalSettingsContent() {
   const [notifyWeeklyDigest, setNotifyWeeklyDigest] = useState(true);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
 
-  const handleSaveNotifications = (e: React.FormEvent) => {
+  const handleSaveNotifications = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSavingNotifications(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/settings/notifications`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          notify_seo_complete: notifySeoComplete,
+          notify_aeo_shift: notifyAeoShift,
+          notify_geo_alert: notifyGeoAlert,
+          notify_weekly_digest: notifyWeeklyDigest,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to save notification preferences");
+      }
+
+      success("Notification Preferences Saved", "Delivery channels and multi-pillar alert triggers updated.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to save preferences";
+      error("Save Error", msg);
+    } finally {
       setIsSavingNotifications(false);
-      success("Notification Preferences Saved", "Delivery channels and frequency thresholds updated.");
-    }, 400);
+    }
   };
 
   return (
     <DashboardShell>
-      <div className="space-y-6">
+      <div className="space-y-6 pb-12">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-400 text-xs font-semibold">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 shadow-xs relative overflow-hidden">
+          <div className="space-y-1.5 z-10">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-400 text-xs font-bold">
               <Settings className="w-3.5 h-3.5" />
               Unified Platform Administration
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
               Global Platform Settings
             </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-3xl">
               Manage workspace preferences, technical SEO crawler policies, AEO answer engine monitoring, and GEO brand profiles in one centralized location.
             </p>
+          </div>
+
+          <div className="flex items-center gap-2 z-10">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchHealthDiagnostics}
+              disabled={isLoadingHealth}
+              className="gap-2 text-xs"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isLoadingHealth ? "animate-spin" : ""}`} />
+              <span>Diagnostic Refresh</span>
+            </Button>
           </div>
         </div>
 
@@ -435,7 +613,7 @@ function GlobalSettingsContent() {
           <button
             type="button"
             onClick={() => handleTabChange("general")}
-            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === "general"
                 ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs border border-slate-200 dark:border-slate-700"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800/50"
@@ -448,7 +626,7 @@ function GlobalSettingsContent() {
           <button
             type="button"
             onClick={() => handleTabChange("seo")}
-            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === "seo"
                 ? "bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-xs border border-sky-200 dark:border-sky-800/60"
                 : "text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-white/50 dark:hover:bg-slate-800/50"
@@ -464,7 +642,7 @@ function GlobalSettingsContent() {
           <button
             type="button"
             onClick={() => handleTabChange("aeo")}
-            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === "aeo"
                 ? "bg-white dark:bg-slate-800 text-purple-600 dark:text-purple-400 shadow-xs border border-purple-200 dark:border-purple-800/60"
                 : "text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-white/50 dark:hover:bg-slate-800/50"
@@ -480,7 +658,7 @@ function GlobalSettingsContent() {
           <button
             type="button"
             onClick={() => handleTabChange("geo")}
-            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === "geo"
                 ? "bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 shadow-xs border border-amber-200 dark:border-amber-800/60"
                 : "text-slate-600 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-white/50 dark:hover:bg-slate-800/50"
@@ -496,7 +674,7 @@ function GlobalSettingsContent() {
           <button
             type="button"
             onClick={() => handleTabChange("notifications")}
-            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === "notifications"
                 ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs border border-slate-200 dark:border-slate-700"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800/50"
@@ -528,17 +706,26 @@ function GlobalSettingsContent() {
                     type="text"
                     value={workspaceName}
                     onChange={(e) => setWorkspaceName(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-medium"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700 dark:text-slate-300">Owner Email</label>
+                  <div className="flex items-center justify-between">
+                    <label className="font-semibold text-slate-700 dark:text-slate-300">Owner Email</label>
+                    {user?.email && (
+                      <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
+                        Active Account: {user.email}
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="email"
-                    disabled
+                    required
                     value={ownerEmail}
-                    className="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-500 cursor-not-allowed font-mono"
+                    onChange={(e) => setOwnerEmail(e.target.value)}
+                    placeholder="owner@yourcompany.com"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono"
                   />
                 </div>
 
@@ -547,7 +734,7 @@ function GlobalSettingsContent() {
                   <select
                     value={timezone}
                     onChange={(e) => setTimezone(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
                   >
                     <option value="UTC (GMT+00:00)">UTC (GMT+00:00)</option>
                     <option value="America/New_York (EST)">America/New York (EST/EDT)</option>
@@ -563,7 +750,7 @@ function GlobalSettingsContent() {
                   <select
                     value={defaultLanguage}
                     onChange={(e) => setDefaultLanguage(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
                   >
                     <option value="en-US">English (United States)</option>
                     <option value="en-GB">English (United Kingdom)</option>
@@ -575,53 +762,69 @@ function GlobalSettingsContent() {
               </div>
             </Card>
 
+            {/* Platform Health & Runtime Widget */}
             <Card className="p-6 border-slate-200 dark:border-slate-800 space-y-4">
-              <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">Platform Health &amp; Runtime</h3>
-                  <p className="text-xs text-slate-500">Real-time status of backend services and multi-pillar indexes.</p>
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Platform Health &amp; Runtime</h3>
+                    <p className="text-xs text-slate-500">Real-time status of backend services and multi-pillar indexes.</p>
+                  </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                <div className="p-3.5 rounded-xl bg-sky-50/50 dark:bg-sky-950/20 border border-sky-200/60 dark:border-sky-800/40">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-semibold text-sky-800 dark:text-sky-300">SEO Engine</span>
-                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      Online
+                <div className="p-4 rounded-2xl bg-sky-50/50 dark:bg-sky-950/20 border border-sky-200/60 dark:border-sky-800/40 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-sky-800 dark:text-sky-300">SEO Engine</span>
+                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/60">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      {healthDiagnostics?.seo_engine?.status || "Online"}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">BFS Crawler &amp; 37 Deterministic Rules active</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {healthDiagnostics?.seo_engine?.active_rules_or_features || "BFS Crawler & 37 Deterministic Rules active"}
+                  </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-800/40">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-semibold text-purple-800 dark:text-purple-300">AEO Engine</span>
-                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      Online
+                <div className="p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-800/40 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-purple-800 dark:text-purple-300">AEO Engine</span>
+                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/60">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      {healthDiagnostics?.aeo_engine?.status || "Online"}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Answer monitoring &amp; citation tracking active</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {healthDiagnostics?.aeo_engine?.active_rules_or_features || "Answer monitoring & citation tracking active"}
+                  </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/40">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-semibold text-amber-800 dark:text-amber-300">GEO Optimization</span>
-                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      Online
+                <div className="p-4 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/40 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-amber-800 dark:text-amber-300">GEO Optimization</span>
+                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/60">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      {healthDiagnostics?.geo_engine?.status || "Online"}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">4 Generative Search Engines &amp; 42 Rules active</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {healthDiagnostics?.geo_engine?.active_rules_or_features || "4 Generative Search Engines & 42 Rules active"}
+                  </p>
                 </div>
               </div>
             </Card>
 
             <div className="flex justify-end">
-              <Button type="submit" variant="primary" size="md" isLoading={isSavingGeneral} leftIcon={<Save className="w-4 h-4" />}>
+              <Button
+                type="submit"
+                variant="primary"
+                size="md"
+                isLoading={isSavingGeneral}
+                leftIcon={<Save className="w-4 h-4" />}
+                className="shadow-lg shadow-blue-500/20 cursor-pointer"
+              >
                 Save Workspace Profile
               </Button>
             </div>
@@ -635,18 +838,18 @@ function GlobalSettingsContent() {
           <form onSubmit={handleSaveSeo} className="space-y-6">
             {/* Project Context Selector */}
             {seoProjects.length > 0 && (
-              <div className="flex items-center justify-between p-4 rounded-xl bg-sky-500/5 border border-sky-200 dark:border-sky-900/60">
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-sky-500/5 border border-sky-200 dark:border-sky-900/60">
                 <div className="flex items-center gap-3">
                   <Globe className="w-4 h-4 text-sky-600 dark:text-sky-400" />
                   <div>
-                    <span className="text-xs font-semibold text-slate-900 dark:text-white">Active SEO Project</span>
-                    <p className="text-[11px] text-slate-500">Select which project's crawler profile to configure.</p>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">Active SEO Project</span>
+                    <p className="text-[11px] text-slate-500">Select which project&apos;s crawler profile to configure.</p>
                   </div>
                 </div>
                 <select
                   value={selectedSeoProjectId}
                   onChange={(e) => handleSeoProjectChange(e.target.value)}
-                  className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold text-slate-800 dark:text-slate-200"
+                  className="px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200"
                 >
                   {seoProjects.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -676,7 +879,7 @@ function GlobalSettingsContent() {
                     max="2000"
                     value={maxCrawlPages}
                     onChange={(e) => setMaxCrawlPages(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-sky-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-sky-500"
                   />
                   <span className="text-[11px] text-slate-400">Recommended: 100-500 pages</span>
                 </div>
@@ -690,7 +893,7 @@ function GlobalSettingsContent() {
                     step="50"
                     value={crawlDelayMs}
                     onChange={(e) => setCrawlDelayMs(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-sky-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-sky-500"
                   />
                   <span className="text-[11px] text-slate-400">Prevents target server rate-limiting</span>
                 </div>
@@ -703,7 +906,7 @@ function GlobalSettingsContent() {
                     max="10"
                     value={concurrentWorkers}
                     onChange={(e) => setConcurrentWorkers(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-sky-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-sky-500"
                   />
                   <span className="text-[11px] text-slate-400">Parallel HTTP fetch threads</span>
                 </div>
@@ -770,7 +973,7 @@ function GlobalSettingsContent() {
                     max="50"
                     value={criticalThreshold}
                     onChange={(e) => setCriticalThreshold(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-sky-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-sky-500"
                   />
                   <span className="text-[11px] text-slate-400">Trigger alert if critical SEO issues exceed this number</span>
                 </div>
@@ -783,7 +986,7 @@ function GlobalSettingsContent() {
                     max="100"
                     value={scoreAlertThreshold}
                     onChange={(e) => setScoreAlertThreshold(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-sky-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-sky-500"
                   />
                   <span className="text-[11px] text-slate-400">Alert if overall audit health score drops below this floor</span>
                 </div>
@@ -791,7 +994,7 @@ function GlobalSettingsContent() {
             </Card>
 
             <div className="flex justify-end">
-              <Button type="submit" variant="primary" size="md" isLoading={isSavingSeo} leftIcon={<Save className="w-4 h-4" />}>
+              <Button type="submit" variant="primary" size="md" isLoading={isSavingSeo} leftIcon={<Save className="w-4 h-4" />} className="cursor-pointer shadow-lg shadow-blue-500/20">
                 Save SEO Configuration
               </Button>
             </div>
@@ -805,11 +1008,11 @@ function GlobalSettingsContent() {
           <form onSubmit={handleSaveAeo} className="space-y-6">
             {/* Project Context Selector */}
             {aeoProjects.length > 0 ? (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-purple-500/5 border border-purple-200 dark:border-purple-900/60">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-purple-500/5 border border-purple-200 dark:border-purple-900/60">
                 <div className="flex items-center gap-3">
                   <Bot className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                   <div>
-                    <span className="text-xs font-semibold text-slate-900 dark:text-white">Active AEO Project</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">Active AEO Project</span>
                     <p className="text-[11px] text-slate-500">Select project to configure automated Answer Engine monitoring.</p>
                   </div>
                 </div>
@@ -817,7 +1020,7 @@ function GlobalSettingsContent() {
                   <select
                     value={selectedAeoProjectId}
                     onChange={(e) => setSelectedAeoProjectId(e.target.value)}
-                    className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold text-slate-800 dark:text-slate-200"
+                    className="px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200"
                   >
                     {aeoProjects.map((p) => (
                       <option key={p.id} value={p.id}>
@@ -831,7 +1034,7 @@ function GlobalSettingsContent() {
                     variant="outline"
                     isLoading={isRunningAeoCycle}
                     onClick={handleTriggerAeoCycle}
-                    className="border-purple-300 dark:border-purple-800 text-purple-700 dark:text-purple-300 bg-white dark:bg-slate-800 text-xs"
+                    className="border-purple-300 dark:border-purple-800 text-purple-700 dark:text-purple-300 bg-white dark:bg-slate-800 text-xs cursor-pointer"
                     leftIcon={<Play className="w-3.5 h-3.5 fill-current" />}
                   >
                     Run Cycle Now
@@ -875,7 +1078,7 @@ function GlobalSettingsContent() {
                   <select
                     value={aeoFrequency}
                     onChange={(e) => setAeoFrequency(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-purple-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-purple-500"
                   >
                     <option value="daily">Daily (High-velocity tracking)</option>
                     <option value="weekly">Weekly (Recommended for most brands)</option>
@@ -886,7 +1089,7 @@ function GlobalSettingsContent() {
 
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700 dark:text-slate-300">Next Scheduled Run</label>
-                  <div className="px-3 py-2 bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-mono text-slate-600 dark:text-slate-400">
+                  <div className="px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono text-slate-600 dark:text-slate-400">
                     {aeoSchedule?.next_run_at
                       ? new Date(aeoSchedule.next_run_at).toLocaleString()
                       : "Upon next trigger cycle"}
@@ -912,7 +1115,7 @@ function GlobalSettingsContent() {
                         key={eng.id}
                         type="button"
                         onClick={() => handleAeoEngineToggle(eng.id)}
-                        className={`p-3 rounded-xl border text-left transition-all ${
+                        className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                           isSelected
                             ? "bg-purple-50/60 dark:bg-purple-950/30 border-purple-300 dark:border-purple-800"
                             : "bg-slate-50/50 dark:bg-slate-800/20 border-slate-200 dark:border-slate-800 opacity-60"
@@ -949,7 +1152,7 @@ function GlobalSettingsContent() {
                     max="50"
                     value={aeoScoreDropThreshold}
                     onChange={(e) => setAeoScoreDropThreshold(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-purple-500"
                   />
                   <span className="text-[11px] text-slate-400">Alert if score drops by this %</span>
                 </div>
@@ -962,7 +1165,7 @@ function GlobalSettingsContent() {
                     max="50"
                     value={aeoCompetitorGainThreshold}
                     onChange={(e) => setAeoCompetitorGainThreshold(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-purple-500"
                   />
                   <span className="text-[11px] text-slate-400">Alert if a rival gains share of voice</span>
                 </div>
@@ -975,7 +1178,7 @@ function GlobalSettingsContent() {
                     max="50"
                     value={aeoMentionLossThreshold}
                     onChange={(e) => setAeoMentionLossThreshold(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-purple-500"
                   />
                   <span className="text-[11px] text-slate-400">Alert if mention count decreases</span>
                 </div>
@@ -983,7 +1186,7 @@ function GlobalSettingsContent() {
             </Card>
 
             <div className="flex justify-end">
-              <Button type="submit" variant="primary" size="md" isLoading={isSavingAeo} leftIcon={<Save className="w-4 h-4" />}>
+              <Button type="submit" variant="aeo" size="md" isLoading={isSavingAeo} leftIcon={<Save className="w-4 h-4" />} className="cursor-pointer shadow-lg shadow-purple-500/20">
                 Save AEO Configuration
               </Button>
             </div>
@@ -997,18 +1200,18 @@ function GlobalSettingsContent() {
           <form onSubmit={handleSaveGeo} className="space-y-6">
             {/* Project Context Selector */}
             {geoProjects.length > 0 ? (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-amber-500/5 border border-amber-200 dark:border-amber-900/60">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/5 border border-amber-200 dark:border-amber-900/60">
                 <div className="flex items-center gap-3">
                   <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                   <div>
-                    <span className="text-xs font-semibold text-slate-900 dark:text-white">Active GEO Project</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">Active GEO Project</span>
                     <p className="text-[11px] text-slate-500">Configure canonical brand identity and competitor tracking.</p>
                   </div>
                 </div>
                 <select
                   value={selectedGeoProjectId}
                   onChange={(e) => handleGeoProjectChange(e.target.value)}
-                  className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold text-slate-800 dark:text-slate-200"
+                  className="px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-200"
                 >
                   {geoProjects.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -1043,7 +1246,7 @@ function GlobalSettingsContent() {
                     required
                     value={geoBrandName}
                     onChange={(e) => setGeoBrandName(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-medium"
                   />
                 </div>
 
@@ -1053,7 +1256,7 @@ function GlobalSettingsContent() {
                     type="text"
                     disabled
                     value={geoDomain}
-                    className="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-mono text-slate-500 cursor-not-allowed"
+                    className="w-full px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono text-slate-500 cursor-not-allowed"
                   />
                 </div>
 
@@ -1064,7 +1267,7 @@ function GlobalSettingsContent() {
                     placeholder="e.g., Enterprise B2B SaaS, FinTech, LegalTech"
                     value={geoIndustry}
                     onChange={(e) => setGeoIndustry(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
                   />
                 </div>
 
@@ -1075,7 +1278,7 @@ function GlobalSettingsContent() {
                     placeholder="e.g., CTOs, Enterprise Engineers, Compliance Officers"
                     value={geoTargetAudience}
                     onChange={(e) => setGeoTargetAudience(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
                   />
                 </div>
 
@@ -1086,7 +1289,7 @@ function GlobalSettingsContent() {
                     placeholder="Concise 1-2 sentence canonical definition of your brand and core offering."
                     value={geoDescription}
                     onChange={(e) => setGeoDescription(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
                   />
                 </div>
               </div>
@@ -1110,7 +1313,7 @@ function GlobalSettingsContent() {
                     placeholder="e.g., SEO Sensing, SS AI, DMOS"
                     value={geoAliases}
                     onChange={(e) => setGeoAliases(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
                   />
                   <span className="text-[11px] text-slate-400">Comma separated alternate names</span>
                 </div>
@@ -1122,7 +1325,7 @@ function GlobalSettingsContent() {
                     placeholder="e.g., Cloud Analytics, Realtime API"
                     value={geoProducts}
                     onChange={(e) => setGeoProducts(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
                   />
                   <span className="text-[11px] text-slate-400">Flagship products tracked</span>
                 </div>
@@ -1134,7 +1337,7 @@ function GlobalSettingsContent() {
                     placeholder="e.g., Enterprise Migration, AI Strategy"
                     value={geoServices}
                     onChange={(e) => setGeoServices(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
                   />
                   <span className="text-[11px] text-slate-400">Service offerings tracked</span>
                 </div>
@@ -1148,7 +1351,7 @@ function GlobalSettingsContent() {
                   <Cpu className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 dark:text-white">Tracked Competitors</h3>
-                    <p className="text-xs text-slate-500">Benchmark your brand's AI recommendation frequency against market alternatives.</p>
+                    <p className="text-xs text-slate-500">Benchmark your brand&apos;s AI recommendation frequency against market alternatives.</p>
                   </div>
                 </div>
                 <Button
@@ -1156,7 +1359,7 @@ function GlobalSettingsContent() {
                   size="sm"
                   variant="outline"
                   onClick={handleAddCompetitor}
-                  className="text-xs"
+                  className="text-xs cursor-pointer"
                   leftIcon={<Plus className="w-3.5 h-3.5" />}
                 >
                   Add Competitor
@@ -1176,19 +1379,19 @@ function GlobalSettingsContent() {
                         placeholder="Competitor Name (e.g. Acme Corp)"
                         value={comp.name}
                         onChange={(e) => handleCompetitorChange(idx, "name", e.target.value)}
-                        className="flex-1 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
+                        className="flex-1 px-3.5 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-medium"
                       />
                       <input
                         type="text"
                         placeholder="Domain (e.g. acme.com)"
                         value={comp.domain || ""}
                         onChange={(e) => handleCompetitorChange(idx, "domain", e.target.value)}
-                        className="flex-1 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-amber-500"
+                        className="flex-1 px-3.5 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-amber-500"
                       />
                       <button
                         type="button"
                         onClick={() => handleRemoveCompetitor(idx)}
-                        className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-all"
+                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-all cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1215,7 +1418,7 @@ function GlobalSettingsContent() {
                   { bot: "Google-Extended", provider: "Google Gemini", status: "Permitted", statusColor: "text-emerald-600 dark:text-emerald-400" },
                   { bot: "ClaudeBot", provider: "Anthropic Claude", status: "Permitted", statusColor: "text-emerald-600 dark:text-emerald-400" },
                 ].map((item, i) => (
-                  <div key={i} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
+                  <div key={i} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800">
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-bold text-slate-900 dark:text-white font-mono">{item.bot}</span>
                       <span className={`text-[10px] font-bold ${item.statusColor}`}>● {item.status}</span>
@@ -1227,7 +1430,7 @@ function GlobalSettingsContent() {
             </Card>
 
             <div className="flex justify-end">
-              <Button type="submit" variant="primary" size="md" isLoading={isSavingGeo} leftIcon={<Save className="w-4 h-4" />}>
+              <Button type="submit" variant="primary" size="md" isLoading={isSavingGeo} leftIcon={<Save className="w-4 h-4" />} className="cursor-pointer shadow-lg shadow-amber-500/20 bg-amber-600 hover:bg-amber-700 border-amber-700">
                 Save GEO Configuration
               </Button>
             </div>
@@ -1305,28 +1508,38 @@ function GlobalSettingsContent() {
 
             {/* AI Providers Connection Status */}
             <Card className="p-6 border-slate-200 dark:border-slate-800 space-y-4">
-              <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800">
-                <Cpu className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">Generative &amp; Search Engine Providers</h3>
-                  <p className="text-xs text-slate-500">Connection state for live API query execution.</p>
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2.5">
+                  <Cpu className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">External Platform Integrations</h3>
+                    <p className="text-xs text-slate-500">Connect Google Search Console, Google Analytics 4, Ahrefs, Semrush, and AI providers.</p>
+                  </div>
                 </div>
+
+                <Link
+                  href="/integrations"
+                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1 font-semibold"
+                >
+                  <span>Manage All Integrations</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </Link>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 {[
-                  { name: "OpenAI (GPT-4o & SearchGPT)", status: "Active / Configured via Backend Environment", healthy: true },
-                  { name: "Google Gemini (1.5 Flash / Pro)", status: "Active / Configured via Backend Environment", healthy: true },
-                  { name: "Perplexity AI (Sonar Online)", status: "Active / Configured via Backend Environment", healthy: true },
-                  { name: "Anthropic Claude (Claude 3.5 Sonnet)", status: "Active / Configured via Backend Environment", healthy: true },
+                  { name: "OpenAI ChatGPT Search", status: "Active API Gateway", healthy: true },
+                  { name: "Google Gemini 1.5 Pro", status: "Active API Gateway", healthy: true },
+                  { name: "Perplexity AI Sonar", status: "Active API Gateway", healthy: true },
+                  { name: "Brevo SMTP Relay (dm@fortunehestia.in)", status: "Active TLS Relay", healthy: true },
                 ].map((item, idx) => (
-                  <div key={idx} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                  <div key={idx} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
                     <div>
                       <span className="font-bold text-slate-900 dark:text-white">{item.name}</span>
                       <p className="text-[11px] text-slate-500">{item.status}</p>
                     </div>
-                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/60">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                       Ready
                     </span>
                   </div>
@@ -1335,7 +1548,7 @@ function GlobalSettingsContent() {
             </Card>
 
             <div className="flex justify-end">
-              <Button type="submit" variant="primary" size="md" isLoading={isSavingNotifications} leftIcon={<Save className="w-4 h-4" />}>
+              <Button type="submit" variant="primary" size="md" isLoading={isSavingNotifications} leftIcon={<Save className="w-4 h-4" />} className="cursor-pointer shadow-lg shadow-blue-500/20">
                 Save Notification Preferences
               </Button>
             </div>

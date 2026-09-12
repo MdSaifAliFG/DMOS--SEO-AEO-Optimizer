@@ -1,8 +1,9 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import actions, aeo, geo, health, projects, scans, seo, public_scan
+from app.api.v1.endpoints import actions, aeo, auth, geo, health, projects, scans, seo, public_scan, integrations, settings
 
 api_router = APIRouter()
 
+api_router.include_router(auth.router)
 api_router.include_router(health.router)
 api_router.include_router(projects.router)
 api_router.include_router(scans.router)
@@ -11,4 +12,6 @@ api_router.include_router(actions.router)
 api_router.include_router(aeo.router)
 api_router.include_router(geo.router)
 api_router.include_router(public_scan.router)
+api_router.include_router(integrations.router)
+api_router.include_router(settings.router)
 

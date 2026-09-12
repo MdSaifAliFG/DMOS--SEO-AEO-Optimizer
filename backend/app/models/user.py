@@ -1,5 +1,6 @@
+from datetime import datetime
 from typing import TYPE_CHECKING, List, Optional
-from sqlalchemy import Boolean, String
+from sqlalchemy import Boolean, DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 from app.models.base import TimestampMixin, generate_uuid
@@ -25,6 +26,19 @@ class User(Base, TimestampMixin):
     )
     full_name: Mapped[Optional[str]] = mapped_column(
         String(255),
+        nullable=True,
+    )
+    hashed_password: Mapped[Optional[str]] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+    failed_login_attempts: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
+    locked_until: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
         nullable=True,
     )
     is_active: Mapped[bool] = mapped_column(

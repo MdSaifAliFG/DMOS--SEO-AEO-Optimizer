@@ -11,9 +11,9 @@ export const LandingFooter: React.FC = () => {
       <div className="max-w-7xl 2xl:max-w-[1680px] 3xl:max-w-[1920px] 4k:max-w-[2240px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 relative z-10 space-y-14 2xl:space-y-20">
 
         {/* Middle Section: Footer Navigation Links */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-8 2xl:gap-12">
-          {/* Col 1: Brand Info (2 cols) */}
-          <div className="space-y-4 2xl:space-y-6 md:col-span-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-8 2xl:gap-10">
+          {/* Col 1: Brand Info (2 cols on lg) */}
+          <div className="space-y-4 2xl:space-y-6 col-span-2 sm:col-span-3 lg:col-span-2">
             <Link href="/" className="inline-flex items-center gap-2.5 group">
               <SeoSensingLogo size={36} className="2xl:scale-110 3xl:scale-120" />
               <span className="text-xl 2xl:text-2xl 3xl:text-3xl font-black tracking-tight text-white font-sans">
@@ -163,7 +163,7 @@ export const LandingFooter: React.FC = () => {
             </ul>
           </div>
 
-          {/* Col 4: GEO Optimization */}
+          {/* Col 4: GEO Engine */}
           <div className="space-y-3 2xl:space-y-4">
             <h4 className="text-xs 2xl:text-sm font-bold text-amber-400 uppercase tracking-wider">GEO Engine</h4>
             <ul className="space-y-2 2xl:space-y-3 text-xs 2xl:text-sm">
@@ -206,7 +206,7 @@ export const LandingFooter: React.FC = () => {
               </li>
               <li>
                 <a href="#services" className="hover:text-blue-400 transition-colors">
-                  Features & Services
+                  Features &amp; Services
                 </a>
               </li>
               <li>
@@ -222,6 +222,28 @@ export const LandingFooter: React.FC = () => {
               <li>
                 <Link href="/login" className="hover:text-blue-400 transition-colors font-semibold text-blue-400">
                   Sign In / Register →
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 6: Legal */}
+          <div className="space-y-3 2xl:space-y-4">
+            <h4 className="text-xs 2xl:text-sm font-bold text-white uppercase tracking-wider">Legal</h4>
+            <ul className="space-y-2 2xl:space-y-3 text-xs 2xl:text-sm">
+              <li>
+                <Link href="/privacy-policy" className="hover:text-blue-400 transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-blue-400 transition-colors">
+                  Terms &amp; Conditions
+                </Link>
+              </li>
+              <li>
+                <Link href="/refund-policy" className="hover:text-blue-400 transition-colors">
+                  Refund Policy
                 </Link>
               </li>
             </ul>

@@ -1,5 +1,8 @@
 from app.models.base import Base, TimestampMixin
 from app.models.user import User
+from app.models.password_reset import PasswordReset
+from app.models.integration import PlatformIntegration
+from app.models.system_settings import SystemSettings
 from app.models.project import Project
 from app.models.scan import Scan, ScanStatus, ScanType
 from app.models.seo_page import SeoPage, SeoPageImage, SeoPageLink
@@ -66,6 +69,9 @@ __all__ = [
     "Base",
     "TimestampMixin",
     "User",
+    "PasswordReset",
+    "PlatformIntegration",
+    "SystemSettings",
     "Project",
     "Scan",
     "ScanStatus",
