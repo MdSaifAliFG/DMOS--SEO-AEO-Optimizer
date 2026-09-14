@@ -37,11 +37,22 @@ async def test_duplicate_domain_rejected(client: AsyncClient):
     assert res2.status_code == 409
 
 
+from app.models.user import User
+
+
 @pytest.mark.asyncio
-async def test_list_and_search_projects(client: AsyncClient):
-    # Create two projects
-    await client.post("/api/v1/projects", json={"name": "Alpha Corp", "domain": "alpha.io"})
-    await client.post("/api/v1/projects", json={"name": "Beta Inc", "domain": "beta.org"})
+async def test_list_and_search_projects(client: AsyncClient, db_session: AsyncSession):
+    # Create two users so each has their own isolated workspace/project allowance
+    user1 = User(id="u1_test", email="user_a@test.local", full_name="User A", is_active=True)
+    user2 = User(id="u2_test", email="user_b@test.local", full_name="User B", is_active=True)
+    db_session.add_all([user1, user2])
+    await db_session.commit()
+
+    # Create two projects across test users
+    r1 = await client.post("/api/v1/projects", json={"name": "Alpha Corp", "domain": "alpha.io"}, headers={"X-User-Id": "u1_test"})
+    assert r1.status_code == 201
+    r2 = await client.post("/api/v1/projects", json={"name": "Beta Inc", "domain": "beta.org"}, headers={"X-User-Id": "u2_test"})
+    assert r2.status_code == 201
 
     # List all
     res = await client.get("/api/v1/projects")

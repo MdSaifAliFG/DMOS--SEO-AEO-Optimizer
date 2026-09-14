@@ -18,6 +18,7 @@ from app.models.billing import (
 from app.schemas.billing import (
     PlanResponse,
     SubscriptionResponse,
+    CurrentSubscriptionResponse,
     CreditWalletResponse,
     CreditTransactionResponse,
     UsageEventResponse,
@@ -110,24 +111,25 @@ async def list_plans(db: AsyncSession = Depends(get_db)):
     return await PlanService.get_all_plans(db)
 
 
-@router.get("/current", response_model=Dict[str, Any])
+@router.get("/current", response_model=CurrentSubscriptionResponse)
 async def get_current_subscription(
     current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
-):
+) -> CurrentSubscriptionResponse:
     """Retrieve current workspace subscription details."""
     workspace_id = await resolve_workspace_id(current_user)
     user_id = current_user.id if current_user else None
     sub, plan = await EntitlementService.get_active_subscription_and_plan(db, workspace_id, user_id)
     wallet = await CreditWalletService.get_or_create_wallet(db, workspace_id, user_id)
 
-    return {
-        "workspace_id": workspace_id,
-        "subscription": sub,
-        "plan": plan,
-        "wallet": wallet,
-        "is_stripe_configured": StripeService.is_configured(),
-    }
+    return CurrentSubscriptionResponse(
+        workspace_id=workspace_id,
+        subscription=SubscriptionResponse.model_validate(sub) if sub else None,
+        plan=PlanResponse.model_validate(plan),
+        wallet=CreditWalletResponse.model_validate(wallet),
+        is_stripe_configured=StripeService.is_configured(),
+        is_razorpay_configured=RazorpayService.is_configured(),
+    )
 
 
 @router.get("/summary", response_model=BillingSummaryResponse)

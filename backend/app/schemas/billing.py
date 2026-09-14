@@ -38,7 +38,7 @@ class SubscriptionResponse(BaseModel):
     id: str
     workspace_id: str
     plan_id: str
-    plan: PlanResponse
+    plan: Optional[PlanResponse] = None
     provider: str
     status: str
     billing_interval: str
@@ -46,6 +46,17 @@ class SubscriptionResponse(BaseModel):
     current_period_end: Optional[datetime] = None
     cancel_at_period_end: bool
     cancelled_at: Optional[datetime] = None
+
+
+class CurrentSubscriptionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    workspace_id: str
+    subscription: Optional[SubscriptionResponse] = None
+    plan: PlanResponse
+    wallet: CreditWalletResponse
+    is_stripe_configured: bool = False
+    is_razorpay_configured: bool = False
 
 
 class CreditWalletResponse(BaseModel):

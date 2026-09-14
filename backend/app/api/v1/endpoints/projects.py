@@ -29,6 +29,14 @@ async def create_project(
     workspace_id = await resolve_workspace_id(current_user)
     user_id = current_user.id if current_user else None
 
+    # Check if domain already exists
+    existing = await ProjectService.get_project_by_domain(db, data.domain)
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"A project for domain '{data.domain}' already exists (ID: {existing.id})",
+        )
+
     # Check plan entitlement limits
     can_create, current_cnt, limit_cnt = await EntitlementService.can_create_project(
         db, workspace_id, user_id=user_id
@@ -37,14 +45,6 @@ async def create_project(
         raise HTTPException(
             status_code=status.HTTP_402_PAYMENT_REQUIRED,
             detail=f"Plan limit reached: your current plan allows up to {limit_cnt} projects ({current_cnt} active). Please upgrade your plan to add more websites.",
-        )
-
-    # Check if domain already exists
-    existing = await ProjectService.get_project_by_domain(db, data.domain)
-    if existing:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"A project for domain '{data.domain}' already exists (ID: {existing.id})",
         )
 
     project = await ProjectService.create_project(db, data, user_id=user_id)

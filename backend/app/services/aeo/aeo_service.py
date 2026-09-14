@@ -59,7 +59,9 @@ class AeoService:
 
     # --- Project Management ---
     @staticmethod
-    async def create_project(db: AsyncSession, data: AeoProjectCreate) -> AeoProject:
+    async def create_project(
+        db: AsyncSession, data: AeoProjectCreate, user_id: Optional[str] = None
+    ) -> AeoProject:
         # Validate domain / URL safety
         clean_url = data.domain if data.domain.startswith("http") else f"https://{data.domain}"
         is_safe, err_msg = validate_url(clean_url, check_dns=False)
@@ -72,6 +74,7 @@ class AeoService:
             domain = domain[4:]
 
         project = AeoProject(
+            user_id=user_id,
             name=data.name.strip(),
             domain=domain,
             brand_name=data.brand_name or data.name.strip(),
