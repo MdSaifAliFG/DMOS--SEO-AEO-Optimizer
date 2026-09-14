@@ -1,5 +1,18 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import actions, aeo, auth, geo, health, projects, scans, seo, public_scan, integrations, settings
+from app.api.v1.endpoints import (
+    actions,
+    aeo,
+    auth,
+    geo,
+    health,
+    projects,
+    scans,
+    seo,
+    public_scan,
+    integrations,
+    settings,
+    billing,
+)
 
 api_router = APIRouter()
 
@@ -14,4 +27,6 @@ api_router.include_router(geo.router)
 api_router.include_router(public_scan.router)
 api_router.include_router(integrations.router)
 api_router.include_router(settings.router)
+api_router.include_router(billing.router)
+
 

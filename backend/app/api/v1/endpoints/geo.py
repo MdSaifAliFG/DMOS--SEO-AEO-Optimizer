@@ -70,6 +70,10 @@ from app.schemas.geo import (
 from app.services.geo.analysis_runner import geo_analysis_runner
 from app.services.geo.geo_service import GeoService
 from app.services.geo.scoring_engine import GEOScoringEngine
+from app.services.entitlement_service import EntitlementService
+from app.services.credit_service import CreditCostService, CreditWalletService
+from app.models.user import User
+from app.api.v1.endpoints.billing import get_optional_current_user, resolve_workspace_id
 
 router = APIRouter(prefix="/geo", tags=["GEO Engine"])
 
@@ -78,12 +82,26 @@ router = APIRouter(prefix="/geo", tags=["GEO Engine"])
 @router.post("/projects", response_model=GeoProjectResponse, status_code=status.HTTP_201_CREATED)
 async def create_geo_project(
     data: GeoProjectCreate,
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Create a new GEO Project with default brand profile and 18-category questions."""
+    workspace_id = await resolve_workspace_id(current_user)
+    user_id = current_user.id if current_user else None
+
+    can_create, current_cnt, limit_cnt = await EntitlementService.can_create_project(
+        db, workspace_id, user_id=user_id
+    )
+    if not can_create:
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail=f"Plan limit reached: your current plan allows up to {limit_cnt} projects ({current_cnt} active). Please upgrade your plan to add more websites.",
+        )
+
     svc = GeoService(db)
-    project = await svc.create_project(data)
+    project = await svc.create_project(data, user_id=user_id)
     return project
+
 
 
 @router.get("/projects", response_model=GeoProjectListResponse)
@@ -166,6 +184,7 @@ async def update_geo_brand_profile(
 @router.post("/analyze", response_model=GeoAnalysisResponse, status_code=status.HTTP_202_ACCEPTED)
 async def trigger_geo_analysis(
     req: GeoAnalysisTriggerRequest,
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Trigger background end-to-end GEO analysis."""
@@ -173,6 +192,28 @@ async def trigger_geo_analysis(
     project = await svc.get_project(req.project_id)
     if not project:
         raise HTTPException(status_code=404, detail="GEO project not found")
+
+    workspace_id = await resolve_workspace_id(current_user)
+    user_id = current_user.id if current_user else None
+
+    cost = CreditCostService.get_cost("geo_ai_query", models_count=len(req.providers or ["openai", "perplexity", "gemini"]))
+    success, _ = await CreditWalletService.deduct_atomic(
+        db=db,
+        workspace_id=workspace_id,
+        amount=cost,
+        operation="geo_analysis_run",
+        module="GEO",
+        resource_type="geo_project",
+        resource_id=req.project_id,
+        user_id=user_id,
+        description=f"GEO Generative Engine Analysis (-{cost} credits)",
+    )
+    if not success:
+        wallet = await CreditWalletService.get_or_create_wallet(db, workspace_id, user_id)
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail=f"Insufficient credits: this GEO analysis requires {cost} credits, but your wallet has {wallet.available_credits} available. Please upgrade your plan or top up credits.",
+        )
 
     analysis = GeoAnalysis(
         project_id=req.project_id,

@@ -143,15 +143,17 @@ function GlobalSettingsContent() {
   const loadGeneralSettings = useCallback(async () => {
     setIsLoadingGeneral(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/settings`);
+      const activeSession = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("seosensing_auth_session") || "{}") : {};
+      const token = activeSession?.token || activeSession?.id || activeSession?.email;
+      const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+
+      const res = await fetch(`${API_BASE_URL}/settings`, { headers });
       if (res.ok) {
         const data = await res.json();
         setWorkspaceName(data.workspace_name || "Enterprise Global Growth");
         
-        const activeEmail = user?.email || (typeof window !== "undefined" ? JSON.parse(localStorage.getItem("seosensing_auth_session") || "{}")?.email : "");
-        const resolvedEmail = data.owner_email && !["admin@seosensing-enterprise.internal", "admin@seosensing.internal"].includes(data.owner_email)
-          ? data.owner_email
-          : (activeEmail || "");
+        const activeEmail = user?.email || activeSession?.email || "";
+        const resolvedEmail = activeEmail || data.owner_email || "";
         
         setOwnerEmail(resolvedEmail);
         setTimezone(data.timezone || "UTC (GMT+00:00)");
@@ -179,9 +181,16 @@ function GlobalSettingsContent() {
     e.preventDefault();
     setIsSavingGeneral(true);
     try {
+      const activeSession = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("seosensing_auth_session") || "{}") : {};
+      const token = activeSession?.token || activeSession?.id || activeSession?.email;
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      };
+
       const res = await fetch(`${API_BASE_URL}/settings/workspace`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           workspace_name: workspaceName,
           owner_email: ownerEmail.trim().toLowerCase(),
@@ -196,7 +205,7 @@ function GlobalSettingsContent() {
 
       const data = await res.json();
       setWorkspaceName(data.workspace_name);
-      setOwnerEmail(data.owner_email);
+      setOwnerEmail(data.owner_email || user?.email || "");
       setTimezone(data.timezone);
       setDefaultLanguage(data.default_language);
       success("Workspace Settings Saved", "Global enterprise profile updated successfully.");

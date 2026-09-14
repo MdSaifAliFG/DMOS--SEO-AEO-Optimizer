@@ -43,6 +43,7 @@ import {
   ExternalLink,
   ShieldCheck,
   LogOut,
+  CreditCard,
 } from "lucide-react";
 import { NAVIGATION_CONFIG, NavItem } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -72,6 +73,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   FileBarChart: <FileBarChart className="w-4 h-4" />,
   Puzzle: <Puzzle className="w-4 h-4" />,
   Settings: <Settings className="w-4 h-4" />,
+  CreditCard: <CreditCard className="w-4 h-4" />,
   Layers: <Layers className="w-4 h-4" />,
   Target: <Target className="w-4 h-4" />,
   Share2: <Share2 className="w-4 h-4" />,

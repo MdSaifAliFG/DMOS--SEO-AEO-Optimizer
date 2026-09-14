@@ -59,7 +59,7 @@ export default function SignUpPage() {
     setIsLoading(true);
     try {
       await signUpWithCredentials(cleanEmail, cleanName, password);
-      window.location.href = "/overview";
+      window.location.href = `/login?registered=true&email=${encodeURIComponent(cleanEmail)}`;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to create account. Please try again.";
       setErrorMessage(msg);

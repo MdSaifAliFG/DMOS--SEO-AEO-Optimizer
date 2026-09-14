@@ -89,13 +89,23 @@ connect_args = {}
 if "sqlite" in database_url:
     connect_args["check_same_thread"] = False
 
-engine = create_async_engine(
-    database_url,
-    echo=settings.DEBUG,
-    future=True,
-    pool_pre_ping=True,
-    connect_args=connect_args,
-)
+try:
+    engine = create_async_engine(
+        database_url,
+        echo=settings.DEBUG,
+        future=True,
+        pool_pre_ping=True,
+        connect_args=connect_args,
+    )
+except Exception as e:
+    logger.warning("Failed to initialize database engine for %s: %s. Falling back to SQLite.", database_url, e)
+    fallback_url = "sqlite+aiosqlite:///./dmos_dev.db"
+    engine = create_async_engine(
+        fallback_url,
+        echo=settings.DEBUG,
+        future=True,
+        connect_args={"check_same_thread": False},
+    )
 
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,

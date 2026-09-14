@@ -17,20 +17,30 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useSearchParams } from "next/navigation";
 import { SeoSensingLogo } from "@/components/brand/SeoSensingLogo";
 
-export default function LoginPage() {
+function LoginFormContent() {
   const { loginWithCredentials } = useAuth();
+  const searchParams = useSearchParams();
+  const registered = searchParams.get("registered");
+  const emailParam = searchParams.get("email");
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(emailParam || "");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(
+    registered === "true"
+      ? "Account created successfully! Please sign in with your password to continue."
+      : null
+  );
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setSuccessMessage(null);
 
     const cleanEmail = email.trim().toLowerCase();
     if (!cleanEmail || !password) {
@@ -115,6 +125,14 @@ export default function LoginPage() {
               Deterministic SEO crawling & AI Answer Engine Optimization.
             </p>
           </div>
+
+          {/* Success Message */}
+          {successMessage && (
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start gap-2.5 text-xs text-emerald-600 dark:text-emerald-400 animate-in fade-in duration-200">
+              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-500" />
+              <div className="flex-1 font-medium leading-relaxed">{successMessage}</div>
+            </div>
+          )}
 
           {/* Error Message */}
           {errorMessage && (
@@ -211,5 +229,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen bg-[#030712]" />}>
+      <LoginFormContent />
+    </React.Suspense>
   );
 }

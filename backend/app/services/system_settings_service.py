@@ -1,6 +1,7 @@
+from __future__ import annotations
 import time
 from datetime import datetime, timezone
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List, Tuple
 from sqlalchemy import select, func, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,17 +25,21 @@ from app.schemas.system_settings import (
 
 class SystemSettingsService:
     @staticmethod
-    async def get_or_create_settings(db: AsyncSession) -> SystemSettings:
-        """Fetch singleton global settings record or initialize with enterprise defaults."""
+    async def get_or_create_settings(
+        db: AsyncSession, current_user: User | None = None
+    ) -> SystemSettings:
+        """Fetch settings record, dynamically bound to the active authenticated user's workspace."""
         stmt = select(SystemSettings).where(SystemSettings.id == "global")
         result = await db.execute(stmt)
         record = result.scalar_one_or_none()
 
-        # Check for registered active user to bind real owner email
-        user_stmt = select(User).order_by(User.created_at.desc()).limit(1)
-        user_res = await db.execute(user_stmt)
-        active_user = user_res.scalar_one_or_none()
-        resolved_owner = active_user.email if active_user else "admin@seosensing-enterprise.internal"
+        resolved_owner = current_user.email if current_user else "admin@seosensing-enterprise.internal"
+        if not current_user:
+            user_stmt = select(User).order_by(User.created_at.desc()).limit(1)
+            user_res = await db.execute(user_stmt)
+            active_user = user_res.scalar_one_or_none()
+            if active_user:
+                resolved_owner = active_user.email
 
         if not record:
             record = SystemSettings(
@@ -64,25 +69,25 @@ class SystemSettingsService:
             db.add(record)
             await db.commit()
             await db.refresh(record)
-        elif record.owner_email in ("admin@seosensing-enterprise.internal", "admin@seosensing.internal", "") and active_user:
-            # Dynamically sync placeholder to actual registered owner
-            record.owner_email = active_user.email
-            await db.commit()
-            await db.refresh(record)
+        else:
+            if current_user and current_user.email:
+                record.owner_email = current_user.email
 
         return record
 
     @staticmethod
     async def update_workspace_settings(
-        db: AsyncSession, data: WorkspaceSettingsUpdate
+        db: AsyncSession, data: WorkspaceSettingsUpdate, current_user: User | None = None
     ) -> SystemSettings:
         """Update workspace name, owner contact, and locale preferences."""
-        record = await SystemSettingsService.get_or_create_settings(db)
+        record = await SystemSettingsService.get_or_create_settings(db, current_user)
 
         if data.workspace_name is not None:
             record.workspace_name = data.workspace_name.strip()
         if data.owner_email is not None:
             record.owner_email = data.owner_email.strip().lower()
+        elif current_user and current_user.email:
+            record.owner_email = current_user.email
         if data.timezone is not None:
             record.timezone = data.timezone.strip()
         if data.default_language is not None:

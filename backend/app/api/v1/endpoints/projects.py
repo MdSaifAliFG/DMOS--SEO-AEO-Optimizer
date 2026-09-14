@@ -2,10 +2,14 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
+from app.models.user import User
 from app.schemas.project import ProjectCreate, ProjectListResponse, ProjectResponse, ProjectUpdate
 from app.schemas.scan import ScanCreate, ScanListResponse, ScanResponse
 from app.services.project_service import ProjectService
 from app.services.scan_service import ScanService
+from app.services.entitlement_service import EntitlementService
+from app.services.credit_service import CreditCostService, CreditWalletService
+from app.api.v1.endpoints.billing import get_optional_current_user, resolve_workspace_id
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
 
@@ -18,9 +22,23 @@ router = APIRouter(prefix="/projects", tags=["Projects"])
 )
 async def create_project(
     data: ProjectCreate,
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ProjectResponse:
     """Register a new website domain for SEO/AEO scanning."""
+    workspace_id = await resolve_workspace_id(current_user)
+    user_id = current_user.id if current_user else None
+
+    # Check plan entitlement limits
+    can_create, current_cnt, limit_cnt = await EntitlementService.can_create_project(
+        db, workspace_id, user_id=user_id
+    )
+    if not can_create:
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail=f"Plan limit reached: your current plan allows up to {limit_cnt} projects ({current_cnt} active). Please upgrade your plan to add more websites.",
+        )
+
     # Check if domain already exists
     existing = await ProjectService.get_project_by_domain(db, data.domain)
     if existing:
@@ -29,8 +47,9 @@ async def create_project(
             detail=f"A project for domain '{data.domain}' already exists (ID: {existing.id})",
         )
 
-    project = await ProjectService.create_project(db, data)
+    project = await ProjectService.create_project(db, data, user_id=user_id)
     return ProjectService.map_to_response(project)
+
 
 
 @router.get(
@@ -121,6 +140,7 @@ async def delete_project(
 async def create_scan_for_project(
     project_id: str,
     data: Optional[ScanCreate] = None,
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ScanResponse:
     """
@@ -135,6 +155,38 @@ async def create_scan_for_project(
         )
 
     scan_data = data or ScanCreate()
+    workspace_id = await resolve_workspace_id(current_user)
+    if not current_user and project.user_id:
+        workspace_id = str(project.user_id)
+    user_id = current_user.id if current_user else project.user_id
+
+    # If project didn't have user_id associated, bind it to active user
+    if not project.user_id and user_id:
+        project.user_id = user_id
+        await db.commit()
+        await db.refresh(project)
+
+    # Credit check and deduction
+    crawl_limit = (project.settings or {}).get("crawl_limit", 100)
+    cost = CreditCostService.get_cost("seo_full_audit", pages=crawl_limit)
+    success, _ = await CreditWalletService.deduct_atomic(
+        db=db,
+        workspace_id=workspace_id,
+        amount=cost,
+        operation="website_crawl",
+        module="SEO",
+        resource_type="project",
+        resource_id=project_id,
+        user_id=user_id,
+        description=f"SEO Full Audit for {project.domain} (-{cost} credits)",
+    )
+    if not success:
+        wallet = await CreditWalletService.get_or_create_wallet(db, workspace_id, user_id)
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail=f"Insufficient credits: this crawl requires {cost} credits, but your wallet has {wallet.available_credits} available. Please upgrade your plan or top up credits.",
+        )
+
     scan = await ScanService.create_scan(db, project, scan_data)
     return ScanService.map_to_response(scan)
 

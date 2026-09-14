@@ -97,8 +97,6 @@ export function useAuth() {
       token: data.token,
     };
 
-    setStoredUser(session);
-    setUser(session);
     return session;
   };
 

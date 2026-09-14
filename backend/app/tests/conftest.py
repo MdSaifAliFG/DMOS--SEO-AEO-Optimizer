@@ -1,7 +1,11 @@
 import asyncio
 from typing import AsyncGenerator
 import pytest
-import pytest_asyncio
+try:
+    import pytest_asyncio
+    async_fixture = pytest_asyncio.fixture
+except ImportError:
+    async_fixture = pytest.fixture
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -29,7 +33,7 @@ TestingSessionLocal = async_sessionmaker(
 )
 
 
-@pytest_asyncio.fixture(scope="function")
+@async_fixture(scope="function")
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -41,7 +45,7 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest_asyncio.fixture(scope="function")
+@async_fixture(scope="function")
 async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
         yield db_session

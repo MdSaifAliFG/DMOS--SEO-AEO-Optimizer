@@ -55,8 +55,13 @@ from app.services.aeo.monitoring.schedule_service import AEOScheduleService
 from app.services.aeo.monitoring.trend_engine import AEOTrendEngine
 from app.services.aeo.monitoring.alert_engine import AEOAlertEngine
 from app.services.aeo.intelligence.intelligence_engine import AEOIntelligenceEngine
+from app.services.entitlement_service import EntitlementService
+from app.services.credit_service import CreditCostService, CreditWalletService
+from app.models.user import User
+from app.api.v1.endpoints.billing import get_optional_current_user, resolve_workspace_id
 
 router = APIRouter(prefix="/aeo", tags=["AEO Optimization"])
+
 
 
 # --- Dashboard ---
@@ -143,10 +148,23 @@ async def list_aeo_projects(
 )
 async def create_aeo_project(
     data: AeoProjectCreate,
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoProjectResponse:
+    workspace_id = await resolve_workspace_id(current_user)
+    user_id = current_user.id if current_user else None
+
+    can_create, current_cnt, limit_cnt = await EntitlementService.can_create_project(
+        db, workspace_id, user_id=user_id
+    )
+    if not can_create:
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail=f"Plan limit reached: your current plan allows up to {limit_cnt} projects ({current_cnt} active). Please upgrade your plan to add more websites.",
+        )
+
     try:
-        project = await AeoService.create_project(db, data)
+        project = await AeoService.create_project(db, data, user_id=user_id)
     except ValueError as val_err:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -303,10 +321,33 @@ async def delete_aeo_project(
 async def trigger_aeo_analysis(
     project_id: str,
     data: Optional[AeoAnalysisTriggerRequest] = None,
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoAnalysisResponse:
     engines = data.engines if data else None
     allow_test_mode = data.allow_test_mode if data else False
+    workspace_id = await resolve_workspace_id(current_user)
+    user_id = current_user.id if current_user else None
+
+    cost = CreditCostService.get_cost("aeo_ai_query", engines_count=len(engines or ["chatgpt", "gemini", "perplexity"]))
+    success, _ = await CreditWalletService.deduct_atomic(
+        db=db,
+        workspace_id=workspace_id,
+        amount=cost,
+        operation="aeo_analysis_run",
+        module="AEO",
+        resource_type="aeo_project",
+        resource_id=project_id,
+        user_id=user_id,
+        description=f"AEO Synthesis & AI Engine Query (-{cost} credits)",
+    )
+    if not success:
+        wallet = await CreditWalletService.get_or_create_wallet(db, workspace_id, user_id)
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail=f"Insufficient credits: this AEO analysis requires {cost} credits, but your wallet has {wallet.available_credits} available. Please upgrade your plan or top up credits.",
+        )
+
     try:
         analysis = await AeoService.trigger_analysis(
             db, project_id, engines=engines, allow_test_mode=allow_test_mode

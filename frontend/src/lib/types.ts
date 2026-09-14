@@ -1723,4 +1723,185 @@ export interface UnifiedSearchIntelligence {
   executive_brief: string;
 }
 
+// ----------------------------------------------------
+// BILLING & MONETIZATION TYPES
+// ----------------------------------------------------
+export type PlanCode =
+  | "FREE"
+  | "STARTER"
+  | "GROWTH"
+  | "PRO"
+  | "BUSINESS"
+  | "AGENCY"
+  | "free"
+  | "starter"
+  | "growth"
+  | "pro"
+  | "business"
+  | "agency"
+  | string;
+
+export interface Plan {
+  id: string;
+  code: PlanCode;
+  name: string;
+  description?: string | null;
+  price_monthly: number;
+  currency: string;
+  monthly_credits: number;
+  max_rollover_credits: number;
+  max_projects: number;
+  max_websites: number;
+  max_team_members: number;
+  max_ai_queries: number;
+  monitoring_enabled: boolean;
+  advanced_monitoring: boolean;
+  competitor_monitoring: boolean;
+  pdf_reports: boolean;
+  api_access: boolean;
+  white_label: boolean;
+  priority_processing: boolean;
+  is_popular: boolean;
+  is_active: boolean;
+  features: string[];
+  stripe_price_id?: string | null;
+}
+
+export interface Subscription {
+  id: string;
+  workspace_id: string;
+  plan_id: string;
+  plan: Plan;
+  provider: string;
+  status: "trialing" | "active" | "past_due" | "canceled" | "unpaid" | "incomplete" | "incomplete_expired";
+  billing_interval: string;
+  current_period_start?: string | null;
+  current_period_end?: string | null;
+  cancel_at_period_end: boolean;
+  cancelled_at?: string | null;
+}
+
+export interface CreditWallet {
+  available_credits: number;
+  monthly_credits: number;
+  rollover_credits: number;
+  purchased_credits: number;
+  used_credits: number;
+  reserved_credits: number;
+  last_allocation_at?: string | null;
+  next_allocation_at?: string | null;
+}
+
+export interface CreditTransaction {
+  id: string;
+  workspace_id: string;
+  type: string;
+  amount: number;
+  balance_before: number;
+  balance_after: number;
+  operation: string;
+  resource_type?: string | null;
+  resource_id?: string | null;
+  description: string;
+  created_at: string;
+  transaction_metadata?: Record<string, unknown>;
+}
+
+export interface UsageEvent {
+  id: string;
+  workspace_id: string;
+  module: "SEO" | "AEO" | "GEO" | "SYSTEM";
+  operation: string;
+  resource_type?: string | null;
+  resource_id?: string | null;
+  credits_used: number;
+  provider?: string | null;
+  provider_model?: string | null;
+  status: string;
+  created_at: string;
+  usage_metadata?: Record<string, unknown>;
+}
+
+export interface UsageSummary {
+  total_credits_used: number;
+  seo_credits: number;
+  aeo_credits: number;
+  geo_credits: number;
+  system_credits: number;
+  period_start?: string | null;
+  period_end?: string | null;
+}
+
+export interface Invoice {
+  id: string;
+  workspace_id: string;
+  invoice_number: string;
+  amount: number;
+  currency: string;
+  status: string;
+  invoice_url?: string | null;
+  pdf_url?: string | null;
+  period_start?: string | null;
+  period_end?: string | null;
+  created_at: string;
+}
+
+export interface BillingSummary {
+  current_plan: Plan;
+  subscription_status: string;
+  price: number;
+  currency: string;
+  monthly_credits: number;
+  available_credits: number;
+  used_credits: number;
+  rollover_credits: number;
+  purchased_credits: number;
+  current_period_start?: string | null;
+  current_period_end?: string | null;
+  next_billing_date?: string | null;
+  cancel_at_period_end: boolean;
+  projects_used: number;
+  projects_limit: number;
+  websites_used: number;
+  websites_limit: number;
+  team_members_used?: number;
+  team_members_limit?: number;
+}
+
+export interface RazorpayOrder {
+  order_id: string;
+  amount: number;
+  amount_display?: number;
+  currency: string;
+  key_id: string;
+  plan_code?: string;
+  plan_name?: string;
+  pack_credits?: number;
+  billing_cycle?: string;
+  user_email?: string;
+  name: string;
+  description?: string;
+  is_free: boolean;
+  message?: string;
+}
+
+export interface RazorpayVerifyResponse {
+  success: boolean;
+  verified?: boolean;
+  type?: string;
+  plan_code?: string;
+  plan_name?: string;
+  pack_credits?: number;
+  message: string;
+  available_credits: number;
+  invoice_number?: string;
+}
+
+export interface RazorpayConfig {
+  key_id: string;
+  currency: string;
+  is_configured: boolean;
+}
+
+
 

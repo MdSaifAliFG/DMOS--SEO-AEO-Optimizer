@@ -240,6 +240,11 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
     items: [
 
       {
+        title: "Billing & Plans",
+        href: "/billing",
+        icon: "CreditCard",
+      },
+      {
         title: "Integrations",
         href: "/integrations",
         icon: "Puzzle",

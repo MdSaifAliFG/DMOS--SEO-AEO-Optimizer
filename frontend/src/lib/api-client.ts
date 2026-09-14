@@ -98,6 +98,17 @@ import {
   GeoReport,
   GeoAnalysisJob,
   UnifiedSearchIntelligence,
+  Plan,
+  Subscription,
+  CreditWallet,
+  CreditTransaction,
+  UsageEvent,
+  UsageSummary,
+  Invoice,
+  BillingSummary,
+  RazorpayOrder,
+  RazorpayVerifyResponse,
+  RazorpayConfig,
 } from "./types";
 
 
@@ -113,10 +124,39 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    const headers = {
+    
+    let authHeader: string | null = null;
+    let userEmailHeader: string | null = null;
+    let userIdHeader: string | null = null;
+
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("seosensing_auth_session") || localStorage.getItem("dmos_auth_session");
+        if (raw) {
+          const session = JSON.parse(raw);
+          const token = session.token || session.id || session.email;
+          if (token) {
+            authHeader = `Bearer ${token}`;
+          }
+          if (session.email) {
+            userEmailHeader = session.email;
+          }
+          if (session.id) {
+            userIdHeader = session.id;
+          }
+        }
+      } catch {
+        // Ignore JSON error
+      }
+    }
+
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
       Accept: "application/json",
-      ...options.headers,
+      ...(authHeader ? { Authorization: authHeader } : {}),
+      ...(userEmailHeader ? { "X-User-Email": userEmailHeader } : {}),
+      ...(userIdHeader ? { "X-User-Id": userIdHeader } : {}),
+      ...(options.headers as Record<string, string>),
     };
 
     try {
@@ -192,10 +232,12 @@ class ApiClient {
   }
 
   async createProject(input: ProjectCreateInput): Promise<Project> {
-    return this.request<Project>("/projects", {
+    const res = await this.request<Project>("/projects", {
       method: "POST",
       body: JSON.stringify(input),
     });
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("credits_updated"));
+    return res;
   }
 
   async updateProject(
@@ -209,22 +251,26 @@ class ApiClient {
   }
 
   async deleteProject(projectId: string): Promise<{ success: boolean; message: string }> {
-    return this.request<{ success: boolean; message: string }>(
+    const res = await this.request<{ success: boolean; message: string }>(
       `/projects/${projectId}`,
       {
         method: "DELETE",
       }
     );
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("credits_updated"));
+    return res;
   }
 
   async createScan(
     projectId: string,
     input?: ScanCreateInput
   ): Promise<Scan> {
-    return this.request<Scan>(`/projects/${projectId}/scans`, {
+    const res = await this.request<Scan>(`/projects/${projectId}/scans`, {
       method: "POST",
       body: JSON.stringify(input || {}),
     });
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("credits_updated"));
+    return res;
   }
 
   async getProjectScans(
@@ -387,10 +433,12 @@ class ApiClient {
   }
 
   async createAeoProject(input: AeoProjectCreateInput): Promise<AeoProject> {
-    return this.request<AeoProject>("/aeo/projects", {
+    const res = await this.request<AeoProject>("/aeo/projects", {
       method: "POST",
       body: JSON.stringify(input),
     });
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("credits_updated"));
+    return res;
   }
 
   async updateAeoProject(projectId: string, input: AeoProjectUpdateInput): Promise<AeoProject> {
@@ -401,22 +449,26 @@ class ApiClient {
   }
 
   async deleteAeoProject(projectId: string): Promise<{ success: boolean; message: string }> {
-    return this.request<{ success: boolean; message: string }>(
+    const res = await this.request<{ success: boolean; message: string }>(
       `/aeo/projects/${projectId}`,
       {
         method: "DELETE",
       }
     );
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("credits_updated"));
+    return res;
   }
 
   async triggerAeoAnalysis(
     projectId: string,
     input?: { engines?: string[]; allow_test_mode?: boolean }
   ): Promise<AeoAnalysis> {
-    return this.request<AeoAnalysis>(`/aeo/projects/${projectId}/analyze`, {
+    const res = await this.request<AeoAnalysis>(`/aeo/projects/${projectId}/analyze`, {
       method: "POST",
       body: JSON.stringify(input || {}),
     });
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("credits_updated"));
+    return res;
   }
 
   async getAeoAnalysis(analysisId: string): Promise<AeoAnalysis> {
@@ -956,10 +1008,12 @@ class ApiClient {
   }
 
   async createGeoProject(input: GeoProjectCreateInput): Promise<GeoProject> {
-    return this.request<GeoProject>("/geo/projects", {
+    const res = await this.request<GeoProject>("/geo/projects", {
       method: "POST",
       body: JSON.stringify(input),
     });
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("credits_updated"));
+    return res;
   }
 
   async updateGeoProject(id: string, input: GeoProjectUpdateInput): Promise<GeoProject> {
@@ -970,9 +1024,10 @@ class ApiClient {
   }
 
   async deleteGeoProject(id: string): Promise<void> {
-    return this.request<void>(`/geo/projects/${id}`, {
+    await this.request<void>(`/geo/projects/${id}`, {
       method: "DELETE",
     });
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("credits_updated"));
   }
 
   async getGeoBrandProfile(projectId: string): Promise<GeoBrandProfile> {
@@ -992,10 +1047,12 @@ class ApiClient {
     crawling_enabled?: boolean;
     question_count?: number;
   }): Promise<GeoAnalysisJob> {
-    return this.request<GeoAnalysisJob>("/geo/analyze", {
+    const res = await this.request<GeoAnalysisJob>("/geo/analyze", {
       method: "POST",
       body: JSON.stringify(input),
     });
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("credits_updated"));
+    return res;
   }
 
   async getGeoAnalysisStatus(analysisId: string): Promise<GeoAnalysisJob> {
@@ -1234,8 +1291,166 @@ class ApiClient {
   async getUnifiedSearchIntelligence(projectId: string): Promise<UnifiedSearchIntelligence> {
     return this.request<UnifiedSearchIntelligence>(`/geo/unified-intelligence/${projectId}`);
   }
-}
 
+  // ==========================================
+  // BILLING & SUBSCRIPTION & CREDITS APIS
+  // ==========================================
+
+  async getBillingPlans(): Promise<Plan[]> {
+    return this.request<Plan[]>("/billing/plans");
+  }
+
+  async getCurrentSubscription(): Promise<Subscription> {
+    return this.request<Subscription>("/billing/current");
+  }
+
+  async getBillingSummary(): Promise<BillingSummary> {
+    return this.request<BillingSummary>("/billing/summary");
+  }
+
+  async getCreditWallet(): Promise<CreditWallet> {
+    return this.request<CreditWallet>("/billing/credits");
+  }
+
+  async getUsageEvents(params?: {
+    module?: string;
+    skip?: number;
+    limit?: number;
+  }): Promise<UsageEvent[]> {
+    const query = new URLSearchParams();
+    if (params?.module && params.module !== "all") query.set("module", params.module);
+    if (params?.skip !== undefined) query.set("skip", params.skip.toString());
+    if (params?.limit !== undefined) query.set("limit", params.limit.toString());
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    return this.request<UsageEvent[]>(`/billing/usage${qs}`);
+  }
+
+  async getUsageSummary(days: number = 30): Promise<UsageSummary> {
+    return this.request<UsageSummary>(`/billing/usage/summary?days=${days}`);
+  }
+
+  async getCreditTransactions(params?: {
+    category?: string;
+    skip?: number;
+    limit?: number;
+  }): Promise<CreditTransaction[]> {
+    const query = new URLSearchParams();
+    if (params?.category && params.category !== "all") query.set("category", params.category);
+    if (params?.skip !== undefined) query.set("skip", params.skip.toString());
+    if (params?.limit !== undefined) query.set("limit", params.limit.toString());
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    return this.request<CreditTransaction[]>(`/billing/transactions${qs}`);
+  }
+
+  async getInvoices(limit: number = 20): Promise<Invoice[]> {
+    return this.request<Invoice[]>(`/billing/invoices?limit=${limit}`);
+  }
+
+  async getCreditPacks(): Promise<Array<{
+    credits: number;
+    price: number;
+    name: string;
+    description: string;
+    price_id?: string | null;
+  }>> {
+    return this.request<Array<{
+      credits: number;
+      price: number;
+      name: string;
+      description: string;
+      price_id?: string | null;
+    }>>("/billing/credit-packs");
+  }
+
+  async createCheckoutSession(input: {
+    plan_tier: string;
+    billing_cycle?: string;
+    success_url?: string;
+    cancel_url?: string;
+  }): Promise<{ checkout_url: string; session_id: string; message?: string }> {
+    return this.request<{ checkout_url: string; session_id: string; message?: string }>(
+      "/billing/checkout",
+      {
+        method: "POST",
+        body: JSON.stringify(input),
+      }
+    );
+  }
+
+  async createCreditCheckoutSession(input: {
+    pack_credits: number;
+    success_url?: string;
+    cancel_url?: string;
+  }): Promise<{ checkout_url: string; session_id: string; message?: string }> {
+    return this.request<{ checkout_url: string; session_id: string; message?: string }>(
+      "/billing/credits/checkout",
+      {
+        method: "POST",
+        body: JSON.stringify(input),
+      }
+    );
+  }
+
+  async createCustomerPortalSession(returnUrl?: string): Promise<{ portal_url: string }> {
+    return this.request<{ portal_url: string }>("/billing/portal", {
+      method: "POST",
+      body: JSON.stringify({ return_url: returnUrl }),
+    });
+  }
+
+  async cancelSubscription(feedback?: string): Promise<Subscription> {
+    return this.request<Subscription>("/billing/cancel", {
+      method: "POST",
+      body: JSON.stringify({ cancel_immediately: false, feedback }),
+    });
+  }
+
+  async reactivateSubscription(): Promise<Subscription> {
+    return this.request<Subscription>("/billing/reactivate", {
+      method: "POST",
+    });
+  }
+
+  async changePlan(newPlanTier: string, billingCycle: string = "monthly"): Promise<Subscription> {
+    return this.request<Subscription>("/billing/change-plan", {
+      method: "POST",
+      body: JSON.stringify({ new_plan_tier: newPlanTier, billing_cycle: billingCycle }),
+    });
+  }
+
+  // ==========================================
+  // RAZORPAY PAYMENT METHODS
+  // ==========================================
+
+  async getRazorpayConfig(): Promise<RazorpayConfig> {
+    return this.request<RazorpayConfig>("/billing/razorpay/config");
+  }
+
+  async createRazorpayOrder(input: {
+    plan_code?: string;
+    pack_credits?: number;
+    billing_cycle?: string;
+  }): Promise<RazorpayOrder> {
+    return this.request<RazorpayOrder>("/billing/razorpay/order", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async verifyRazorpayPayment(input: {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+    plan_code?: string;
+    pack_credits?: number;
+    billing_cycle?: string;
+  }): Promise<RazorpayVerifyResponse> {
+    return this.request<RazorpayVerifyResponse>("/billing/razorpay/verify", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+}
 
 export const api = new ApiClient();
 

@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Depends, status
+from typing import Optional
+from fastapi import APIRouter, Depends, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.models.user import User
+from app.api.v1.endpoints.billing import get_optional_current_user
 from app.schemas.system_settings import (
     WorkspaceSettingsUpdate,
     NotificationSettingsUpdate,
@@ -20,10 +23,11 @@ router = APIRouter(prefix="/settings", tags=["System Settings"])
     summary="Get global platform settings",
 )
 async def get_system_settings(
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SystemSettingsResponse:
     """Retrieve global workspace identity, notification preferences, and default crawler limits."""
-    return await SystemSettingsService.get_or_create_settings(db)
+    return await SystemSettingsService.get_or_create_settings(db, current_user=current_user)
 
 
 @router.patch(
@@ -33,10 +37,11 @@ async def get_system_settings(
 )
 async def update_workspace_profile(
     data: WorkspaceSettingsUpdate,
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SystemSettingsResponse:
     """Update enterprise workspace name, owner contact email, timezone, and language."""
-    return await SystemSettingsService.update_workspace_settings(db, data)
+    return await SystemSettingsService.update_workspace_settings(db, data, current_user=current_user)
 
 
 @router.patch(
