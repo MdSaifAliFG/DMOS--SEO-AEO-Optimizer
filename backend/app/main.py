@@ -22,13 +22,13 @@ logging.basicConfig(
     level=logging.INFO if not settings.DEBUG else logging.DEBUG,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
-logger = logging.getLogger("seosensing")
+logger = logging.getLogger("zobayrank")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan event handler for startup and shutdown routines."""
-    logger.info("Initializing SeoSensing SEO & AEO Backend...")
+    logger.info("Initializing Zobay Rank SEO, AEO & GEO Backend...")
     # Initialize DB tables
     await init_db()
     logger.info("Database schema initialized successfully.")
@@ -40,14 +40,14 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown
-    logger.info("Shutting down SeoSensing Backend...")
+    logger.info("Shutting down Zobay Rank Backend...")
     await close_redis_pool()
 
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="SeoSensing SEO & AEO Optimization Platform - Core Architecture & Scan Lifecycle Engine",
+    description="Zobay Rank SEO, AEO & GEO Optimization Platform - Core Architecture & Scan Lifecycle Engine",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url=f"{settings.API_V1_STR}/docs",
     redoc_url=f"{settings.API_V1_STR}/redoc",

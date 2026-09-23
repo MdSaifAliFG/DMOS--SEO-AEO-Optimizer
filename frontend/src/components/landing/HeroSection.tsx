@@ -41,31 +41,31 @@ export const HeroSection: React.FC = () => {
             {/* Small Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 2xl:px-4 py-1 2xl:py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs 2xl:text-sm font-bold tracking-wide">
               <Sparkles className="w-3.5 h-3.5 2xl:w-4 2xl:h-4 text-amber-400" />
-              <span>SEO, AEO &amp; GEO Zobay Rank Operating System</span>
+              <span>SEO, AEO &amp; GEO Intelligence</span>
             </div>
 
             {/* Main Bold Heading */}
             <h1 className="text-3xl sm:text-5xl lg:text-[54px] 2xl:text-6xl 3xl:text-7xl 4k:text-[82px] font-black tracking-tight leading-[1.08] text-white font-sans">
-              Unleash the power <br />
-              of smarter <span className="text-white">SEO, AEO &amp; GEO</span>
+              AI-Powered SEO, <br />
+              <span className="text-white">AEO &amp; GEO Optimization</span>
             </h1>
 
             {/* Subtitle */}
             <p className="text-xs sm:text-sm 2xl:text-base 3xl:text-lg text-slate-300 max-w-lg 2xl:max-w-2xl 3xl:max-w-3xl leading-relaxed font-normal">
-              Stop guessing what is holding your website back. Zobay Rank crawls, analyzes, and helps you optimize your brand for traditional search engines, AI answer engines, and generative discovery (GEO).
+              Zobay Rank helps businesses optimize technical SEO, answer engine visibility and generative AI search presence from one platform.
             </p>
 
             {/* Side-by-Side Pill CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-3.5 2xl:gap-5 pt-1">
-              <a href="#quick-scan" className="w-full sm:w-auto">
+              <Link href={isAuthenticated ? "/overview" : "/signup"} className="w-full sm:w-auto">
                 <button className="w-full sm:w-auto px-7 sm:px-8 2xl:px-10 py-3.5 2xl:py-4.5 rounded-full bg-[#1D63FF] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm 2xl:text-base tracking-wide shadow-xl shadow-blue-600/40 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer text-center">
-                  Try free audit
+                  Start Free
                 </button>
-              </a>
+              </Link>
 
-              <Link href={isAuthenticated ? "/overview" : "/login"} className="w-full sm:w-auto">
+              <Link href="/ai-search-optimization" className="w-full sm:w-auto">
                 <button className="w-full sm:w-auto px-7 sm:px-8 2xl:px-10 py-3.5 2xl:py-4.5 rounded-full bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs sm:text-sm 2xl:text-base tracking-wide shadow-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer text-center">
-                  Scan your website
+                  Explore Zobay Rank
                 </button>
               </Link>
             </div>

@@ -527,7 +527,7 @@ export default function SeoDashboardPage() {
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-slate-900 dark:text-white">How is my SEO score calculated?</h3>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">SeoSensing Deterministic Diagnostic Model</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Zobay Rank Deterministic Diagnostic Model</p>
                   </div>
                 </div>
                 <button
@@ -590,7 +590,7 @@ export default function SeoDashboardPage() {
                 </div>
 
                 <p className="text-[11px] text-slate-400 dark:text-slate-500 italic">
-                  Note: This score is a SeoSensing diagnostic health metric designed to prioritize crawlability and technical compliance. It is not an official Google ranking score.
+                  Note: This score is a Zobay Rank diagnostic health metric designed to prioritize crawlability and technical compliance. It is not an official Google ranking score.
                 </p>
               </div>
 

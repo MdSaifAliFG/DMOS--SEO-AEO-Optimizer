@@ -1,14 +1,28 @@
-"use client";
-
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { LandingFooter } from "@/components/landing/LandingFooter";
-import { RefreshCw, ArrowLeft, CheckCircle2, Clock, DollarSign, HelpCircle, Mail, ShieldAlert } from "lucide-react";
+import { RefreshCw, ArrowLeft, CheckCircle2, Clock, DollarSign, Mail, ShieldAlert } from "lucide-react";
+import { createPageMetadata } from "@/lib/seo-metadata";
+import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Refund & Cancellation Policy — Zobay Rank",
+  description:
+    "Learn about our 14-day money-back guarantee, subscription renewals, and cancellation terms for the Zobay Rank platform.",
+  path: "/refund-policy",
+});
 
 export default function RefundPolicyPage() {
   return (
     <div className="min-h-screen bg-black text-slate-100 flex flex-col selection:bg-blue-600 selection:text-white">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://rank.zobay.in/" },
+          { name: "Refund Policy", url: "https://rank.zobay.in/refund-policy" },
+        ]}
+      />
       <LandingNavbar />
 
       <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 w-full">
@@ -102,7 +116,7 @@ export default function RefundPolicyPage() {
               To initiate a refund or discuss your billing statement, please contact our billing team with your registered workspace email and invoice ID:
             </p>
             <div className="p-4 rounded-xl bg-slate-800/40 border border-white/10 text-xs space-y-1.5 text-slate-300">
-              <p><strong>Billing Desk:</strong> <a href="mailto:dm@fortunehestia.in" className="text-blue-400 hover:underline">dm@fortunehestia.in</a></p>
+              <p><strong>Billing Desk:</strong> <a href="mailto:support@zobay.in" className="text-blue-400 hover:underline">support@zobay.in</a></p>
               <p><strong>Processing Window:</strong> Approved refunds are credited back to your original payment method within <strong>5–7 business days</strong>.</p>
             </div>
           </section>

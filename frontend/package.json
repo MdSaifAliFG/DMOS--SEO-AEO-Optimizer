@@ -7,7 +7,10 @@
     "build": "node node_modules/next/dist/bin/next build",
     "start": "node node_modules/next/dist/bin/next start",
     "lint": "node node_modules/next/dist/bin/next lint",
-    "type-check": "node node_modules/typescript/bin/tsc --noEmit"
+    "type-check": "node node_modules/typescript/bin/tsc --noEmit",
+    "seo:check": "node scripts/seo-check.mjs",
+    "aeo:check": "node scripts/aeo-check.mjs",
+    "geo:check": "node scripts/geo-check.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

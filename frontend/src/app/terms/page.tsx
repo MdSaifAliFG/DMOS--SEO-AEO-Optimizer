@@ -1,14 +1,28 @@
-"use client";
-
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { FileText, ArrowLeft, CheckCircle2, AlertTriangle, ShieldCheck, Scale, Server } from "lucide-react";
+import { createPageMetadata } from "@/lib/seo-metadata";
+import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Terms & Conditions — Zobay Rank",
+  description:
+    "Review the terms, conditions, licensing, and acceptable use policies governing the Zobay Rank AI Search and technical optimization platform.",
+  path: "/terms",
+});
 
 export default function TermsAndConditionsPage() {
   return (
     <div className="min-h-screen bg-black text-slate-100 flex flex-col selection:bg-blue-600 selection:text-white">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://rank.zobay.in/" },
+          { name: "Terms & Conditions", url: "https://rank.zobay.in/terms" },
+        ]}
+      />
       <LandingNavbar />
 
       <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 w-full">
@@ -104,7 +118,7 @@ export default function TermsAndConditionsPage() {
               To the maximum extent permitted by applicable law, Zobay Rank shall not be liable for indirect, incidental, or consequential damages resulting from audit outages, target website downtime, or algorithmic volatility.
             </p>
             <div className="p-4 rounded-xl bg-slate-800/40 border border-white/10 text-xs space-y-1 text-slate-300">
-              <p><strong>Inquiries &amp; Legal Notices:</strong> <a href="mailto:dm@fortunehestia.in" className="text-blue-400 hover:underline">dm@fortunehestia.in</a></p>
+              <p><strong>Inquiries &amp; Legal Notices:</strong> <a href="mailto:support@zobay.in" className="text-blue-400 hover:underline">support@zobay.in</a></p>
               <p><strong>Corporate Jurisdiction:</strong> Applicable state and national commercial arbitration guidelines.</p>
             </div>
           </section>

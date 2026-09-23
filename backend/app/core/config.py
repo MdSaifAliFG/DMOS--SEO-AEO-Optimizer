@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "SeoSensing SEO & AEO Optimization Platform"
+    PROJECT_NAME: str = "Zobay Rank SEO, AEO & GEO Optimization Platform"
     VERSION: str = "0.2.0"
     API_V1_STR: str = "/api/v1"
     ENVIRONMENT: str = "development"
@@ -18,6 +18,7 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:8000",
+        "https://rank.zobay.in",
     ]
 
     @field_validator("CORS_ORIGINS", mode="before")
@@ -47,7 +48,7 @@ class Settings(BaseSettings):
     CRAWL_CONCURRENCY: int = 5
     CRAWL_MAX_RETRIES: int = 2
     CRAWL_MAX_RESPONSE_SIZE: int = 10485760  # 10MB
-    CRAWLER_USER_AGENT: str = "SeoSensingBot/1.0 (+https://seosensing.io/bot; SEO & AEO Audit Engine)"
+    CRAWLER_USER_AGENT: str = "ZobayRankBot/1.0 (+https://rank.zobay.in/bot; SEO, AEO & GEO Audit Engine)"
     SCAN_TIMEOUT_SECONDS: int = 600  # 10 minutes maximum scan lifecycle
 
     # Security

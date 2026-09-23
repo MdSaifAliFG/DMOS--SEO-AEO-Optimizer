@@ -99,98 +99,98 @@ export const LandingFooter: React.FC = () => {
             </div>
           </div>
 
-          {/* Col 2: SEO Products */}
+          {/* Col 2: Optimization Engines */}
           <div className="space-y-3 2xl:space-y-4">
-            <h4 className="text-xs 2xl:text-sm font-bold text-white uppercase tracking-wider">SEO Engine</h4>
+            <h4 className="text-xs 2xl:text-sm font-bold text-white uppercase tracking-wider">Solutions</h4>
             <ul className="space-y-2 2xl:space-y-3 text-xs 2xl:text-sm">
               <li>
-                <Link href="/seo/dashboard" className="hover:text-blue-400 transition-colors">
-                  SEO Dashboard
+                <Link href="/seo-optimization" className="hover:text-blue-400 transition-colors">
+                  SEO Optimization
                 </Link>
               </li>
               <li>
-                <Link href="/seo/projects" className="hover:text-blue-400 transition-colors">
-                  Website Projects
+                <Link href="/aeo-optimization" className="hover:text-purple-300 transition-colors">
+                  AEO Optimization
                 </Link>
               </li>
               <li>
-                <Link href="/seo/technical" className="hover:text-blue-400 transition-colors">
-                  Technical Audits
+                <Link href="/geo-optimization" className="hover:text-amber-300 transition-colors">
+                  GEO Optimization
                 </Link>
               </li>
               <li>
-                <Link href="/seo/keywords" className="hover:text-blue-400 transition-colors">
-                  Keyword Tracking
+                <Link href="/ai-search-optimization" className="hover:text-blue-400 transition-colors">
+                  AI Search Engine
                 </Link>
               </li>
               <li>
-                <Link href="/seo/pages" className="hover:text-blue-400 transition-colors">
-                  Crawled Webpages
+                <Link href="/seo-vs-aeo-vs-geo" className="hover:text-blue-400 transition-colors">
+                  SEO vs AEO vs GEO
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: AEO Intelligence */}
+          {/* Col 3: Comparisons & Use Cases */}
           <div className="space-y-3 2xl:space-y-4">
-            <h4 className="text-xs 2xl:text-sm font-bold text-purple-400 uppercase tracking-wider">AEO Intelligence</h4>
+            <h4 className="text-xs 2xl:text-sm font-bold text-purple-400 uppercase tracking-wider">Use Cases</h4>
             <ul className="space-y-2 2xl:space-y-3 text-xs 2xl:text-sm">
               <li>
-                <Link href="/aeo/dashboard" className="hover:text-purple-300 transition-colors">
-                  AEO Dashboard
+                <Link href="/use-cases/saas" className="hover:text-purple-300 transition-colors">
+                  For SaaS Platforms
                 </Link>
               </li>
               <li>
-                <Link href="/aeo/questions" className="hover:text-purple-300 transition-colors">
-                  AI Question Tracking
+                <Link href="/use-cases/ecommerce" className="hover:text-purple-300 transition-colors">
+                  For E-Commerce
                 </Link>
               </li>
               <li>
-                <Link href="/aeo/citations" className="hover:text-purple-300 transition-colors">
-                  Citation Extraction
+                <Link href="/use-cases/agencies" className="hover:text-purple-300 transition-colors">
+                  For Agencies
                 </Link>
               </li>
               <li>
-                <Link href="/aeo/answer-engine" className="hover:text-purple-300 transition-colors">
-                  Answer Engine Monitor
+                <Link href="/use-cases/startups" className="hover:text-purple-300 transition-colors">
+                  For Startups
                 </Link>
               </li>
               <li>
-                <Link href="/aeo/entities" className="hover:text-purple-300 transition-colors">
-                  Knowledge Entities
+                <Link href="/compare/zobay-rank-vs-traditional-seo-tools" className="hover:text-purple-300 transition-colors">
+                  Platform Comparison
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 4: GEO Engine */}
+          {/* Col 4: Knowledge & Docs */}
           <div className="space-y-3 2xl:space-y-4">
-            <h4 className="text-xs 2xl:text-sm font-bold text-amber-400 uppercase tracking-wider">GEO Engine</h4>
+            <h4 className="text-xs 2xl:text-sm font-bold text-amber-400 uppercase tracking-wider">Knowledge Hub</h4>
             <ul className="space-y-2 2xl:space-y-3 text-xs 2xl:text-sm">
               <li>
-                <Link href="/geo/dashboard" className="hover:text-amber-300 transition-colors">
-                  GEO Dashboard
+                <Link href="/resources" className="hover:text-amber-300 transition-colors">
+                  Resource Hub
                 </Link>
               </li>
               <li>
-                <Link href="/geo/actions" className="hover:text-amber-300 transition-colors">
-                  Action Center
+                <Link href="/glossary" className="hover:text-amber-300 transition-colors">
+                  Search &amp; AI Glossary
                 </Link>
               </li>
               <li>
-                <Link href="/geo/visibility" className="hover:text-amber-300 transition-colors">
-                  AI Parity Matrix
+                <Link href="/blog" className="hover:text-amber-300 transition-colors">
+                  Research Blog
                 </Link>
               </li>
               <li>
-                <Link href="/geo/optimization/content" className="hover:text-amber-300 transition-colors">
-                  Optimization Studios
+                <Link href="/guides" className="hover:text-amber-300 transition-colors">
+                  Optimization Guides
                 </Link>
               </li>
               <li>
-                <Link href="/geo/reports" className="hover:text-amber-300 transition-colors">
-                  Executive Reports
-                </Link>
+                <a href="/llms.txt" target="_blank" rel="noreferrer" className="hover:text-amber-300 transition-colors">
+                  llms.txt Specification
+                </a>
               </li>
             </ul>
           </div>
@@ -200,33 +200,33 @@ export const LandingFooter: React.FC = () => {
             <h4 className="text-xs 2xl:text-sm font-bold text-white uppercase tracking-wider">Company</h4>
             <ul className="space-y-2 2xl:space-y-3 text-xs 2xl:text-sm">
               <li>
-                <a href="#hero" className="hover:text-blue-400 transition-colors">
+                <Link href="/about-zobay-rank" className="hover:text-blue-400 transition-colors">
                   About Zobay Rank
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#services" className="hover:text-blue-400 transition-colors">
-                  Features &amp; Services
-                </a>
+                <Link href="/about" className="hover:text-blue-400 transition-colors">
+                  About Zobay
+                </Link>
               </li>
               <li>
-                <a href="#pricing" className="hover:text-blue-400 transition-colors">
+                <Link href="/pricing" className="hover:text-blue-400 transition-colors">
                   Pricing Plans
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#faq" className="hover:text-blue-400 transition-colors">
-                  Frequently Asked
-                </a>
+                <Link href="/faq" className="hover:text-blue-400 transition-colors">
+                  Platform FAQ
+                </Link>
               </li>
               <li>
-                <a href="#contact" className="hover:text-blue-400 transition-colors">
-                  Contact &amp; Support
-                </a>
+                <Link href="/contact" className="hover:text-blue-400 transition-colors">
+                  Contact Support
+                </Link>
               </li>
               <li>
                 <Link href="/login" className="hover:text-blue-400 transition-colors font-semibold text-blue-400">
-                  Sign In / Register →
+                  Sign In →
                 </Link>
               </li>
             </ul>

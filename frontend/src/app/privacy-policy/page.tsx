@@ -1,14 +1,28 @@
-"use client";
-
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { LandingFooter } from "@/components/landing/LandingFooter";
-import { ShieldCheck, Lock, ArrowLeft, FileText, Database, Eye, Bell, Globe } from "lucide-react";
+import { ShieldCheck, Lock, ArrowLeft, Database, Eye, Bell, Globe } from "lucide-react";
+import { createPageMetadata } from "@/lib/seo-metadata";
+import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Privacy Policy — Zobay Rank",
+  description:
+    "Read the Zobay Rank Privacy Policy. Learn how we handle audit data, crawl telemetry, and user information with strict security and privacy standards.",
+  path: "/privacy-policy",
+});
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-black text-slate-100 flex flex-col selection:bg-blue-600 selection:text-white">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://rank.zobay.in/" },
+          { name: "Privacy Policy", url: "https://rank.zobay.in/privacy-policy" },
+        ]}
+      />
       <LandingNavbar />
 
       <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 w-full">
@@ -135,7 +149,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <div className="p-4 rounded-xl bg-slate-800/40 border border-white/10 text-xs space-y-1 text-slate-300">
               <p><strong>Entity:</strong> Zobay Rank Enterprise Intelligence</p>
-              <p><strong>Email:</strong> <a href="mailto:dm@fortunehestia.in" className="text-blue-400 hover:underline">dm@fortunehestia.in</a></p>
+              <p><strong>Email:</strong> <a href="mailto:support@zobay.in" className="text-blue-400 hover:underline">support@zobay.in</a></p>
               <p><strong>Response SLA:</strong> Within 48 business hours</p>
             </div>
           </section>

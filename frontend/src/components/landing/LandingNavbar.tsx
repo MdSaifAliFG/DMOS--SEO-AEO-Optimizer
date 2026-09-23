@@ -20,12 +20,12 @@ export const LandingNavbar: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { label: "Home", href: "#hero" },
-    { label: "Quick Scan", href: "#quick-scan" },
-    { label: "Services", href: "#services" },
-    { label: "Pricing", href: "#pricing" },
-    { label: "FAQ's", href: "#faq" },
-    { label: "Contact", href: "#contact" },
+    { label: "Home", href: "/#hero" },
+    { label: "Quick Scan", href: "/#quick-scan" },
+    { label: "Solutions", href: "/ai-search-optimization" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Resources", href: "/resources" },
+    { label: "FAQ", href: "/faq" },
   ];
 
   return (

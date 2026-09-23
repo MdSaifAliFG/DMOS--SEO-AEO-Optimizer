@@ -5,12 +5,22 @@ import { PricingSection } from "@/components/landing/PricingSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { Zap, ShieldCheck, RefreshCw, CheckCircle2 } from "lucide-react";
+import { createPageMetadata } from "@/lib/seo-metadata";
+import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Plans & Pricing — Zobay Rank",
   description:
     "Explore transparent plans for SEO, AEO, and GEO optimization. Choose from Free, Starter, Growth, Pro, Business, and Agency tiers with credit rollovers.",
-};
+  path: "/pricing",
+  keywords: [
+    "Zobay Rank pricing",
+    "SEO software cost",
+    "AEO tracking price",
+    "GEO optimization plans",
+    "search visibility pricing",
+  ],
+});
 
 const CREDIT_PACKS = [
   { credits: 250, price: 2.99, costPerCredit: "$0.012" },
@@ -23,6 +33,12 @@ const CREDIT_PACKS = [
 export default function PricingPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-[#1D63FF] selection:text-white">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://rank.zobay.in/" },
+          { name: "Pricing", url: "https://rank.zobay.in/pricing" },
+        ]}
+      />
       <LandingNavbar />
 
       <main className="flex-1 pt-24">

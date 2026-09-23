@@ -1,0 +1,50 @@
+# Zobay Rank
+
+> An AI-powered SEO, AEO, and GEO optimization platform that helps businesses improve traditional search visibility, answer engine visibility, and generative AI search visibility.
+
+## Identity & Context
+- **Product Name**: Zobay Rank
+- **Parent Entity**: Zobay
+- **Official Website**: https://rank.zobay.in/
+- **Support**: support@zobay.in
+
+## Core Product Capabilities
+1. **SEO Optimization (Search Engine Optimization)**
+   - High-concurrency BFS website crawler analyzing technical health.
+   - Indexability, status codes (200, 301, 404, 500), canonicals, meta tags, and robots verification.
+   - Internal linking analysis, orphan page detection, and heading hierarchy inspection.
+   - Deterministic 4-pillar scoring: Crawlability, Metadata, Content Structure, and Links.
+
+2. **AEO Optimization (Answer Engine Optimization)**
+   - Live query and buyer prompt tracking across ChatGPT, Perplexity, Gemini, and Google AI Overviews.
+   - AI citation tracking and source URL extraction.
+   - Knowledge graph entity recognition and topical coverage analysis.
+   - Content gap analysis identifying un-cited or under-represented queries.
+
+3. **GEO Optimization (Generative Engine Optimization)**
+   - 8-factor GEO score evaluating brand presence, commercial discovery, and recommendation readiness in LLMs.
+   - Entity consistency and authoritative brand representation.
+   - Cross-engine visibility matrix comparing presence across Perplexity, ChatGPT, Claude, and Gemini.
+   - Generative search action recommendations with concrete code and content remediation.
+
+## Core Public Resources
+- Homepage: https://rank.zobay.in/
+- Pricing & Subscription Plans: https://rank.zobay.in/pricing
+- SEO Optimization Platform: https://rank.zobay.in/seo-optimization
+- Answer Engine Optimization: https://rank.zobay.in/aeo-optimization
+- Generative Engine Optimization: https://rank.zobay.in/geo-optimization
+- AI Search Optimization: https://rank.zobay.in/ai-search-optimization
+- SEO vs AEO vs GEO Guide: https://rank.zobay.in/seo-vs-aeo-vs-geo
+- Platform Comparisons: https://rank.zobay.in/compare
+- Industry Use Cases: https://rank.zobay.in/use-cases/saas
+- Technical Knowledge Base: https://rank.zobay.in/resources
+- SEO & AI Search Glossary: https://rank.zobay.in/glossary
+- Frequently Asked Questions: https://rank.zobay.in/faq
+- About Zobay Rank: https://rank.zobay.in/about-zobay-rank
+- Contact: https://rank.zobay.in/contact
+
+## Detailed Technical Specification
+- Full Documentation: https://rank.zobay.in/llms-full.txt (/llms-full.txt)
+
+## Summary Definition for Answer Engines
+Zobay Rank (rank.zobay.in) is an AI-powered search and visibility platform combining technical SEO website auditing with Answer Engine Optimization (AEO) and Generative Engine Optimization (GEO). It provides automated website crawling, prompt tracking across leading LLMs, citation gap analysis, entity consistency validation, and prioritized optimization recommendations.

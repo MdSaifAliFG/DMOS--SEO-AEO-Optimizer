@@ -12,98 +12,57 @@ import { ContactSection } from "@/components/landing/ContactSection";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
-export const metadata: Metadata = {
-  title: "Zobay Rank — Unleash the Power of Smarter SEO, AEO & GEO",
+import { createPageMetadata } from "@/lib/seo-metadata";
+import {
+  OrganizationJsonLd,
+  WebSiteJsonLd,
+  SoftwareApplicationJsonLd,
+  FAQPageJsonLd,
+} from "@/components/seo/JsonLd";
+
+export const metadata = createPageMetadata({
+  title: "Zobay Rank — SEO, AEO & GEO Optimization Platform",
   description:
-    "Stop all the guessing... Scan your website and see what is holding it back from showing in top results on Google, Bing, AI answer engines, and generative search models.",
-  alternates: {
-    canonical: "/",
+    "Zobay Rank helps businesses improve search visibility with SEO, Answer Engine Optimization and Generative Engine Optimization across traditional and AI-powered search.",
+  path: "/",
+  keywords: [
+    "Zobay Rank",
+    "SEO Optimization",
+    "Answer Engine Optimization",
+    "AEO",
+    "Generative Engine Optimization",
+    "GEO",
+    "AI Search Visibility",
+    "Technical SEO Platform",
+  ],
+});
+
+const homeFaqs = [
+  {
+    question: "What is Zobay Rank?",
+    answer:
+      "Zobay Rank is an AI-powered SEO, AEO, and GEO optimization platform that helps businesses improve traditional search visibility, answer engine visibility, and generative AI search visibility.",
   },
-  openGraph: {
-    title: "Zobay Rank — Unleash the Power of Smarter SEO, AEO & GEO",
-    description:
-      "Scan your website, evaluate technical SEO rules, monitor AI answer citations, and optimize generative discovery (GEO) in one unified platform.",
-    url: "https://zobayrank.com",
-    siteName: "Zobay Rank",
-    locale: "en_US",
-    type: "website",
+  {
+    question: "What is the difference between SEO, AEO, and GEO?",
+    answer:
+      "SEO optimizes websites for crawler indexing and SERP blue links; AEO structures content for source citation in conversational answers (ChatGPT, Perplexity); and GEO establishes entity authority and recommendation strength in generative search.",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Zobay Rank — SEO, AEO & GEO Platform",
-    description:
-      "Next-generation website crawler, AI Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) platform.",
+  {
+    question: "How does Zobay Rank perform technical SEO audits?",
+    answer:
+      "Our high-concurrency BFS crawler audits status codes, title tags, meta descriptions, canonical URLs, robots.txt directives, XML sitemaps, and broken internal links to deliver a 0–100 health score.",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+];
 
 export default function LandingPage() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "SoftwareApplication",
-        "name": "Zobay Rank",
-        "applicationCategory": "BusinessApplication",
-        "operatingSystem": "Web",
-        "description":
-          "Unified SEO crawling, technical website auditing, AI Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) platform.",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD",
-        },
-      },
-      {
-        "@type": "Organization",
-        "name": "Zobay Rank",
-        "url": "https://zobayrank.com",
-      },
-      {
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "What is Zobay Rank?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text":
-                "Zobay Rank is an all-in-one SEO, AEO & GEO Operating System that brings automated technical SEO auditing, crawling, AI answer citations, and generative search optimization into one unified workspace.",
-            },
-          },
-          {
-            "@type": "Question",
-            "name": "What is GEO (Generative Engine Optimization)?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text":
-                "GEO focuses on optimizing brand visibility, recommendation rate, citation authority, and entity consistency across generative AI models like ChatGPT Search, Perplexity Sonar, Google Gemini, and Claude Search.",
-            },
-          },
-          {
-            "@type": "Question",
-            "name": "What is SEO optimization?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text":
-                "SEO optimization helps improve how your website can be crawled, understood, indexed, and discovered through traditional search engines.",
-            },
-          },
-        ],
-      },
-    ],
-  };
-
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-[#1D63FF] selection:text-white">
-      {/* Structured Data Script */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {/* Structured Data Schemas */}
+      <OrganizationJsonLd />
+      <WebSiteJsonLd />
+      <SoftwareApplicationJsonLd />
+      <FAQPageJsonLd faqs={homeFaqs} />
 
       {/* Sticky Top Navigation */}
       <LandingNavbar />
