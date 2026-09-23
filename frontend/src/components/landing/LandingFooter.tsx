@@ -188,9 +188,9 @@ export const LandingFooter: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <a href="/llms.txt" target="_blank" rel="noreferrer" className="hover:text-amber-300 transition-colors">
-                  llms.txt Specification
-                </a>
+                <Link href="/compare" className="hover:text-amber-300 transition-colors">
+                  Platform Comparisons
+                </Link>
               </li>
             </ul>
           </div>

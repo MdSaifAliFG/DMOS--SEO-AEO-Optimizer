@@ -15,6 +15,13 @@ import {
   Globe,
   Bot,
   TrendingUp,
+  AlertTriangle,
+  Compass,
+  Check,
+  Target,
+  BarChart3,
+  Layers,
+  Zap,
 } from "lucide-react";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { LandingFooter } from "@/components/landing/LandingFooter";
@@ -438,7 +445,7 @@ export default async function UseCasePage(props: { params: Promise<{ slug: strin
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-[#1D63FF] selection:text-white">
+    <div className="min-h-screen bg-[#050B18] text-slate-100 flex flex-col selection:bg-[#1D63FF] selection:text-white">
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
@@ -451,144 +458,298 @@ export default async function UseCasePage(props: { params: Promise<{ slug: strin
 
       <LandingNavbar />
 
-      <main className="flex-1 pt-24 pb-20">
-        {/* Hero Section */}
-        <section className="relative py-16 sm:py-24 border-b border-slate-900 text-center space-y-6">
-          <div className="max-w-4xl mx-auto px-4 space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold tracking-wide">
-              {data.icon}
+      <main className="flex-1 pt-20">
+        {/* ========================================================
+            SECTION 1: HERO (Dark #050B18)
+        ======================================================== */}
+        <section className="relative py-16 sm:py-24 2xl:py-32 bg-[#050B18] border-b border-white/10 overflow-hidden">
+          {/* Ambient Glows */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-blue-600/15 rounded-full blur-[140px] pointer-events-none" />
+          <div className="absolute bottom-10 right-10 w-[450px] h-[350px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:32px_32px] opacity-15 pointer-events-none" />
+
+          <div className="max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-8">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs sm:text-sm font-semibold tracking-wide backdrop-blur-md shadow-inner">
+              <span className="w-4 h-4 flex items-center justify-center">{data.icon}</span>
               <span>{data.badge}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl 2xl:text-7xl font-extrabold text-white tracking-tight leading-[1.12]">
               {data.heroHeading}
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-lg 2xl:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
               {data.heroSubheading}
             </p>
 
-            {/* Direct Answer Block */}
-            <div className="max-w-3xl mx-auto p-5 rounded-2xl bg-slate-900/80 border border-slate-800 text-left space-y-2 mt-4">
-              <div className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+            {/* Direct Answer Box */}
+            <div className="max-w-3xl mx-auto p-5 sm:p-6 rounded-2xl bg-white/[0.03] border border-blue-500/30 text-left space-y-2 backdrop-blur-xl shadow-2xl relative group hover:border-blue-500/50 transition-all">
+              <div className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>Executive Overview</span>
+                <span>EXECUTIVE STRATEGY OVERVIEW: {data.title.toUpperCase()}</span>
               </div>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 {data.directAnswer}
               </p>
             </div>
 
-            <div className="pt-4 flex justify-center">
+            {/* Quick Industry Metrics */}
+            <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-2">
+              <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
+                <span className="block text-xl sm:text-2xl font-black text-white">4 Engines</span>
+                <span className="text-[11px] sm:text-xs text-slate-400 uppercase tracking-wider">AI Search Coverage</span>
+              </div>
+              <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
+                <span className="block text-xl sm:text-2xl font-black text-blue-400">100%</span>
+                <span className="text-[11px] sm:text-xs text-slate-400 uppercase tracking-wider">Verified Citations</span>
+              </div>
+              <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
+                <span className="block text-xl sm:text-2xl font-black text-indigo-400">Real-Time</span>
+                <span className="text-[11px] sm:text-xs text-slate-400 uppercase tracking-wider">Prompt Monitoring</span>
+              </div>
+              <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
+                <span className="block text-xl sm:text-2xl font-black text-emerald-400">0–100</span>
+                <span className="text-[11px] sm:text-xs text-slate-400 uppercase tracking-wider">GEO Parity Index</span>
+              </div>
+            </div>
+
+            {/* Hero CTAs */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/login"
-                className="px-8 py-3.5 rounded-full bg-[#1D63FF] hover:bg-blue-600 text-white font-bold text-sm tracking-wide shadow-xl shadow-blue-600/30 transition-all flex items-center gap-2"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#1D63FF] hover:bg-blue-600 text-white font-bold text-sm tracking-wide shadow-xl shadow-blue-600/30 transition-all flex items-center justify-center gap-2 group"
               >
                 <span>{data.ctaText}</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                href="/use-cases"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-semibold text-sm transition-colors text-center"
+              >
+                Explore All Use Cases
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Challenges Section */}
-        <section className="py-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-              Common Search &amp; AI Challenges in {data.title}
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-400">
-              Where traditional SEO falls short and how AI answer engines disrupt organic traffic.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {data.challenges.map((c, i) => (
-              <div
-                key={i}
-                className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3"
-              >
-                <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center font-bold text-xs">
-                  {i + 1}
-                </div>
-                <h3 className="text-sm font-bold text-white">{c.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{c.description}</p>
+        {/* ========================================================
+            SECTION 2: WHITE / LIGHT SECTION (Industry Challenges)
+        ======================================================== */}
+        <section className="py-20 sm:py-24 2xl:py-32 bg-white text-slate-900 relative overflow-hidden bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:4rem_4rem] border-b border-slate-200">
+          <div className="max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-16">
+            <div className="text-center space-y-4 max-w-3xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm font-semibold">
+                <AlertTriangle className="w-4 h-4 text-rose-600" />
+                <span>Industry Search Bottlenecks</span>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Features / Solutions Section */}
-        <section className="py-16 bg-slate-900/40 border-y border-slate-800/80">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                How Zobay Rank Solves This for {data.title}
+              <h2 className="text-3xl sm:text-4xl 2xl:text-5xl font-black text-slate-900 tracking-tight">
+                Common Search &amp; AI Challenges in {data.title}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400">
-                Tailored capabilities to secure top positions in both SERPs and conversational answer models.
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                Where traditional SEO falls short and how conversational AI answer models disrupt organic traffic in your sector.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {data.features.map((f, i) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {data.challenges.map((c, i) => (
                 <div
                   key={i}
-                  className="p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-3 hover:border-blue-500/40 transition-colors"
+                  className="p-8 rounded-3xl bg-white border border-slate-200/80 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:border-rose-300 transition-all flex flex-col justify-between group"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xs">
-                    ✓
+                  <div className="space-y-4">
+                    <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center font-bold text-xs group-hover:scale-110 transition-transform">
+                      0{i + 1}
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-rose-600 transition-colors">
+                      {c.title}
+                    </h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      {c.description}
+                    </p>
                   </div>
-                  <h3 className="text-sm font-bold text-white">{f.title}</h3>
-                  <p className="text-xs text-slate-400 leading-relaxed">{f.description}</p>
+                  <div className="pt-6 border-t border-slate-100 mt-6 text-xs text-rose-600 font-semibold flex items-center justify-between">
+                    <span>Critical Pain Point</span>
+                    <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* FAQ Section */}
-        <section className="py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white">
-              {data.title} Search Optimization FAQ
-            </h2>
-          </div>
-
-          <div className="space-y-4">
-            {data.faqs.map((faq, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2"
-              >
-                <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                  <span className="text-blue-400 font-mono">Q:</span>
-                  <span>{faq.question}</span>
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed pl-6">
-                  {faq.answer}
-                </p>
+        {/* ========================================================
+            SECTION 3: DARK NAVY SECTION (How Zobay Rank Solves This)
+        ======================================================== */}
+        <section className="py-20 sm:py-24 2xl:py-32 bg-gradient-to-br from-[#060c22] via-[#0a1845] to-[#0f172a] text-white border-b border-white/10 relative overflow-hidden">
+          <div className="max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-16">
+            <div className="text-center space-y-4 max-w-3xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs sm:text-sm font-semibold">
+                <Sparkles className="w-4 h-4" />
+                <span>Tailored Architecture</span>
               </div>
-            ))}
+              <h2 className="text-3xl sm:text-4xl 2xl:text-5xl font-black text-white tracking-tight">
+                How Zobay Rank Solves This for {data.title}
+              </h2>
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                Tailored capabilities to secure top positions in both traditional SERPs and conversational answer models.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {data.features.map((f, i) => (
+                <div
+                  key={i}
+                  className="p-8 rounded-3xl bg-white/[0.04] border border-white/10 hover:border-blue-400/50 transition-all flex flex-col justify-between group space-y-6"
+                >
+                  <div className="space-y-4">
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold text-sm group-hover:scale-110 transition-transform">
+                      ✓
+                    </div>
+                    <h3 className="text-xl font-bold text-white group-hover:text-blue-300 transition-colors">
+                      {f.title}
+                    </h3>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      {f.description}
+                    </p>
+                  </div>
+                  <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-blue-400 font-semibold">
+                    <span>Verified Capability</span>
+                    <CheckCircle2 className="w-4 h-4 text-blue-400" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* Bottom CTA */}
-        <section className="py-16 bg-gradient-to-b from-blue-950/20 to-slate-950 border-t border-slate-900 text-center">
-          <div className="max-w-3xl mx-auto px-4 space-y-6">
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
+        {/* ========================================================
+            SECTION 4: LIGHT SLATE-50 SECTION (Strategy Playbook Roadmap)
+        ======================================================== */}
+        <section className="py-20 sm:py-24 2xl:py-32 bg-slate-50 text-slate-900 border-b border-slate-200 relative overflow-hidden">
+          <div className="max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-16">
+            <div className="text-center space-y-4 max-w-3xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-200 border border-slate-300 text-slate-800 text-xs sm:text-sm font-semibold">
+                <Compass className="w-4 h-4 text-blue-600" />
+                <span>Execution Blueprint</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl 2xl:text-5xl font-black text-slate-900 tracking-tight">
+                The 3-Stage Optimization Strategy for {data.title}
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                A concrete sequence of optimizations to secure persistent citations, entity accuracy, and recurring organic search referrals.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Stage 1 */}
+              <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-xl shadow-slate-200/50 space-y-4">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white font-mono font-bold flex items-center justify-center shadow-lg shadow-blue-600/30">
+                  01
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">Technical Baseline &amp; Clean Routing</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Run a deterministic BFS crawl to eliminate 404 errors, canonical loops, trailing slash discrepancies, and crawl budget leaks across critical landing pages.
+                </p>
+                <div className="p-3 rounded-xl bg-blue-50 text-blue-800 text-xs font-mono">
+                  Focus: Crawlability &amp; Indexability
+                </div>
+              </div>
+
+              {/* Stage 2 */}
+              <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-xl shadow-slate-200/50 space-y-4">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white font-mono font-bold flex items-center justify-center shadow-lg shadow-blue-600/30">
+                  02
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">Entity Disambiguation &amp; Schemas</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Structure your brand entity with machine-readable Organization, Product, and DefinedTerm schemas to cement your attributes into AI knowledge graphs.
+                </p>
+                <div className="p-3 rounded-xl bg-indigo-50 text-indigo-800 text-xs font-mono">
+                  Focus: Knowledge Graph Grounding
+                </div>
+              </div>
+
+              {/* Stage 3 */}
+              <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-xl shadow-slate-200/50 space-y-4">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white font-mono font-bold flex items-center justify-center shadow-lg shadow-blue-600/30">
+                  03
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">Prompt Tracking &amp; Citation Parity</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Submit real buyer prompt permutations across ChatGPT, Perplexity, Gemini, and Claude to bridge competitor citation gaps and verify recommendation strength.
+                </p>
+                <div className="p-3 rounded-xl bg-purple-50 text-purple-800 text-xs font-mono">
+                  Focus: Answer Engine Parity
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================
+            SECTION 5: DARK SECTION (FAQ)
+        ======================================================== */}
+        <section className="py-20 sm:py-24 2xl:py-32 bg-[#050B18] text-slate-100 border-b border-white/10 relative overflow-hidden">
+          <div className="max-w-4xl 2xl:max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative z-10">
+            <div className="text-center space-y-4">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs sm:text-sm font-semibold">
+                <span>Frequently Asked Questions</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                {data.title} Search Optimization FAQ
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
+                Specific technical and strategic questions on optimizing for search and AI in the {data.title} sector.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {data.faqs.map((faq, idx) => (
+                <div
+                  key={idx}
+                  className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-blue-500/40 transition-colors"
+                >
+                  <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2.5">
+                    <span className="text-blue-400 font-mono text-xs px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
+                      Q{idx + 1}
+                    </span>
+                    <span>{faq.question}</span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pl-8">
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================
+            SECTION 6: VIBRANT GRADIENT HIGH-CONVERSION CTA
+        ======================================================== */}
+        <section className="py-20 sm:py-24 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white relative overflow-hidden text-center">
+          <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] opacity-15 pointer-events-none" />
+
+          <div className="max-w-4xl mx-auto px-4 relative z-10 space-y-6">
+            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
               Ready to Accelerate Your {data.title} Visibility?
             </h2>
-            <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-              Get an instant technical audit and start tracking AI citations with Zobay Rank.
+            <p className="text-sm sm:text-lg text-blue-100 max-w-2xl mx-auto leading-relaxed">
+              Get an instant technical audit and start tracking AI citations across conversational answer engines today.
             </p>
-            <div className="pt-2 flex justify-center">
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/login"
-                className="px-8 py-3.5 rounded-full bg-[#1D63FF] hover:bg-blue-600 text-white font-bold text-sm tracking-wide shadow-xl shadow-blue-600/30 transition-all flex items-center gap-2"
+                className="w-full sm:w-auto px-9 py-4 rounded-full bg-white text-slate-900 hover:bg-slate-100 font-bold text-sm tracking-wide shadow-2xl transition-all flex items-center justify-center gap-2 group"
               >
                 <span>{data.ctaText}</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                href="/pricing"
+                className="w-full sm:w-auto px-9 py-4 rounded-full bg-blue-700/60 hover:bg-blue-700 border border-white/20 text-white font-semibold text-sm transition-colors text-center"
+              >
+                View Plans &amp; Pricing
               </Link>
             </div>
           </div>

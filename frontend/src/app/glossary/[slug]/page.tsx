@@ -314,7 +314,7 @@ export default async function GlossarySlugPage(props: { params: Promise<{ slug: 
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-[#1D63FF] selection:text-white">
+    <div className="min-h-screen bg-[#050B18] text-slate-100 flex flex-col selection:bg-[#1D63FF] selection:text-white">
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
@@ -331,23 +331,31 @@ export default async function GlossarySlugPage(props: { params: Promise<{ slug: 
 
       <LandingNavbar />
 
-      <main className="flex-1 pt-24 pb-20">
-        <section className="relative py-16 sm:py-24 border-b border-slate-900 text-center space-y-6">
-          <div className="max-w-4xl mx-auto px-4 space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold tracking-wide">
-              <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+      <main className="flex-1 pt-20">
+        {/* ========================================================
+            SECTION 1: HERO (Dark #050B18)
+        ======================================================== */}
+        <section className="relative py-16 sm:py-24 2xl:py-32 bg-[#050B18] border-b border-white/10 overflow-hidden">
+          {/* Ambient Glows */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-blue-600/15 rounded-full blur-[140px] pointer-events-none" />
+          <div className="absolute bottom-10 right-10 w-[450px] h-[350px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:32px_32px] opacity-15 pointer-events-none" />
+
+          <div className="max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-8">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs sm:text-sm font-semibold tracking-wide backdrop-blur-md shadow-inner">
+              <BookOpen className="w-4 h-4 text-blue-400" />
               <span>Search &amp; AI Intelligence Glossary</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
               {item.term}
             </h1>
 
             {/* Direct Definition Extractable Block */}
-            <div className="max-w-3xl mx-auto p-6 rounded-2xl bg-blue-950/30 border border-blue-900/60 text-left space-y-2 mt-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+            <div className="max-w-3xl mx-auto p-6 sm:p-7 rounded-2xl bg-white/[0.03] border border-blue-500/30 text-left space-y-2 backdrop-blur-xl shadow-2xl relative group hover:border-blue-500/50 transition-all">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>Formal Definition</span>
+                <span>FORMAL DEFINITION</span>
               </span>
               <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-medium">
                 {item.definition}
@@ -356,76 +364,71 @@ export default async function GlossarySlugPage(props: { params: Promise<{ slug: 
           </div>
         </section>
 
-        {/* Detailed Breakdown */}
-        <section className="py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          {/* Simple Explanation */}
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Lightbulb className="w-5 h-5 text-amber-400" />
-              <span>Simple Explanation</span>
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              {item.simpleExplanation}
-            </p>
-          </div>
+        {/* ========================================================
+            SECTION 2: WHITE / LIGHT SECTION (Dual Explanations)
+        ======================================================== */}
+        <section className="py-20 sm:py-24 2xl:py-32 bg-white text-slate-900 relative overflow-hidden bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:4rem_4rem] border-b border-slate-200">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12">
+            <div className="text-center space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+                Conceptual &amp; Architectural Context
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                Understanding {item.term}
+              </h2>
+            </div>
 
-          {/* Technical Explanation */}
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Code className="w-5 h-5 text-blue-400" />
-              <span>Technical &amp; Architectural Context</span>
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              {item.technicalExplanation}
-            </p>
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Simple Explanation */}
+              <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:border-amber-400 transition-all space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center">
+                  <Lightbulb className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">Simple Explanation</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  {item.simpleExplanation}
+                </p>
+              </div>
 
-          {/* Practical Examples */}
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <FileText className="w-5 h-5 text-emerald-400" />
-              <span>Real-World Examples</span>
-            </h2>
-            <ul className="space-y-2 text-xs sm:text-sm text-slate-300">
-              {item.examples.map((ex, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <span className="text-emerald-400 font-bold">•</span>
-                  <span>{ex}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Related Concepts */}
-          <div className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800/80 space-y-3">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400">
-              Related Concepts in Zobay Rank
-            </h2>
-            <div className="flex flex-wrap gap-2.5">
-              {item.relatedConcepts.map((rc, i) => (
-                <Link
-                  key={i}
-                  href={rc.href}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 text-xs font-semibold text-slate-200 hover:border-blue-500/60 hover:text-white transition-colors"
-                >
-                  {rc.term} →
-                </Link>
-              ))}
+              {/* Technical Explanation */}
+              <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:border-blue-400 transition-all space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center">
+                  <Code className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">Technical &amp; Architectural Context</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  {item.technicalExplanation}
+                </p>
+              </div>
             </div>
           </div>
+        </section>
 
-          {/* FAQ */}
-          <div className="space-y-6 pt-4">
-            <h2 className="text-xl font-bold text-white">Frequently Asked Questions</h2>
-            <div className="space-y-4">
-              {item.faqs.map((faq, i) => (
-                <div key={i} className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
-                  <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                    <span className="text-blue-400 font-mono">Q:</span>
-                    <span>{faq.question}</span>
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed pl-6">
-                    {faq.answer}
+        {/* ========================================================
+            SECTION 3: DARK NAVY SECTION (Practical Examples)
+        ======================================================== */}
+        <section className="py-20 sm:py-24 2xl:py-32 bg-gradient-to-br from-[#060c22] via-[#0a1845] to-[#0f172a] text-white border-b border-white/10 relative overflow-hidden">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12">
+            <div className="text-center space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                Actionable Implementation
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                Real-World Examples
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {item.examples.map((ex, i) => (
+                <div
+                  key={i}
+                  className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-emerald-400/50 transition-all space-y-3"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">
+                    0{i + 1}
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                    {ex}
                   </p>
                 </div>
               ))}
@@ -433,15 +436,104 @@ export default async function GlossarySlugPage(props: { params: Promise<{ slug: 
           </div>
         </section>
 
-        {/* Back Link */}
-        <div className="max-w-4xl mx-auto px-4 pt-4 flex justify-between items-center text-xs">
-          <Link href="/glossary" className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1">
-            ← Back to Glossary Index
-          </Link>
-          <Link href="/resources" className="text-slate-400 hover:text-white transition-colors">
-            All Resources
-          </Link>
-        </div>
+        {/* ========================================================
+            SECTION 4: LIGHT SLATE-50 SECTION (Related Concepts)
+        ======================================================== */}
+        <section className="py-20 sm:py-24 2xl:py-32 bg-slate-50 text-slate-900 border-b border-slate-200 relative overflow-hidden">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-8 text-center">
+            <div className="space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-200 px-3 py-1 rounded-full border border-slate-300">
+                Knowledge Graph Connections
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                Related Concepts in Zobay Rank
+              </h2>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-4 pt-4">
+              {item.relatedConcepts.map((rc, i) => (
+                <Link
+                  key={i}
+                  href={rc.href}
+                  className="px-6 py-3.5 rounded-2xl bg-white border border-slate-200 shadow-md hover:border-blue-400 hover:shadow-lg text-sm font-bold text-slate-800 transition-all flex items-center gap-2 group"
+                >
+                  <span>{rc.term}</span>
+                  <ArrowRight className="w-4 h-4 text-blue-600 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================
+            SECTION 5: DARK SECTION (FAQ)
+        ======================================================== */}
+        <section className="py-20 sm:py-24 2xl:py-32 bg-[#050B18] text-slate-100 border-b border-white/10 relative overflow-hidden">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative z-10">
+            <div className="text-center space-y-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                Common Inquiries
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                Frequently Asked Questions
+              </h2>
+            </div>
+
+            <div className="space-y-4">
+              {item.faqs.map((faq, i) => (
+                <div key={i} className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-blue-500/40 transition-colors">
+                  <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2.5">
+                    <span className="text-blue-400 font-mono text-xs px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
+                      Q{i + 1}
+                    </span>
+                    <span>{faq.question}</span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pl-8">
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-8 flex justify-between items-center text-xs text-slate-400 border-t border-white/10">
+              <Link href="/glossary" className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1">
+                ← Back to Glossary Index
+              </Link>
+              <Link href="/resources" className="text-slate-400 hover:text-white transition-colors">
+                All Resources Hub →
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================
+            SECTION 6: VIBRANT GRADIENT HIGH-CONVERSION CTA
+        ======================================================== */}
+        <section className="py-20 sm:py-24 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white relative overflow-hidden text-center">
+          <div className="max-w-4xl mx-auto px-4 relative z-10 space-y-6">
+            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+              Audit Your Digital Presence with Zobay Rank
+            </h2>
+            <p className="text-sm sm:text-lg text-blue-100 max-w-2xl mx-auto leading-relaxed">
+              Verify your technical website health, schema markup, and AI answer citations today.
+            </p>
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/login"
+                className="w-full sm:w-auto px-9 py-4 rounded-full bg-white text-slate-900 hover:bg-slate-100 font-bold text-sm tracking-wide shadow-2xl transition-all flex items-center justify-center gap-2 group"
+              >
+                <span>Run a Free Audit</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                href="/pricing"
+                className="w-full sm:w-auto px-9 py-4 rounded-full bg-blue-700/60 hover:bg-blue-700 border border-white/20 text-white font-semibold text-sm transition-colors text-center"
+              >
+                View Plans &amp; Pricing
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
 
       <LandingFooter />

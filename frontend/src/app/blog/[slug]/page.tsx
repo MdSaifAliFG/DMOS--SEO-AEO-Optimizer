@@ -198,7 +198,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-[#1D63FF] selection:text-white">
+    <div className="min-h-screen bg-[#050B18] text-slate-100 flex flex-col selection:bg-[#1D63FF] selection:text-white">
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
@@ -218,34 +218,41 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
 
       <LandingNavbar />
 
-      <main className="flex-1 pt-24 pb-20">
-        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          {/* Post Header */}
-          <header className="space-y-6 pt-10 border-b border-slate-800 pb-10">
+      <main className="flex-1 pt-20">
+        {/* ========================================================
+            SECTION 1: HERO (Dark #050B18)
+        ======================================================== */}
+        <section className="relative py-16 sm:py-24 2xl:py-32 bg-[#050B18] border-b border-white/10 overflow-hidden">
+          {/* Ambient Glows */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-blue-600/15 rounded-full blur-[140px] pointer-events-none" />
+          <div className="absolute bottom-10 right-10 w-[450px] h-[350px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:32px_32px] opacity-15 pointer-events-none" />
+
+          <div className="max-w-4xl 2xl:max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 font-semibold"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold hover:bg-blue-500/20 transition-all"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to All Articles</span>
             </Link>
 
-            <div className="space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <div className="space-y-4">
+              <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
                 {post.category}
               </span>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
                 {post.title}
               </h1>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-slate-400 pt-2">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-slate-400 pt-2 border-y border-white/10 py-3">
               <div className="flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-slate-500" />
-                <span>{post.author}</span>
+                <User className="w-3.5 h-3.5 text-blue-400" />
+                <span className="text-slate-300 font-medium">{post.author}</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                <Calendar className="w-3.5 h-3.5 text-blue-400" />
                 <time dateTime={post.publishedAt}>
                   {new Date(post.publishedAt).toLocaleDateString("en-US", {
                     month: "short",
@@ -255,76 +262,166 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
                 </time>
               </div>
               <div className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-slate-500" />
+                <Clock className="w-3.5 h-3.5 text-blue-400" />
                 <span>{post.readTime}</span>
               </div>
             </div>
 
             {/* Direct Answer Summary Block */}
-            <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+            <div className="p-6 sm:p-7 rounded-2xl bg-white/[0.03] border border-blue-500/30 text-left space-y-2 backdrop-blur-xl shadow-2xl relative group hover:border-blue-500/50 transition-all">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>Executive Answer</span>
+                <span>EXECUTIVE ANSWER / CORE TAKEAWAY</span>
               </span>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-medium">
                 {post.directAnswer}
               </p>
             </div>
-          </header>
+          </div>
+        </section>
 
-          {/* Article Body */}
-          <div className="space-y-10 text-sm sm:text-base text-slate-300 leading-relaxed">
+        {/* ========================================================
+            SECTION 2: WHITE / LIGHT SECTION (Article Body Content)
+        ======================================================== */}
+        <section className="py-20 sm:py-24 2xl:py-32 bg-white text-slate-900 relative overflow-hidden bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:4rem_4rem] border-b border-slate-200">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12">
             {post.sections.map((section, idx) => (
-              <section key={idx} className="space-y-4">
-                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              <div
+                key={idx}
+                className="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200/80 shadow-xl shadow-slate-200/50 space-y-4"
+              >
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                   {section.heading}
                 </h2>
-                {section.paragraphs.map((p, pIdx) => (
-                  <p key={pIdx} className="text-slate-300 leading-relaxed">
-                    {p}
-                  </p>
-                ))}
-              </section>
+                <div className="space-y-4 text-sm sm:text-base text-slate-600 leading-relaxed">
+                  {section.paragraphs.map((p, pIdx) => (
+                    <p key={pIdx}>{p}</p>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
+        </section>
 
-          {/* Post FAQs */}
-          {post.faqs.length > 0 && (
-            <section className="pt-8 border-t border-slate-800 space-y-6">
-              <h2 className="text-xl font-bold text-white">Frequently Asked Questions</h2>
+        {/* ========================================================
+            SECTION 3: DARK NAVY SECTION (Actionable Takeaways)
+        ======================================================== */}
+        <section className="py-20 sm:py-24 2xl:py-32 bg-gradient-to-br from-[#060c22] via-[#0a1845] to-[#0f172a] text-white border-b border-white/10 relative overflow-hidden">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10">
+            <div className="text-center space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                Action Checklist
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                Recommended Implementation Steps
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs">
+                  01
+                </div>
+                <h3 className="text-base font-bold text-white">Audit Current Citations</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Submit test prompt permutations to verify whether ChatGPT or Perplexity cite your domain.
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3">
+                <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs">
+                  02
+                </div>
+                <h3 className="text-base font-bold text-white">Optimize Answer Blocks</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Provide direct, 40-word declarative answer paragraphs beneath semantic H2 headers.
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3">
+                <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs">
+                  03
+                </div>
+                <h3 className="text-base font-bold text-white">Verify Crawler Directives</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Ensure `GPTBot` and `PerplexityBot` are unblocked in your robots.txt and verify TTFB &lt; 500ms.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================
+            SECTION 4: DARK SECTION (FAQ)
+        ======================================================== */}
+        {post.faqs.length > 0 && (
+          <section className="py-20 sm:py-24 2xl:py-32 bg-[#050B18] text-slate-100 border-b border-white/10 relative overflow-hidden">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative z-10">
+              <div className="text-center space-y-4">
+                <span className="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                  Article Questions
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                  Frequently Asked Questions
+                </h2>
+              </div>
+
               <div className="space-y-4">
                 {post.faqs.map((faq, idx) => (
-                  <div key={idx} className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
-                    <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                      <span className="text-blue-400 font-mono">Q:</span>
+                  <div key={idx} className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-blue-500/40 transition-colors">
+                    <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2.5">
+                      <span className="text-blue-400 font-mono text-xs px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
+                        Q{idx + 1}
+                      </span>
                       <span>{faq.question}</span>
                     </h3>
-                    <p className="text-xs sm:text-sm text-slate-400 leading-relaxed pl-6">
+                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pl-8">
                       {faq.answer}
                     </p>
                   </div>
                 ))}
               </div>
-            </section>
-          )}
 
-          {/* CTA Box */}
-          <div className="p-8 rounded-3xl bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-500/30 text-center space-y-4">
-            <h3 className="text-xl font-bold text-white">Audit Your Website with Zobay Rank</h3>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto">
+              <div className="pt-8 flex justify-between items-center text-xs text-slate-400 border-t border-white/10">
+                <Link href="/blog" className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1">
+                  ← Back to All Articles
+                </Link>
+                <Link href="/resources" className="text-slate-400 hover:text-white transition-colors">
+                  All Resources Hub →
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ========================================================
+            SECTION 5: VIBRANT GRADIENT HIGH-CONVERSION CTA
+        ======================================================== */}
+        <section className="py-20 sm:py-24 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white relative overflow-hidden text-center">
+          <div className="max-w-4xl mx-auto px-4 relative z-10 space-y-6">
+            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+              Audit Your Website with Zobay Rank
+            </h2>
+            <p className="text-sm sm:text-lg text-blue-100 max-w-2xl mx-auto leading-relaxed">
               Run technical crawler diagnostics and track conversational AI citations from one dashboard.
             </p>
-            <div className="pt-2">
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/login"
-                className="px-6 py-2.5 rounded-full bg-[#1D63FF] hover:bg-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-600/30 transition-all inline-flex items-center gap-1.5"
+                className="w-full sm:w-auto px-9 py-4 rounded-full bg-white text-slate-900 hover:bg-slate-100 font-bold text-sm tracking-wide shadow-2xl transition-all flex items-center justify-center gap-2 group"
               >
-                <span>Try Free Audit</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <span>Run Free Audit</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                href="/pricing"
+                className="w-full sm:w-auto px-9 py-4 rounded-full bg-blue-700/60 hover:bg-blue-700 border border-white/20 text-white font-semibold text-sm transition-colors text-center"
+              >
+                View Plans &amp; Pricing
               </Link>
             </div>
           </div>
-        </article>
+        </section>
       </main>
 
       <LandingFooter />
