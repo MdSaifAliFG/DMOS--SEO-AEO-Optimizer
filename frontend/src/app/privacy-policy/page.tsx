@@ -42,7 +42,7 @@ export default function PrivacyPolicyPage() {
           <div className="p-4 rounded-xl bg-blue-950/30 border border-blue-500/30 text-xs text-blue-200 flex items-start gap-3">
             <Lock className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
             <p>
-              <strong>Summary:</strong> SeoSensing is committed to protecting your privacy. We process customer data strictly to deliver enterprise SEO crawling, Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) insights. We do not sell your personal data or crawl results to third parties.
+              <strong>Summary:</strong> Zobay Rank is committed to protecting your privacy. We process customer data strictly to deliver enterprise SEO crawling, Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) insights. We do not sell your personal data or crawl results to third parties.
             </p>
           </div>
 
@@ -53,7 +53,7 @@ export default function PrivacyPolicyPage() {
               1. Information We Collect
             </h2>
             <p>
-              When you use the SeoSensing platform, we collect information necessary to provide, optimize, and secure our multi-pillar services:
+              When you use the Zobay Rank platform, we collect information necessary to provide, optimize, and secure our multi-pillar services:
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-slate-400">
               <li>
@@ -134,7 +134,7 @@ export default function PrivacyPolicyPage() {
               For privacy requests, data export, or questions concerning this policy, please reach out directly to our Data Protection Office:
             </p>
             <div className="p-4 rounded-xl bg-slate-800/40 border border-white/10 text-xs space-y-1 text-slate-300">
-              <p><strong>Entity:</strong> SeoSensing Enterprise Intelligence</p>
+              <p><strong>Entity:</strong> Zobay Rank Enterprise Intelligence</p>
               <p><strong>Email:</strong> <a href="mailto:dm@fortunehestia.in" className="text-blue-400 hover:underline">dm@fortunehestia.in</a></p>
               <p><strong>Response SLA:</strong> Within 48 business hours</p>
             </div>

@@ -132,7 +132,7 @@ class ApiClient {
 
     if (typeof window !== "undefined") {
       try {
-        const raw = localStorage.getItem("seosensing_auth_session") || localStorage.getItem("dmos_auth_session");
+        const raw = localStorage.getItem("zobayrank_auth_session") || localStorage.getItem("dmos_auth_session");
         if (raw) {
           const session = JSON.parse(raw);
           const token = session.token || session.id || session.email;
@@ -202,7 +202,7 @@ class ApiClient {
 
       if (isTimeout) {
         throw {
-          message: "Request timed out while waiting for SeoSensing Backend API.",
+          message: "Request timed out while waiting for Zobay Rank Backend API.",
           status: 408,
           isTimeout: true,
           isNetworkError: false,
@@ -210,7 +210,7 @@ class ApiClient {
       }
 
       throw {
-        message: errorObj?.message || "Failed to connect to SeoSensing Backend API. Ensure backend is running.",
+        message: errorObj?.message || "Failed to connect to Zobay Rank Backend API. Ensure backend is running.",
         status: 0,
         isNetworkError: true,
         isTimeout: false,

@@ -108,7 +108,7 @@ async def resolve_workspace_id(user: Optional[User] = None) -> str:
 
 @router.get("/plans", response_model=List[PlanResponse])
 async def list_plans(db: AsyncSession = Depends(get_db)):
-    """Fetch all active SEOSensing subscription tiers."""
+    """Fetch all active Zobay Rank subscription tiers."""
     return await PlanService.get_all_plans(db)
 
 

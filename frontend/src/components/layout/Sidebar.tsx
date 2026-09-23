@@ -48,7 +48,7 @@ import {
 import { NAVIGATION_CONFIG, NavItem } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
-import { SeoSensingBrand, SeoSensingLogo } from "@/components/brand/SeoSensingLogo";
+import { SeoSensingBrand, SeoSensingLogo } from "@/components/brand/SeoSensingLogo"; // ZobayRankBrand/ZobayRankLogo aliases
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   LayoutDashboard: <LayoutDashboard className="w-4 h-4" />,
@@ -319,7 +319,7 @@ export const Sidebar: React.FC<{
             logout();
             window.location.href = "/login";
           }}
-          title="Log Out of SeoSensing"
+          title="Log Out of Zobay Rank"
           className={cn(
             "w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors font-medium cursor-pointer",
             isCollapsed ? "justify-center py-2 px-0" : "justify-start"

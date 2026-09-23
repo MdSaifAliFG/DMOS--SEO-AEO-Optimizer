@@ -203,7 +203,7 @@ class RazorpayService:
             "billing_cycle": billing_cycle,
             "user_email": user_email,
             "is_free": False,
-            "name": "SEOSensing",
+            "name": "Zobay Rank",
             "description": f"{plan.name} Plan ({billing_cycle.capitalize()}) - {plan.monthly_credits:,} credits/mo",
         }
 
@@ -288,7 +288,7 @@ class RazorpayService:
             "key_id": RazorpayService.get_public_key(),
             "pack_credits": pack_credits,
             "user_email": user_email,
-            "name": "SEOSensing",
+            "name": "Zobay Rank",
             "description": f"{pack['name']} ({pack_credits:,} Top-Up Credits)",
         }
 

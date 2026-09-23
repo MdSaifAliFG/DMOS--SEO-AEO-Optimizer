@@ -9,9 +9,9 @@ export const FAQSection: React.FC = () => {
 
   const faqs = [
     {
-      question: "What is SeoSensing?",
+      question: "What is Zobay Rank?",
       answer:
-        "SeoSensing is an all-in-one AI Search & SEO Sensing Operating System that brings automated technical SEO auditing, crawling, and AI-powered Answer Engine Optimization (AEO) into one unified workspace.",
+        "Zobay Rank is an all-in-one AI Search & SEO Operating System that brings automated technical SEO auditing, crawling, and AI-powered Answer Engine Optimization (AEO) into one unified workspace.",
     },
     {
       question: "What is SEO optimization?",
@@ -29,24 +29,24 @@ export const FAQSection: React.FC = () => {
         "GEO focuses on optimizing how generative AI search models (ChatGPT Search, Perplexity, Google Gemini, and Claude) recommend, cite, and position your brand during user prompt queries.",
     },
     {
-      question: "How does SeoSensing unite SEO, AEO, and GEO?",
+      question: "How does Zobay Rank unite SEO, AEO, and GEO?",
       answer:
-        "SeoSensing combines deterministic BFS website crawling (SEO), AI answer engine citation monitoring (AEO), and 8-factor generative discovery scoring with 42 deterministic rules (GEO) in one cohesive workspace.",
+        "Zobay Rank combines deterministic BFS website crawling (SEO), AI answer engine citation monitoring (AEO), and 8-factor generative discovery scoring with 42 deterministic rules (GEO) in one cohesive workspace.",
     },
     {
       question: "Can I audit my website?",
       answer:
-        "Yes. SeoSensing provides automated BFS website crawling and deep technical SEO analysis through its SEO module, diagnosing indexability, status codes, HTML tags, and internal link structure.",
+        "Yes. Zobay Rank provides automated BFS website crawling and deep technical SEO analysis through its SEO module, diagnosing indexability, status codes, HTML tags, and internal link structure.",
     },
     {
-      question: "Does SeoSensing support AEO and GEO?",
+      question: "Does Zobay Rank support AEO and GEO?",
       answer:
-        "Yes. SeoSensing includes dedicated AEO and GEO modules designed for answer-engine visibility, 42 deterministic optimization rules, knowledge graph entity tracking, buyer intent questions, and source citation extraction.",
+        "Yes. Zobay Rank includes dedicated AEO and GEO modules designed for answer-engine visibility, 42 deterministic optimization rules, knowledge graph entity tracking, buyer intent questions, and source citation extraction.",
     },
     {
       question: "Do I need technical SEO knowledge?",
       answer:
-        "No. SeoSensing is designed to turn complex server responses and crawl data into understandable issues, clear severity categorizations, and concrete fix recommendations.",
+        "No. Zobay Rank is designed to turn complex server responses and crawl data into understandable issues, clear severity categorizations, and concrete fix recommendations.",
     },
     {
       question: "Is there a free plan?",

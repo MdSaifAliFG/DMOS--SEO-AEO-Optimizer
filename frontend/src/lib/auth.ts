@@ -11,7 +11,7 @@ export interface UserSession {
   token?: string;
 }
 
-const AUTH_STORAGE_KEY = "seosensing_auth_session";
+const AUTH_STORAGE_KEY = "zobayrank_auth_session";
 
 export function getStoredUser(): UserSession | null {
   if (typeof window === "undefined") return null;
@@ -100,7 +100,7 @@ export function useAuth() {
     return session;
   };
 
-  const login = (email: string = "admin@seosensing.internal", name: string = "Enterprise Admin") => {
+  const login = (email: string = "admin@zobayrank.internal", name: string = "Enterprise Admin") => {
     const session: UserSession = {
       id: "usr_active_session",
       email,

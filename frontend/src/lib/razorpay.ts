@@ -70,8 +70,8 @@ export async function openRazorpayModal({
     key: order.key_id,
     amount: order.amount,
     currency: order.currency,
-    name: order.name || "SEOSensing",
-    description: order.description || "AI Search & SEO Sensing Operating System",
+    name: order.name || "Zobay Rank",
+    description: order.description || "AI Search & Zobay Rank Operating System",
     order_id: order.order_id,
     prefill: {
       email: userEmail || order.user_email || "",

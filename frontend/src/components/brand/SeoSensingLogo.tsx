@@ -11,14 +11,12 @@ interface SeoSensingLogoProps {
 }
 
 /**
- * SeoSensing Official Brand Logo
- * Features the signature 4-fold origami ribbon loop forming a central AI star.
- * Unites SEO electric blue with AEO radiant violet in a seamless, freestanding emblem.
+ * Zobay Rank Official Brand Logo
  */
 export const SeoSensingLogo: React.FC<SeoSensingLogoProps> = ({
   className,
   size = 36,
-  title = "SeoSensing",
+  title = "Zobay Rank",
 }) => {
   const [imgError, setImgError] = useState(false);
 
@@ -35,7 +33,7 @@ export const SeoSensingLogo: React.FC<SeoSensingLogoProps> = ({
       {!imgError ? (
         <img
           src="/logo.png"
-          alt="SeoSensing Logo"
+          alt="Zobay Rank Logo"
           width={size}
           height={size}
           onError={() => setImgError(true)}
@@ -44,7 +42,7 @@ export const SeoSensingLogo: React.FC<SeoSensingLogoProps> = ({
       ) : (
         <img
           src="/logo.svg"
-          alt="SeoSensing Logo"
+          alt="Zobay Rank Logo"
           width={size}
           height={size}
           className="w-full h-full object-contain select-none pointer-events-none"
@@ -53,6 +51,8 @@ export const SeoSensingLogo: React.FC<SeoSensingLogoProps> = ({
     </div>
   );
 };
+
+export const ZobayRankLogo = SeoSensingLogo;
 
 interface SeoSensingBrandProps {
   className?: string;
@@ -63,7 +63,8 @@ interface SeoSensingBrandProps {
 }
 
 /**
- * SeoSensing Brand Lockup (Freestanding Logo + Clean Styled Typography)
+ * Zobay Rank Brand Lockup (Freestanding Logo + Clean Styled Typography)
+ * Matches the official Zobay Rank styling: crisp white/slate 'Zob' followed by 'ay Rank' in blue-to-purple gradient.
  */
 export const SeoSensingBrand: React.FC<SeoSensingBrandProps> = ({
   className,
@@ -87,19 +88,21 @@ export const SeoSensingBrand: React.FC<SeoSensingBrandProps> = ({
             isDark && "text-white"
           )}
         >
-          SEO
+          Zob
           <span
             className={cn(
               "bg-gradient-to-r bg-clip-text text-transparent from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400",
               isDark && "from-blue-400 via-indigo-300 to-purple-400"
             )}
           >
-            Sensing
+            ay Rank
           </span>
         </span>
       )}
     </div>
   );
 };
+
+export const ZobayRankBrand = SeoSensingBrand;
 
 export default SeoSensingLogo;

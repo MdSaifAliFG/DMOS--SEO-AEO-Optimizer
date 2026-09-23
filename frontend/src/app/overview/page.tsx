@@ -24,11 +24,11 @@ export default function OverviewPage() {
                 <Sparkles className="w-2.5 h-2.5" />
               </span>
               <span className="text-xs font-semibold tracking-wide text-blue-200">
-                AI Search &amp; SEO Sensing Operating System
+                AI Search &amp; Zobay Rank Operating System
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              SEO<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Sensing</span> Intelligence Hub
+              Zob<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">ay Rank</span> Intelligence Hub
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               Unified control center for technical search engine crawling and AI answer engine visibility.

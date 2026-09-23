@@ -40,7 +40,7 @@ export const LandingNavbar: React.FC = () => {
         <Link href="/" className="flex items-center gap-2.5 group">
           <SeoSensingLogo size={36} className="2xl:scale-110 3xl:scale-120" />
           <span className="text-xl sm:text-2xl 2xl:text-3xl font-black tracking-tight text-white font-sans">
-            SEO<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Sensing</span>
+            Zob<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">ay Rank</span>
           </span>
         </Link>
 

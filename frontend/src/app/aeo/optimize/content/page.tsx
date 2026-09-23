@@ -21,9 +21,9 @@ import {
 
 export default function AeoContentOptimizerPage() {
   const [targetQuestion, setTargetQuestion] = useState<string>("What is the best SEO and AEO optimization platform for marketing agencies?");
-  const [existingContent, setExistingContent] = useState<string>("SeoSensing is an all-in-one SEO and AEO optimization software designed for marketing teams and agencies. It automates technical audits, tracks citations across ChatGPT and Gemini, and generates actionable content briefs.");
+  const [existingContent, setExistingContent] = useState<string>("Zobay Rank is an all-in-one SEO and AEO optimization software designed for marketing teams and agencies. It automates technical audits, tracks citations across ChatGPT and Gemini, and generates actionable content briefs.");
   const [targetKeyword, setTargetKeyword] = useState<string>("AEO optimization platform");
-  const [brandName, setBrandName] = useState<string>("SeoSensing");
+  const [brandName, setBrandName] = useState<string>("Zobay Rank");
   const [productService, setProductService] = useState<string>("Search & Answer Engine Optimizer");
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -118,7 +118,7 @@ export default function AeoContentOptimizerPage() {
                   type="text"
                   value={targetQuestion}
                   onChange={(e) => setTargetQuestion(e.target.value)}
-                  placeholder="e.g. How much does SeoSensing cost and what is included?"
+                  placeholder="e.g. How much does Zobay Rank cost and what is included?"
                   className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 font-medium focus:outline-none focus:ring-2 focus:ring-purple-400"
                   required
                 />
@@ -145,7 +145,7 @@ export default function AeoContentOptimizerPage() {
                     type="text"
                     value={brandName}
                     onChange={(e) => setBrandName(e.target.value)}
-                    placeholder="e.g. SeoSensing"
+                    placeholder="e.g. Zobay Rank"
                     className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-400"
                   />
                 </div>

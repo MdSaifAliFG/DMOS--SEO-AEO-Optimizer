@@ -33,13 +33,13 @@ interface NotificationContextValue {
   resetDefaultNotifications: () => void;
 }
 
-const STORAGE_KEY = "seosensing_global_notifications_v1";
+const STORAGE_KEY = "zobayrank_global_notifications_v1";
 
 const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
   {
     id: "notif_1",
     title: "Full Website Crawl Completed",
-    message: "48 pages audited on seosensing.internal. 12 on-page issues and 2 broken redirects discovered.",
+    message: "48 pages audited on zobayrank.internal. 12 on-page issues and 2 broken redirects discovered.",
     timestamp: "10m ago",
     createdAt: Date.now() - 1000 * 60 * 10,
     type: "seo",
@@ -86,7 +86,7 @@ const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
   },
   {
     id: "notif_5",
-    title: "SeoSensing Engine Online",
+    title: "Zobay Rank Engine Online",
     message: "Deterministic crawler daemon verified and healthy with sub-second response times.",
     timestamp: "6h ago",
     createdAt: Date.now() - 1000 * 60 * 60 * 6,

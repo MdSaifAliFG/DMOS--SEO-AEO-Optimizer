@@ -66,7 +66,7 @@ export default function DashboardPage() {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Badge variant="primary" size="sm" dot>
-                  SeoSensing Engine v1.0
+                  Zobay Rank Engine v1.0
                 </Badge>
                 <Badge variant="emerald" size="sm">
                   Phase 1 Operational

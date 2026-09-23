@@ -42,7 +42,7 @@ export default function TermsAndConditionsPage() {
           <div className="p-4 rounded-xl bg-blue-950/30 border border-blue-500/30 text-xs text-blue-200 flex items-start gap-3">
             <CheckCircle2 className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
             <p>
-              Please read these Terms &amp; Conditions carefully before utilizing the SeoSensing platform. By creating an account or initiating an automated audit, you agree to comply with and be bound by these provisions.
+              Please read these Terms &amp; Conditions carefully before utilizing the Zobay Rank platform. By creating an account or initiating an automated audit, you agree to comply with and be bound by these provisions.
             </p>
           </div>
 
@@ -53,7 +53,7 @@ export default function TermsAndConditionsPage() {
               1. Platform License &amp; Service Scope
             </h2>
             <p>
-              SeoSensing grants enterprise users a non-exclusive, non-transferable, revocable license to access and use our suite of technical SEO crawling, Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) tools in accordance with your subscription tier.
+              Zobay Rank grants enterprise users a non-exclusive, non-transferable, revocable license to access and use our suite of technical SEO crawling, Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) tools in accordance with your subscription tier.
             </p>
           </section>
 
@@ -90,7 +90,7 @@ export default function TermsAndConditionsPage() {
               4. Disclaimer of Search Engine &amp; AI Output Warranties
             </h2>
             <p>
-              While SeoSensing utilizes deterministic crawler scoring and high-frequency AI model tracking (OpenAI ChatGPT, Google Gemini, Perplexity AI, Anthropic Claude), search engine algorithms and generative model outputs are subject to third-party changes outside our direct control. We do not guarantee specific organic ranking positions or permanent AI answer inclusion.
+              While Zobay Rank utilizes deterministic crawler scoring and high-frequency AI model tracking (OpenAI ChatGPT, Google Gemini, Perplexity AI, Anthropic Claude), search engine algorithms and generative model outputs are subject to third-party changes outside our direct control. We do not guarantee specific organic ranking positions or permanent AI answer inclusion.
             </p>
           </section>
 
@@ -101,7 +101,7 @@ export default function TermsAndConditionsPage() {
               5. Limitation of Liability &amp; Governing Jurisdiction
             </h2>
             <p>
-              To the maximum extent permitted by applicable law, SeoSensing shall not be liable for indirect, incidental, or consequential damages resulting from audit outages, target website downtime, or algorithmic volatility.
+              To the maximum extent permitted by applicable law, Zobay Rank shall not be liable for indirect, incidental, or consequential damages resulting from audit outages, target website downtime, or algorithmic volatility.
             </p>
             <div className="p-4 rounded-xl bg-slate-800/40 border border-white/10 text-xs space-y-1 text-slate-300">
               <p><strong>Inquiries &amp; Legal Notices:</strong> <a href="mailto:dm@fortunehestia.in" className="text-blue-400 hover:underline">dm@fortunehestia.in</a></p>

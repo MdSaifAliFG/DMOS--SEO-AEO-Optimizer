@@ -35,7 +35,7 @@ import {
   Bell,
 } from "lucide-react";
 import { NAVIGATION_CONFIG, NavItem } from "@/lib/constants";
-import { SeoSensingBrand } from "@/components/brand/SeoSensingLogo";
+import { SeoSensingBrand } from "@/components/brand/SeoSensingLogo"; // ZobayRankBrand alias
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, React.ReactNode> = {

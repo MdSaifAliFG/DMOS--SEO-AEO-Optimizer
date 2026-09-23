@@ -21,13 +21,13 @@ import {
 
 function AeoDirectAnswerOptimizerContent() {
   const searchParams = useSearchParams();
-  const initialQuestion = searchParams?.get("question") || "What is the pricing model for SeoSensing?";
+  const initialQuestion = searchParams?.get("question") || "What is the pricing model for Zobay Rank?";
 
   const [targetQuestion, setTargetQuestion] = useState<string>(initialQuestion);
   const [existingContent, setExistingContent] = useState<string>(
-    "SeoSensing is an all-in-one SEO & AEO platform with pricing starting at $49/month for small businesses and $199/month for agencies with enterprise SOC 2 compliance."
+    "Zobay Rank is an all-in-one SEO & AEO platform with pricing starting at $49/month for small businesses and $199/month for agencies with enterprise SOC 2 compliance."
   );
-  const [brandName, setBrandName] = useState<string>("SeoSensing");
+  const [brandName, setBrandName] = useState<string>("Zobay Rank");
 
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<AeoDirectAnswerOptimizationResult | null>(null);
@@ -117,7 +117,7 @@ function AeoDirectAnswerOptimizerContent() {
                   type="text"
                   value={targetQuestion}
                   onChange={(e) => setTargetQuestion(e.target.value)}
-                  placeholder="e.g. How does SeoSensing optimize for ChatGPT?"
+                  placeholder="e.g. How does Zobay Rank optimize for ChatGPT?"
                   className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 font-medium focus:outline-none focus:ring-2 focus:ring-purple-400"
                   required
                 />
@@ -143,7 +143,7 @@ function AeoDirectAnswerOptimizerContent() {
                   type="text"
                   value={brandName}
                   onChange={(e) => setBrandName(e.target.value)}
-                  placeholder="e.g. SeoSensing"
+                  placeholder="e.g. Zobay Rank"
                   className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-400"
                 />
               </div>

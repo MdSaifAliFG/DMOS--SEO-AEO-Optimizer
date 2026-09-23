@@ -13,9 +13,9 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "SeoSensing — SEO & AEO Optimization Platform",
+  title: "Zobay Rank — SEO, AEO & GEO Optimization Platform",
   description:
-    "Next-generation SEO and Answer Engine Optimization (AEO) platform built for high-performance crawling and AI search visibility.",
+    "Next-generation SEO, Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) platform built for high-performance crawling and AI search visibility.",
   icons: {
     icon: "/favicon.png",
     shortcut: "/logo.png",
@@ -35,7 +35,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const stored = localStorage.getItem('seosensing_theme');
+                const stored = localStorage.getItem('zobayrank_theme');
                 if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                   document.documentElement.classList.add('dark');
                 } else {

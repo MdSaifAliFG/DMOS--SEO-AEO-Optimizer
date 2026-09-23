@@ -41,7 +41,7 @@ export const HeroSection: React.FC = () => {
             {/* Small Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 2xl:px-4 py-1 2xl:py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs 2xl:text-sm font-bold tracking-wide">
               <Sparkles className="w-3.5 h-3.5 2xl:w-4 2xl:h-4 text-amber-400" />
-              <span>SEO, AEO &amp; GEO Sensing Operating System</span>
+              <span>SEO, AEO &amp; GEO Zobay Rank Operating System</span>
             </div>
 
             {/* Main Bold Heading */}
@@ -52,7 +52,7 @@ export const HeroSection: React.FC = () => {
 
             {/* Subtitle */}
             <p className="text-xs sm:text-sm 2xl:text-base 3xl:text-lg text-slate-300 max-w-lg 2xl:max-w-2xl 3xl:max-w-3xl leading-relaxed font-normal">
-              Stop guessing what is holding your website back. SeoSensing crawls, analyzes, and helps you optimize your brand for traditional search engines, AI answer engines, and generative discovery (GEO).
+              Stop guessing what is holding your website back. Zobay Rank crawls, analyzes, and helps you optimize your brand for traditional search engines, AI answer engines, and generative discovery (GEO).
             </p>
 
             {/* Side-by-Side Pill CTA Buttons */}
@@ -70,7 +70,7 @@ export const HeroSection: React.FC = () => {
               </Link>
             </div>
 
-            {/* 3 Bottom Stat Highlights tailored to SeoSensing: SEO, AEO, and GEO */}
+            {/* 3 Bottom Stat Highlights tailored to Zobay Rank: SEO, AEO, and GEO */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 2xl:gap-6 pt-5 2xl:pt-8 border-t border-white/15">
               <div className="space-y-1 2xl:space-y-2">
                 <h3 className="text-lg sm:text-xl 2xl:text-2xl font-black text-white tracking-tight font-sans">

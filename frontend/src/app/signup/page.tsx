@@ -129,7 +129,7 @@ export default function SignUpPage() {
             <div className="inline-flex items-center gap-2.5 mb-0.5">
               <SeoSensingLogo size={38} />
               <span className="text-2xl font-black tracking-tight text-slate-950 dark:text-white font-sans">
-                SEO<span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">Sensing</span>
+                Zob<span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400 bg-clip-text text-transparent">ay Rank</span>
               </span>
             </div>
             <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
@@ -240,7 +240,7 @@ export default function SignUpPage() {
 
       {/* Bottom Trust & Security Badges */}
       <div className="relative z-10 w-full max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-slate-500 pt-2 border-t border-slate-900 shrink-0">
-        <p>© 2026 SeoSensing Platform. All rights reserved.</p>
+        <p>© 2026 Zobay Rank Platform. All rights reserved.</p>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 text-slate-400">
             <ShieldCheck className="w-3 h-3 text-emerald-400" />

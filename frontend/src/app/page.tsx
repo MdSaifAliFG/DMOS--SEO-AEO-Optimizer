@@ -12,24 +12,24 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
 export const metadata: Metadata = {
-  title: "SeoSensing — Unleash the Power of Smarter SEO, AEO & GEO",
+  title: "Zobay Rank — Unleash the Power of Smarter SEO, AEO & GEO",
   description:
     "Stop all the guessing... Scan your website and see what is holding it back from showing in top results on Google, Bing, AI answer engines, and generative search models.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "SeoSensing — Unleash the Power of Smarter SEO, AEO & GEO",
+    title: "Zobay Rank — Unleash the Power of Smarter SEO, AEO & GEO",
     description:
       "Scan your website, evaluate technical SEO rules, monitor AI answer citations, and optimize generative discovery (GEO) in one unified platform.",
-    url: "https://seosensing.internal",
-    siteName: "SeoSensing",
+    url: "https://zobayrank.com",
+    siteName: "Zobay Rank",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SeoSensing — SEO, AEO & GEO Platform",
+    title: "Zobay Rank — SEO, AEO & GEO Platform",
     description:
       "Next-generation website crawler, AI Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) platform.",
   },
@@ -45,7 +45,7 @@ export default function LandingPage() {
     "@graph": [
       {
         "@type": "SoftwareApplication",
-        "name": "SeoSensing",
+        "name": "Zobay Rank",
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Web",
         "description":
@@ -58,19 +58,19 @@ export default function LandingPage() {
       },
       {
         "@type": "Organization",
-        "name": "SeoSensing",
-        "url": "https://seosensing.internal",
+        "name": "Zobay Rank",
+        "url": "https://zobayrank.com",
       },
       {
         "@type": "FAQPage",
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "What is SeoSensing?",
+            "name": "What is Zobay Rank?",
             "acceptedAnswer": {
               "@type": "Answer",
               "text":
-                "SeoSensing is an all-in-one SEO, AEO & GEO Operating System that brings automated technical SEO auditing, crawling, AI answer citations, and generative search optimization into one unified workspace.",
+                "Zobay Rank is an all-in-one SEO, AEO & GEO Operating System that brings automated technical SEO auditing, crawling, AI answer citations, and generative search optimization into one unified workspace.",
             },
           },
           {

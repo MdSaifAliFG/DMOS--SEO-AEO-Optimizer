@@ -456,7 +456,7 @@ export const QuickScanSection: React.FC = () => {
             </span>
           </h2>
           <p className="text-sm sm:text-base text-slate-500 leading-relaxed max-w-xl mx-auto">
-            Paste any URL below. In seconds, SeoSensing surfaces every critical SEO, AEO &amp; GEO issue — ranked by business impact.
+            Paste any URL below. In seconds, Zobay Rank surfaces every critical SEO, AEO &amp; GEO issue — ranked by business impact.
           </p>
         </div>
 

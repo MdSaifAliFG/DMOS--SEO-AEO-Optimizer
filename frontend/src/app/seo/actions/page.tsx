@@ -263,7 +263,7 @@ export default function SeoActionsPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `seosensing_actions_${selectedProjectId || "export"}.csv`);
+    link.setAttribute("download", `zobayrank_actions_${selectedProjectId || "export"}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

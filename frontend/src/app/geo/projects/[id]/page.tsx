@@ -324,7 +324,7 @@ export default function GeoProjectDetailPage() {
                   type="text"
                   value={productsStr}
                   onChange={(e) => setProductsStr(e.target.value)}
-                  placeholder="e.g., GEO Optimizer, SEO Sensing Studio, AEO Radar"
+                  placeholder="e.g., GEO Optimizer, Zobay Rank Studio, AEO Radar"
                   className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:border-amber-500"
                 />
               </div>

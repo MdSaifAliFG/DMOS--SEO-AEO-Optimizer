@@ -7,7 +7,7 @@ import { LandingFooter } from "@/components/landing/LandingFooter";
 import { Zap, ShieldCheck, RefreshCw, CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Plans & Pricing — SeoSensing",
+  title: "Plans & Pricing — Zobay Rank",
   description:
     "Explore transparent plans for SEO, AEO, and GEO optimization. Choose from Free, Starter, Growth, Pro, Business, and Agency tiers with credit rollovers.",
 };
@@ -81,7 +81,7 @@ export default function PricingPage() {
         <section className="py-16 bg-slate-950">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <h3 className="text-xl font-bold text-white text-center mb-8">
-              Every SeoSensing Plan Includes
+              Every Zobay Rank Plan Includes
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-300">
               <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">

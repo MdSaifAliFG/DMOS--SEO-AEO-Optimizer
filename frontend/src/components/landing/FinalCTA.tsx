@@ -45,7 +45,7 @@ export const FinalCTA: React.FC = () => {
               variant="outline"
               className="w-full sm:w-auto text-slate-200 border-slate-700 hover:bg-white/5 hover:text-white px-6 2xl:px-9 py-3.5 2xl:py-4.5 text-sm 2xl:text-base cursor-pointer"
             >
-              Explore SeoSensing
+              Explore Zobay Rank
             </Button>
           </Link>
         </div>

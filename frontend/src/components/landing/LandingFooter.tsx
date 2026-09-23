@@ -17,12 +17,12 @@ export const LandingFooter: React.FC = () => {
             <Link href="/" className="inline-flex items-center gap-2.5 group">
               <SeoSensingLogo size={36} className="2xl:scale-110 3xl:scale-120" />
               <span className="text-xl 2xl:text-2xl 3xl:text-3xl font-black tracking-tight text-white font-sans">
-                SEO<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-amber-400 bg-clip-text text-transparent">Sensing</span>
+                Zob<span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">ay Rank</span>
               </span>
             </Link>
 
             <p className="text-slate-400 text-xs 2xl:text-sm 3xl:text-base leading-relaxed max-w-sm 2xl:max-w-md">
-              AI Search &amp; SEO Sensing Operating System. Unified intelligence platform engineered for deterministic technical SEO crawling, AI Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO).
+              AI Search &amp; Zobay Rank Operating System. Unified intelligence platform engineered for deterministic technical SEO crawling, AI Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO).
             </p>
 
             {/* Social Media Links with Authentic Brand Colors */}
@@ -201,7 +201,7 @@ export const LandingFooter: React.FC = () => {
             <ul className="space-y-2 2xl:space-y-3 text-xs 2xl:text-sm">
               <li>
                 <a href="#hero" className="hover:text-blue-400 transition-colors">
-                  About SeoSensing
+                  About Zobay Rank
                 </a>
               </li>
               <li>
@@ -252,7 +252,7 @@ export const LandingFooter: React.FC = () => {
 
         {/* Bottom Section: Copyright & Badges */}
         <div className="pt-8 2xl:pt-10 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs 2xl:text-sm text-slate-500">
-          <p>© 2026 SeoSensing Platform. AI Search & SEO Sensing Operating System. All rights reserved.</p>
+          <p>© 2026 Zobay Rank Platform. AI Search & Zobay Rank Operating System. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5 text-slate-400">
               <ShieldCheck className="w-4 h-4 2xl:w-5 2xl:h-5 text-emerald-500" />

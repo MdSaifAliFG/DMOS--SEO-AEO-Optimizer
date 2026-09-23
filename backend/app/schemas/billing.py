@@ -216,7 +216,7 @@ class RazorpayOrderResponse(BaseModel):
     pack_credits: Optional[int] = None
     billing_cycle: Optional[str] = "monthly"
     user_email: Optional[str] = None
-    name: str = "SEOSensing"
+    name: str = "Zobay Rank"
     description: Optional[str] = None
     is_free: bool = False
     message: Optional[str] = None

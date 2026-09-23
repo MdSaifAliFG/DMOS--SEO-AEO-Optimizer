@@ -60,7 +60,7 @@ export default function MetadataOptimizerPage() {
         setProjects(res.projects || []);
         if (res.projects?.length > 0) {
           setSelectedProjectId(res.projects[0].id);
-          setBrandName(res.projects[0].name || "SeoSensing");
+          setBrandName(res.projects[0].name || "Zobay Rank");
         }
       } catch (err) {
         console.error(err);
@@ -244,7 +244,7 @@ export default function MetadataOptimizerPage() {
                   <label className="text-xs text-slate-600 dark:text-slate-400 font-semibold block mb-1">Brand Name</label>
                   <input
                     type="text"
-                    placeholder="e.g. SeoSensing"
+                    placeholder="e.g. Zobay Rank"
                     value={brandName}
                     onChange={(e) => setBrandName(e.target.value)}
                     className="w-full text-xs bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 transition"

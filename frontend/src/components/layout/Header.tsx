@@ -283,7 +283,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
     }
 
     return {
-      title: "SeoSensing Platform",
+      title: "Zobay Rank Platform",
       subtitle: "AI Search & SEO Optimization Operating System",
     };
   };
@@ -468,20 +468,20 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
             <div className="absolute right-0 mt-2 w-60 max-w-[calc(100vw-2rem)] bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
               <div className="px-3.5 py-2.5 border-b border-slate-100 dark:border-slate-800">
                 <p className="text-xs font-bold text-slate-900 dark:text-white">{user?.name || "Growth Lead"}</p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{user?.email || "admin@seosensing.internal"}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{user?.email || "admin@zobayrank.internal"}</p>
                 <span className="inline-block mt-1 text-[10px] px-1.5 py-0.2 rounded font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                   {user?.role || "Enterprise Admin"}
                 </span>
               </div>
 
-              {/* SeoSensing Engine Status Inside User Dropdown */}
+              {/* Zobay Rank Engine Status Inside User Dropdown */}
               <div className="p-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                 <a
                   href="http://localhost:8000/api/v1/docs"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setIsUserMenuOpen(false)}
-                  title="Open FastAPI Swagger API Docs (SeoSensing Engine)"
+                  title="Open FastAPI Swagger API Docs (Zobay Rank Engine)"
                   className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700/80 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-xs text-slate-700 dark:text-slate-200 transition-all group select-none"
                 >
                   <div className="flex items-center gap-2 min-w-0">
@@ -499,7 +499,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
                     </span>
                     <div className="flex flex-col min-w-0 text-left">
                       <span className="text-[11px] font-bold text-slate-800 dark:text-slate-100 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        SeoSensing Engine
+                        Zobay Rank Engine
                       </span>
                       <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 leading-tight">
                         {health?.status === "healthy" ? "Online & Healthy" : "Connecting..."}
@@ -543,7 +543,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
                   className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors font-medium text-left cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5 text-rose-500" />
-                  <span>Log Out of SeoSensing</span>
+                  <span>Log Out of Zobay Rank</span>
                 </button>
               </div>
             </div>

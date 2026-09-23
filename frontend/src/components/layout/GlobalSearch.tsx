@@ -710,7 +710,7 @@ export const GlobalSearch: React.FC = () => {
                 close
               </span>
             </div>
-            <span className="hidden sm:inline font-mono">SEOSensing v2.4</span>
+            <span className="hidden sm:inline font-mono">Zobay Rank v2.4</span>
           </div>
         </div>
       )}

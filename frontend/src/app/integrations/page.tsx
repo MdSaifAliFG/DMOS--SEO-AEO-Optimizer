@@ -314,7 +314,7 @@ export default function IntegrationsPage() {
               </span>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
-              Connect external search engines, analytics trackers, and generative AI providers to feed real-time ranking, citation, and visibility telemetry into SeoSensing.
+              Connect external search engines, analytics trackers, and generative AI providers to feed real-time ranking, citation, and visibility telemetry into Zobay Rank.
             </p>
           </div>
 
@@ -693,7 +693,7 @@ export default function IntegrationsPage() {
               </div>
 
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Provide your authorization token or API credentials below. SeoSensing will establish a secure TLS handshake and stream live telemetry.
+                Provide your authorization token or API credentials below. Zobay Rank will establish a secure TLS handshake and stream live telemetry.
               </p>
 
               <form onSubmit={handleConnect} className="space-y-4">

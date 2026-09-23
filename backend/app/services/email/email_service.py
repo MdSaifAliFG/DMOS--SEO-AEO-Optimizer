@@ -96,9 +96,9 @@ def generate_password_reset_email_html(code: str, user_name: Optional[str] = Non
           <!-- Header Banner -->
           <tr>
             <td style="padding: 36px 36px 20px 36px; text-align: center; background: linear-gradient(180deg, rgba(29, 99, 255, 0.12) 0%, rgba(15, 23, 42, 0) 100%);">
-              <div style="display: inline-block; padding: 10px 16px; border-radius: 12px; background: #1e293b; border: 1px solid #334155; margin-bottom: 12px;">
+              <div style="display: inline-block; padding: 10px 18px; border-radius: 12px; background: #1e293b; border: 1px solid #334155; margin-bottom: 12px;">
                 <span style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: #ffffff;">
-                  SEO<span style="color: #3b82f6;">Sensing</span>
+                  Zob<span style="color: #60a5fa; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ay Rank</span>
                 </span>
               </div>
               <h1 style="margin: 8px 0 0 0; font-size: 22px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px;">
@@ -147,10 +147,10 @@ def generate_password_reset_email_html(code: str, user_name: Optional[str] = Non
           <tr>
             <td style="padding: 24px 36px; background-color: #030712; border-top: 1px solid #1e293b; text-align: center;">
               <p style="margin: 0 0 6px 0; font-size: 11px; color: #64748b;">
-                Sent by <strong>{settings.SMTP_FROM_NAME or 'SeoSensing Platform'}</strong>
+                Sent by <strong>{settings.SMTP_FROM_NAME or 'Zobay Rank Platform'}</strong>
               </p>
               <p style="margin: 0; font-size: 11px; color: #475569;">
-                &copy; 2026 SeoSensing Platform. All rights reserved.
+                &copy; 2026 Zobay Rank Platform. All rights reserved.
               </p>
             </td>
           </tr>

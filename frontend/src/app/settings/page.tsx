@@ -143,7 +143,7 @@ function GlobalSettingsContent() {
   const loadGeneralSettings = useCallback(async () => {
     setIsLoadingGeneral(true);
     try {
-      const activeSession = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("seosensing_auth_session") || "{}") : {};
+      const activeSession = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("zobayrank_auth_session") || "{}") : {};
       const token = activeSession?.token || activeSession?.id || activeSession?.email;
       const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -181,7 +181,7 @@ function GlobalSettingsContent() {
     e.preventDefault();
     setIsSavingGeneral(true);
     try {
-      const activeSession = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("seosensing_auth_session") || "{}") : {};
+      const activeSession = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("zobayrank_auth_session") || "{}") : {};
       const token = activeSession?.token || activeSession?.id || activeSession?.email;
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -1319,7 +1319,7 @@ function GlobalSettingsContent() {
                   <label className="font-semibold text-slate-700 dark:text-slate-300">Brand Aliases / Acronyms</label>
                   <input
                     type="text"
-                    placeholder="e.g., SEO Sensing, SS AI, DMOS"
+                    placeholder="e.g., Zobay Rank, ZR AI, DMOS"
                     value={geoAliases}
                     onChange={(e) => setGeoAliases(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
