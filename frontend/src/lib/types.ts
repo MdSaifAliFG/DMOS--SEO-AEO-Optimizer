@@ -993,6 +993,8 @@ export interface ApiError {
   message: string;
   detail?: string | Array<{ msg: string; loc?: string[] }>;
   status?: number;
+  isNetworkError?: boolean;
+  isTimeout?: boolean;
 }
 
 // --- Phase 7 AEO Intelligence & Monitoring Types ---
@@ -1779,6 +1781,15 @@ export interface Subscription {
   current_period_end?: string | null;
   cancel_at_period_end: boolean;
   cancelled_at?: string | null;
+}
+
+export interface CurrentSubscriptionResponse {
+  workspace_id: string;
+  subscription: Subscription | null;
+  plan: Plan;
+  wallet: CreditWallet;
+  is_stripe_configured: boolean;
+  is_razorpay_configured: boolean;
 }
 
 export interface CreditWallet {

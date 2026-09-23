@@ -95,14 +95,15 @@ class WebsiteCrawler:
         if self.log_callback:
             try:
                 await self.log_callback(step, message, level)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Error in crawler log callback: %s", exc)
 
     async def _is_cancelled(self) -> bool:
         if self.cancellation_check:
             try:
                 return await self.cancellation_check()
-            except Exception:
+            except Exception as exc:
+                logger.debug("Error in crawler cancellation check: %s", exc)
                 return False
         return False
 
@@ -199,9 +200,10 @@ class WebsiteCrawler:
                         await self._emit_log("Robots Disallowed", f"Skipping {url} (blocked by robots.txt rules)", "INFO")
                         return None
 
-                    # Pre-check URL safety
-                    if not is_url_safe(url, check_dns=False):
+                    # Pre-check URL safety with DNS resolution
+                    if not is_url_safe(url, check_dns=True):
                         self.pages_failed += 1
+                        await self._emit_log("SSRF Blocked", f"Skipping {url} (SSRF security policy)", "WARNING")
                         return None
 
                     try:
@@ -210,7 +212,7 @@ class WebsiteCrawler:
                             url,
                             self.project_domain,
                             validate_ssrf=True,
-                            check_dns=False,
+                            check_dns=True,
                         )
 
                         if not fetch_res.is_success and fetch_res.status_code == 0:
@@ -316,8 +318,8 @@ class WebsiteCrawler:
                         self.pages_failed,
                         batch[-1].url if batch else "",
                     )
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.debug("Error in crawler progress callback: %s", exc)
 
         # Cleanup HTTP client
         await self.http_client.close()

@@ -5,6 +5,7 @@ import time
 from typing import Any, Dict, List, Optional
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
+from app.core.config import settings
 from app.core.database import AsyncSessionLocal
 from app.models.scan import Scan, ScanStatus
 from app.models.project import Project
@@ -23,13 +24,64 @@ class ScanRunner:
     """
     Phase 2 Background Execution Orchestrator.
     Orchestrates the live scan lifecycle:
-    queued -> initializing -> crawling -> analyzing -> scoring -> completed (or failed/cancelled).
+    queued -> initializing -> crawling -> analyzing -> scoring -> completed (or failed/cancelled/timed_out).
     """
 
-    @classmethod
-    async def run_scan_lifecycle(cls, scan_id: str) -> None:
-        logger.info("Starting background scan worker for scan ID: %s", scan_id)
+    MAX_LOGS: int = 500  # P1-02: Bounded scan logs retention limit
 
+    @classmethod
+    def bound_logs(cls, logs: List[Dict[str, Any]], max_logs: int = MAX_LOGS) -> List[Dict[str, Any]]:
+        """Bounds scan log size, preserving early initialization and latest events."""
+        if len(logs) <= max_logs:
+            return logs
+        keep_initial = 50
+        keep_recent = max_logs - keep_initial - 1
+        truncated_count = len(logs) - keep_initial - keep_recent
+        marker = {
+            "timestamp": get_iso_now(),
+            "level": "INFO",
+            "step": "Log Retention",
+            "message": f"[Log retention limit reached: trimmed {truncated_count} intermediate logs]",
+        }
+        return logs[:keep_initial] + [marker] + logs[-keep_recent:]
+
+    @classmethod
+    async def run_scan_lifecycle(cls, scan_id: str, timeout_seconds: Optional[int] = None) -> None:
+        """Entrypoint for scan lifecycle with execution timeout and terminal state guarantees."""
+        timeout = timeout_seconds or getattr(settings, "SCAN_TIMEOUT_SECONDS", 600)
+        logger.info("Starting background scan worker for scan ID: %s (timeout: %ds)", scan_id, timeout)
+
+        try:
+            await asyncio.wait_for(cls._execute_lifecycle(scan_id), timeout=float(timeout))
+        except asyncio.TimeoutError:
+            logger.warning("Scan %s timed out after %ds", scan_id, timeout)
+            try:
+                async with AsyncSessionLocal() as session:
+                    res = await session.execute(select(Scan).where(Scan.id == scan_id))
+                    current = res.scalar_one_or_none()
+                    if current and current.status not in (
+                        ScanStatus.COMPLETED.value,
+                        ScanStatus.FAILED.value,
+                        ScanStatus.CANCELLED.value,
+                    ):
+                        current.status = ScanStatus.TIMED_OUT.value
+                        current.completed_at = datetime.now(timezone.utc)
+                        current.current_step = f"Scan timed out after {timeout} seconds"
+                        current.error_message = f"Scan exceeded maximum execution timeout limit of {timeout}s."
+                        current_logs = list(current.logs or [])
+                        current_logs.append({
+                            "timestamp": get_iso_now(),
+                            "level": "ERROR",
+                            "step": "Scan Timeout",
+                            "message": f"Scan execution timed out after {timeout} seconds and was halted.",
+                        })
+                        current.logs = cls.bound_logs(current_logs)
+                        await session.commit()
+            except Exception as timeout_db_err:
+                logger.error("Failed to persist TIMED_OUT status for scan %s: %s", scan_id, timeout_db_err)
+
+    @classmethod
+    async def _execute_lifecycle(cls, scan_id: str) -> None:
         async with AsyncSessionLocal() as session:
             # Load scan and associated project
             res = await session.execute(
@@ -52,6 +104,11 @@ class ScanRunner:
             crawl_settings = scan.project.settings if scan.project else {}
             max_depth = crawl_settings.get("crawl_depth", 5)
 
+            # In-memory throttled progress and log buffers to avoid excessive DB writes (P1-01)
+            in_memory_logs: List[Dict[str, Any]] = list(scan.logs or [])
+            last_commit_time = time.monotonic()
+            last_committed_progress = scan.progress or 0
+
             # Helper for stage transitions and logging
             async def update_stage(
                 status: ScanStatus,
@@ -62,6 +119,7 @@ class ScanRunner:
                 meta_update: Optional[Dict[str, Any]] = None,
                 extra_fields: Optional[Dict[str, Any]] = None,
             ) -> bool:
+                nonlocal last_commit_time, last_committed_progress
                 curr_res = await session.execute(select(Scan).where(Scan.id == scan_id))
                 current = curr_res.scalar_one_or_none()
                 if not current or current.status == ScanStatus.CANCELLED.value:
@@ -73,14 +131,14 @@ class ScanRunner:
                 current.current_step = step
 
                 if log_msg:
-                    current_logs: List[Dict[str, Any]] = list(current.logs or [])
-                    current_logs.append({
+                    in_memory_logs.append({
                         "timestamp": get_iso_now(),
                         "level": level,
                         "step": step,
                         "message": log_msg,
                     })
-                    current.logs = current_logs
+
+                current.logs = cls.bound_logs(in_memory_logs)
 
                 if meta_update:
                     current_meta = dict(current.meta_data or {})
@@ -93,10 +151,12 @@ class ScanRunner:
 
                 if status == ScanStatus.INITIALIZING and not current.started_at:
                     current.started_at = datetime.now(timezone.utc)
-                elif status in (ScanStatus.COMPLETED, ScanStatus.FAILED, ScanStatus.CANCELLED):
+                elif status in (ScanStatus.COMPLETED, ScanStatus.FAILED, ScanStatus.CANCELLED, ScanStatus.TIMED_OUT):
                     current.completed_at = datetime.now(timezone.utc)
 
                 await session.commit()
+                last_commit_time = time.monotonic()
+                last_committed_progress = progress
                 return True
 
             async def is_cancelled_check() -> bool:
@@ -105,31 +165,38 @@ class ScanRunner:
                 return st == ScanStatus.CANCELLED.value
 
             async def log_callback(step: str, message: str, level: str) -> None:
-                curr_res = await session.execute(select(Scan).where(Scan.id == scan_id))
-                current = curr_res.scalar_one_or_none()
-                if current and current.status != ScanStatus.CANCELLED.value:
-                    current_logs = list(current.logs or [])
-                    current_logs.append({
-                        "timestamp": get_iso_now(),
-                        "level": level,
-                        "step": step,
-                        "message": message,
-                    })
-                    current.logs = current_logs
-                    await session.commit()
+                """Appends to bounded in-memory log buffer without executing DB SELECT/COMMIT every time."""
+                in_memory_logs.append({
+                    "timestamp": get_iso_now(),
+                    "level": level,
+                    "step": step,
+                    "message": message,
+                })
 
             async def progress_callback(discovered: int, crawled: int, failed: int, current_url: str) -> None:
-                curr_res = await session.execute(select(Scan).where(Scan.id == scan_id))
-                current = curr_res.scalar_one_or_none()
-                if current and current.status != ScanStatus.CANCELLED.value:
-                    current.pages_discovered = discovered
-                    current.pages_crawled = crawled
-                    current.pages_failed = failed
-                    # Calculate progress between 15% and 65% during crawl
-                    crawl_progress = min(65, 15 + int((crawled / max(discovered, 1)) * 50))
-                    current.progress = crawl_progress
-                    current.current_step = f"Crawling ({crawled}/{discovered} pages): {current_url[:60]}"
-                    await session.commit()
+                """Throttled progress update avoiding repetitive per-page SELECT + COMMIT queries (P1-01)."""
+                nonlocal last_commit_time, last_committed_progress
+                crawl_progress = min(65, 15 + int((crawled / max(discovered, 1)) * 50))
+                now = time.monotonic()
+
+                # Flush to DB if 2+ seconds elapsed, progress advanced by >= 5%, or crawl finished
+                is_finished = (crawled + failed >= discovered) and discovered > 0
+                time_elapsed = now - last_commit_time
+                progress_diff = abs(crawl_progress - last_committed_progress)
+
+                if time_elapsed >= 2.0 or progress_diff >= 5 or is_finished:
+                    curr_res = await session.execute(select(Scan).where(Scan.id == scan_id))
+                    current = curr_res.scalar_one_or_none()
+                    if current and current.status != ScanStatus.CANCELLED.value:
+                        current.pages_discovered = discovered
+                        current.pages_crawled = crawled
+                        current.pages_failed = failed
+                        current.progress = crawl_progress
+                        current.current_step = f"Crawling ({crawled}/{discovered} pages): {current_url[:60]}"
+                        current.logs = cls.bound_logs(in_memory_logs)
+                        await session.commit()
+                        last_commit_time = now
+                        last_committed_progress = crawl_progress
 
             try:
                 # STAGE 1: Initializing
@@ -176,6 +243,13 @@ class ScanRunner:
                 crawl_result = await crawler.run(session)
 
                 if await is_cancelled_check():
+                    await update_stage(
+                        status=ScanStatus.CANCELLED,
+                        progress=scan.progress or 50,
+                        step="Scan Cancelled",
+                        log_msg="Crawl execution cancelled by user request.",
+                        level="WARNING",
+                    )
                     return
 
                 # STAGE 3: Analyzing (SEO Rule Evaluator)
@@ -207,6 +281,13 @@ class ScanRunner:
                 )
 
                 if await is_cancelled_check():
+                    await update_stage(
+                        status=ScanStatus.CANCELLED,
+                        progress=70,
+                        step="Scan Cancelled",
+                        log_msg="Scan analysis cancelled by user request.",
+                        level="WARNING",
+                    )
                     return
 
                 # STAGE 4: Scoring
@@ -275,5 +356,5 @@ class ScanRunner:
                         level="ERROR",
                         extra_fields={"error_message": f"Scan failed during processing: {str(e)}"},
                     )
-                except Exception:
-                    pass
+                except Exception as update_err:
+                    logger.error("Failed to persist scan failure state for scan %s: %s", scan_id, update_err)

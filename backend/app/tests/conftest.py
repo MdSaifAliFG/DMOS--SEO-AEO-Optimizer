@@ -12,11 +12,19 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+import logging
+logging.getLogger("aiosqlite").setLevel(logging.WARNING)
+logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 from app.core.database import Base, get_db
 from app.main import app
 
-# In-memory test database
-TEST_DB_URL = "sqlite+aiosqlite:///:memory:"
+from sqlalchemy.pool import StaticPool
+
+import os
+import pathlib
+
+TEST_DB_FILE = pathlib.Path(__file__).parent / "test_dmos.db"
+TEST_DB_URL = f"sqlite+aiosqlite:///{TEST_DB_FILE.as_posix()}"
 
 test_engine = create_async_engine(
     TEST_DB_URL,

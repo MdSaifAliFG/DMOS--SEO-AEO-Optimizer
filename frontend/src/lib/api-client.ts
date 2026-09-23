@@ -100,6 +100,7 @@ import {
   UnifiedSearchIntelligence,
   Plan,
   Subscription,
+  CurrentSubscriptionResponse,
   CreditWallet,
   CreditTransaction,
   UsageEvent,
@@ -170,16 +171,18 @@ class ApiClient {
         try {
           errorData = await response.json();
         } catch {
-          errorData = { message: response.statusText };
+          errorData = { message: response.statusText || `HTTP ${response.status}` };
         }
 
-        const detail = errorData.detail || errorData.message || "An unexpected error occurred";
-        const message = typeof detail === "string" ? detail : JSON.stringify(detail);
+        const detail = errorData.detail || errorData.message || response.statusText || "An unexpected error occurred";
+        const message = typeof detail === "string" ? detail : (Array.isArray(detail) ? detail.map((d: any) => d.msg || JSON.stringify(d)).join(", ") : JSON.stringify(detail));
 
         const error: ApiError = {
           message,
           detail: errorData.detail,
           status: response.status,
+          isNetworkError: false,
+          isTimeout: response.status === 408 || response.status === 504,
         };
         throw error;
       }
@@ -190,12 +193,27 @@ class ApiClient {
 
       return await response.json();
     } catch (err: unknown) {
-      if ((err as ApiError)?.status) {
+      if ((err as ApiError)?.status !== undefined) {
         throw err;
       }
+
+      const errorObj = err as Error;
+      const isTimeout = errorObj?.name === "AbortError" || errorObj?.name === "TimeoutError" || errorObj?.message?.toLowerCase().includes("timeout");
+
+      if (isTimeout) {
+        throw {
+          message: "Request timed out while waiting for SeoSensing Backend API.",
+          status: 408,
+          isTimeout: true,
+          isNetworkError: false,
+        } as ApiError;
+      }
+
       throw {
-        message: (err as Error)?.message || "Failed to connect to SeoSensing Backend API. Ensure backend is running.",
-        status: 500,
+        message: errorObj?.message || "Failed to connect to SeoSensing Backend API. Ensure backend is running.",
+        status: 0,
+        isNetworkError: true,
+        isTimeout: false,
       } as ApiError;
     }
   }
@@ -1300,8 +1318,16 @@ class ApiClient {
     return this.request<Plan[]>("/billing/plans");
   }
 
-  async getCurrentSubscription(): Promise<Subscription> {
-    return this.request<Subscription>("/billing/current");
+  async getCurrentSubscription(): Promise<Subscription | null> {
+    const res = await this.request<any>("/billing/current");
+    if (res && res.subscription !== undefined) {
+      return res.subscription;
+    }
+    return res as Subscription;
+  }
+
+  async getCurrentSubscriptionDetails(): Promise<CurrentSubscriptionResponse> {
+    return this.request<CurrentSubscriptionResponse>("/billing/current");
   }
 
   async getBillingSummary(): Promise<BillingSummary> {
@@ -1398,23 +1424,27 @@ class ApiClient {
     });
   }
 
-  async cancelSubscription(feedback?: string): Promise<Subscription> {
-    return this.request<Subscription>("/billing/cancel", {
+  async cancelSubscription(feedback?: string): Promise<{ success: boolean; message: string }> {
+    return this.request<{ success: boolean; message: string }>("/billing/cancel", {
       method: "POST",
       body: JSON.stringify({ cancel_immediately: false, feedback }),
     });
   }
 
-  async reactivateSubscription(): Promise<Subscription> {
-    return this.request<Subscription>("/billing/reactivate", {
+  async reactivateSubscription(): Promise<{ success: boolean; message: string }> {
+    return this.request<{ success: boolean; message: string }>("/billing/reactivate", {
       method: "POST",
     });
   }
 
-  async changePlan(newPlanTier: string, billingCycle: string = "monthly"): Promise<Subscription> {
-    return this.request<Subscription>("/billing/change-plan", {
+  async changePlan(newPlanTier: string, billingCycle: string = "monthly"): Promise<{ success: boolean; message?: string; checkout_url?: string; plan?: string }> {
+    return this.request<{ success: boolean; message?: string; checkout_url?: string; plan?: string }>("/billing/change-plan", {
       method: "POST",
-      body: JSON.stringify({ new_plan_tier: newPlanTier, billing_cycle: billingCycle }),
+      body: JSON.stringify({
+        plan_code: newPlanTier,
+        new_plan_tier: newPlanTier,
+        billing_cycle: billingCycle,
+      }),
     });
   }
 

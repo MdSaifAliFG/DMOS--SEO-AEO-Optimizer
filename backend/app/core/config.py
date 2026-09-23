@@ -48,6 +48,7 @@ class Settings(BaseSettings):
     CRAWL_MAX_RETRIES: int = 2
     CRAWL_MAX_RESPONSE_SIZE: int = 10485760  # 10MB
     CRAWLER_USER_AGENT: str = "SeoSensingBot/1.0 (+https://seosensing.io/bot; SEO & AEO Audit Engine)"
+    SCAN_TIMEOUT_SECONDS: int = 600  # 10 minutes maximum scan lifecycle
 
     # Security
     SECRET_KEY: str = "dmos-phase-1-super-secret-key-change-in-production"

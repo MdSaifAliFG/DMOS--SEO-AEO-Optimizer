@@ -29,6 +29,7 @@ from app.schemas.billing import (
     CheckoutSessionResponse,
     CreditPackCheckoutRequest,
     CustomerPortalResponse,
+    CancelSubscriptionRequest,
     ChangePlanRequest,
     RazorpayOrderRequest,
     RazorpayOrderResponse,
@@ -174,17 +175,26 @@ async def get_usage_history(
 
 @router.get("/usage/summary", response_model=UsageSummaryResponse)
 async def get_usage_summary(
+    days: Optional[int] = Query(None, description="Optional days window for usage summary"),
     current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get aggregated credit usage breakdown by module."""
+    from datetime import timedelta, timezone
+    from app.models.base import utc_now
+
     workspace_id = await resolve_workspace_id(current_user)
     wallet = await CreditWalletService.get_or_create_wallet(db, workspace_id)
 
-    stmt = select(UsageEvent.module, func.sum(UsageEvent.credits_used)).where(
+    query = select(UsageEvent.module, func.sum(UsageEvent.credits_used)).where(
         UsageEvent.workspace_id == workspace_id
-    ).group_by(UsageEvent.module)
-    res = await db.execute(stmt)
+    )
+    if days is not None and days > 0:
+        cutoff = utc_now() - timedelta(days=days)
+        query = query.where(UsageEvent.created_at >= cutoff)
+
+    query = query.group_by(UsageEvent.module)
+    res = await db.execute(query)
     rows = dict(res.all())
 
     return {
@@ -305,6 +315,7 @@ async def create_customer_portal(
 
 @router.post("/cancel")
 async def cancel_subscription(
+    payload: Optional[CancelSubscriptionRequest] = None,
     current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -357,9 +368,13 @@ async def change_plan(
     workspace_id = await resolve_workspace_id(current_user)
     user_id = current_user.id if current_user else None
 
-    new_plan = await PlanService.get_plan_by_code(db, payload.plan_code)
+    plan_code = payload.plan_code or payload.new_plan_tier
+    if not plan_code:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="plan_code or new_plan_tier is required.")
+
+    new_plan = await PlanService.get_plan_by_code(db, plan_code)
     if not new_plan:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Plan {payload.plan_code} not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Plan {plan_code} not found.")
 
     if new_plan.code == "FREE":
         await StripeService.activate_free_plan(db, workspace_id, user_id)

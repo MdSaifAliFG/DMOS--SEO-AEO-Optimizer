@@ -21,6 +21,7 @@ class ScanStatus(str, Enum):
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    TIMED_OUT = "timed_out"
 
 
 class ScanType(str, Enum):

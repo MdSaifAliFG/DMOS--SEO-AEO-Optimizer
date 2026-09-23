@@ -179,8 +179,14 @@ class CustomerPortalResponse(BaseModel):
     portal_url: str
 
 
+class CancelSubscriptionRequest(BaseModel):
+    cancel_immediately: Optional[bool] = False
+    feedback: Optional[str] = None
+
+
 class ChangePlanRequest(BaseModel):
-    plan_code: str
+    plan_code: Optional[str] = None
+    new_plan_tier: Optional[str] = None
 
 
 class CreditAdjustmentRequest(BaseModel):

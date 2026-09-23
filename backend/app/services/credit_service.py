@@ -407,7 +407,42 @@ class CreditWalletService:
         """Atomically reserves credits for an in-flight expensive operation."""
         wallet = await CreditWalletService.get_or_create_wallet(db, workspace_id, user_id)
 
-        if wallet.available_credits < estimated_credits:
+        if estimated_credits <= 0:
+            return {
+                "success": True,
+                "reservation_id": f"res_{uuid.uuid4().hex[:12]}",
+                "estimated_credits": 0,
+                "available_credits": wallet.available_credits,
+                "reserved_credits": wallet.reserved_credits,
+                "module": module,
+                "operation": operation,
+                "workspace_id": workspace_id,
+                "user_id": user_id,
+                "resource_type": resource_type,
+                "resource_id": resource_id,
+                "provider": provider,
+                "provider_model": provider_model,
+                "metadata": metadata or {},
+            }
+
+        # Atomically shift credits from available to reserved directly at database level
+        stmt = (
+            update(CreditWallet)
+            .where(
+                and_(
+                    CreditWallet.id == wallet.id,
+                    CreditWallet.available_credits >= estimated_credits,
+                )
+            )
+            .values(
+                available_credits=CreditWallet.available_credits - estimated_credits,
+                reserved_credits=CreditWallet.reserved_credits + estimated_credits,
+            )
+        )
+        res = await db.execute(stmt)
+
+        if res.rowcount == 0:
+            await db.refresh(wallet)
             return {
                 "success": False,
                 "error": "INSUFFICIENT_CREDITS",
@@ -416,9 +451,6 @@ class CreditWalletService:
                 "reservation_id": None,
             }
 
-        # Atomically shift credits from available to reserved
-        wallet.available_credits -= estimated_credits
-        wallet.reserved_credits += estimated_credits
         reservation_id = f"res_{uuid.uuid4().hex[:12]}"
 
         await db.commit()
@@ -565,15 +597,34 @@ class CreditWalletService:
         metadata: Optional[Dict[str, Any]] = None,
     ) -> Tuple[bool, Optional[CreditTransaction]]:
         """Direct atomic deduction with ledger recording."""
+        if amount <= 0:
+            return True, None
+
         wallet = await CreditWalletService.get_or_create_wallet(db, workspace_id, user_id)
 
-        if wallet.available_credits < amount:
+        # Atomic conditional update directly at database level
+        stmt = (
+            update(CreditWallet)
+            .where(
+                and_(
+                    CreditWallet.id == wallet.id,
+                    CreditWallet.available_credits >= amount,
+                )
+            )
+            .values(
+                available_credits=CreditWallet.available_credits - amount,
+                used_credits=CreditWallet.used_credits + amount,
+            )
+        )
+        res = await db.execute(stmt)
+
+        if res.rowcount == 0:
+            await db.refresh(wallet)
             return False, None
 
-        balance_before = wallet.available_credits
-        wallet.available_credits -= amount
-        wallet.used_credits += amount
+        await db.refresh(wallet)
         balance_after = wallet.available_credits
+        balance_before = balance_after + amount
 
         desc = description or f"{module} {operation} (-{amount} credits)"
         tx = CreditTransaction(
@@ -734,12 +785,17 @@ class CreditReconciliationService:
         res = await db.execute(stmt)
         ledger_sum = res.scalar() or 0
 
+        # Invariant: Total active credits owned by the wallet (available + currently reserved for in-flight tasks)
+        # must match the cumulative sum of immutable ledger transactions.
+        total_wallet_credits = wallet.available_credits + wallet.reserved_credits
         expected_balance = ledger_sum
-        diff = wallet.available_credits - expected_balance
+        diff = total_wallet_credits - expected_balance
 
         return {
             "workspace_id": workspace_id,
             "wallet_available": wallet.available_credits,
+            "wallet_reserved": wallet.reserved_credits,
+            "total_wallet_credits": total_wallet_credits,
             "ledger_sum": ledger_sum,
             "is_consistent": (diff == 0),
             "difference": diff,

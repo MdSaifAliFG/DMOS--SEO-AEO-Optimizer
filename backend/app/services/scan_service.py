@@ -127,7 +127,7 @@ class ScanService:
         if not scan:
             return None
 
-        if scan.status in (ScanStatus.COMPLETED.value, ScanStatus.FAILED.value, ScanStatus.CANCELLED.value):
+        if scan.status in (ScanStatus.COMPLETED.value, ScanStatus.FAILED.value, ScanStatus.CANCELLED.value, ScanStatus.TIMED_OUT.value):
             return ScanCancelResponse(
                 id=scan.id,
                 status=ScanStatus(scan.status),
