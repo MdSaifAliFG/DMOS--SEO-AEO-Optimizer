@@ -489,22 +489,24 @@ export const QuickScanSection: React.FC = () => {
             </div>
 
             {/* URL Input */}
-            <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 mx-1 mb-2 focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
-              <Globe className="w-5 h-5 text-slate-400 shrink-0" />
-              <input
-                id="quick-scan-url"
-                type="url"
-                value={urlInput}
-                onChange={(e) => setUrlInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={scanMode === "site" ? "https://yourwebsite.com" : "https://yourwebsite.com/page"}
-                className="flex-1 bg-transparent text-base text-slate-800 placeholder:text-slate-400 outline-none font-medium"
-                disabled={scanState === "scanning"}
-              />
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-slate-50 border border-slate-200 rounded-2xl p-2.5 sm:px-5 sm:py-3.5 mx-1 mb-2 focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
+              <div className="flex items-center gap-3 flex-1 min-w-0 px-2 py-1 sm:p-0">
+                <Globe className="w-5 h-5 text-slate-400 shrink-0" />
+                <input
+                  id="quick-scan-url"
+                  type="url"
+                  value={urlInput}
+                  onChange={(e) => setUrlInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={scanMode === "site" ? "https://yourwebsite.com" : "https://yourwebsite.com/page"}
+                  className="w-full bg-transparent text-base sm:text-sm text-slate-800 placeholder:text-slate-400 outline-none font-medium min-w-0"
+                  disabled={scanState === "scanning"}
+                />
+              </div>
               <button
                 onClick={runScan}
                 disabled={scanState === "scanning" || !urlInput.trim()}
-                className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm shadow-md shadow-indigo-600/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap"
+                className="w-full sm:w-auto justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm shadow-md shadow-indigo-600/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap"
               >
                 {scanState === "scanning" ? (
                   <>

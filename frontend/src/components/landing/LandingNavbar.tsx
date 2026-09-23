@@ -25,6 +25,7 @@ export const LandingNavbar: React.FC = () => {
     { label: "Services", href: "#services" },
     { label: "Pricing", href: "#pricing" },
     { label: "FAQ's", href: "#faq" },
+    { label: "Contact", href: "#contact" },
   ];
 
   return (
@@ -75,7 +76,7 @@ export const LandingNavbar: React.FC = () => {
         {/* Mobile Hamburger Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 text-white hover:text-slate-300 rounded-lg"
+          className="md:hidden p-2.5 text-white hover:text-slate-300 rounded-xl hover:bg-white/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer"
           aria-label="Toggle Menu"
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -84,27 +85,28 @@ export const LandingNavbar: React.FC = () => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-slate-950/95 backdrop-blur-xl border-b border-slate-800 px-6 py-6 space-y-4">
-          <div className="flex flex-col space-y-3 text-sm font-medium text-slate-300">
+        <div className="md:hidden bg-slate-950/98 backdrop-blur-2xl border-b border-white/10 px-6 py-6 space-y-5 animate-in fade-in slide-in-from-top-4 duration-200">
+          <div className="flex flex-col space-y-1 text-base font-semibold text-slate-300 divide-y divide-white/5">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-1.5 hover:text-white transition-colors"
+                className="py-3 px-1 hover:text-white transition-colors flex items-center justify-between"
               >
-                {link.label}
+                <span>{link.label}</span>
+                <span className="text-xs text-slate-500">→</span>
               </a>
             ))}
           </div>
 
-          <div className="pt-4 border-t border-slate-800 flex flex-col gap-2.5">
+          <div className="pt-3 border-t border-white/10 flex flex-col gap-3">
             <Link
               href={isAuthenticated ? "/overview" : "/login"}
               onClick={() => setMobileMenuOpen(false)}
               className="w-full"
             >
-              <button className="w-full py-2.5 rounded-lg border border-white/80 text-white text-xs font-semibold">
+              <button className="w-full py-3 rounded-xl border border-white/40 text-white text-sm font-semibold hover:bg-white/10 transition-all cursor-pointer">
                 {isAuthenticated ? "Dashboard" : "Sign in"}
               </button>
             </Link>
@@ -114,8 +116,9 @@ export const LandingNavbar: React.FC = () => {
               onClick={() => setMobileMenuOpen(false)}
               className="w-full"
             >
-              <button className="w-full py-2.5 rounded-lg bg-white text-slate-950 text-xs font-bold">
-                Upgrade
+              <button className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer">
+                <span>{isAuthenticated ? "Settings" : "Get Started Free"}</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
           </div>

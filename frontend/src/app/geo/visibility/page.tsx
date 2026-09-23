@@ -194,7 +194,7 @@ function GeoVisibilityContent() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {activeTab === "visibility" && (
               <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg text-xs font-medium">
                 {(["7d", "30d", "90d"] as const).map((r) => (
@@ -218,7 +218,7 @@ function GeoVisibilityContent() {
                 aria-label="Select GEO Project"
                 value={selectedProjectId}
                 onChange={(e) => handleProjectChange(e.target.value)}
-                className="text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 font-medium text-slate-900 dark:text-slate-100 shadow-sm"
+                className="text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 font-medium text-slate-900 dark:text-slate-100 shadow-sm max-w-full truncate"
               >
                 {projects.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -231,7 +231,7 @@ function GeoVisibilityContent() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center gap-2 p-1 bg-slate-100 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 w-fit">
+        <div className="flex items-center gap-2 p-1 bg-slate-100 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 w-fit max-w-full overflow-x-auto">
           <button
             type="button"
             onClick={() => handleTabChange("visibility")}

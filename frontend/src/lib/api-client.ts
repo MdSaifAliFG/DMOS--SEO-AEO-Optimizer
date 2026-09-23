@@ -1480,6 +1480,24 @@ class ApiClient {
       body: JSON.stringify(input),
     });
   }
+
+  // ==========================================
+  // CONTACT METHODS
+  // ==========================================
+
+  async submitContactForm(input: {
+    name: string;
+    email: string;
+    subject?: string;
+    message: string;
+    company?: string;
+    phone?: string;
+  }): Promise<{ success: boolean; message: string; timestamp: string }> {
+    return this.request<{ success: boolean; message: string; timestamp: string }>("/contact", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
 }
 
 export const api = new ApiClient();

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/ToastProvider";
@@ -11,6 +11,16 @@ const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
+    { media: "(prefers-color-scheme: dark)", color: "#090d16" },
+  ],
+};
 
 export const metadata: Metadata = {
   title: "Zobay Rank — SEO, AEO & GEO Optimization Platform",
@@ -46,7 +56,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="bg-background text-foreground min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white">
+      <body className="bg-background text-foreground min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white overflow-x-clip w-full max-w-full">
         <ThemeProvider>
           <NotificationProvider>
             <ToastProvider>{children}</ToastProvider>

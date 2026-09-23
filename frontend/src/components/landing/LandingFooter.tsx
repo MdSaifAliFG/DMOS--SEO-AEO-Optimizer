@@ -11,9 +11,9 @@ export const LandingFooter: React.FC = () => {
       <div className="max-w-7xl 2xl:max-w-[1680px] 3xl:max-w-[1920px] 4k:max-w-[2240px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 relative z-10 space-y-14 2xl:space-y-20">
 
         {/* Middle Section: Footer Navigation Links */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-8 2xl:gap-10">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-8 2xl:gap-10">
           {/* Col 1: Brand Info (2 cols on lg) */}
-          <div className="space-y-4 2xl:space-y-6 col-span-2 sm:col-span-3 lg:col-span-2">
+          <div className="space-y-4 2xl:space-y-6 col-span-1 xs:col-span-2 sm:col-span-3 lg:col-span-2">
             <Link href="/" className="inline-flex items-center gap-2.5 group">
               <SeoSensingLogo size={36} className="2xl:scale-110 3xl:scale-120" />
               <span className="text-xl 2xl:text-2xl 3xl:text-3xl font-black tracking-tight text-white font-sans">
@@ -217,6 +217,11 @@ export const LandingFooter: React.FC = () => {
               <li>
                 <a href="#faq" className="hover:text-blue-400 transition-colors">
                   Frequently Asked
+                </a>
+              </li>
+              <li>
+                <a href="#contact" className="hover:text-blue-400 transition-colors">
+                  Contact &amp; Support
                 </a>
               </li>
               <li>

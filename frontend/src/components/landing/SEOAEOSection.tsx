@@ -65,7 +65,7 @@ export const SEOAEOSection: React.FC = () => {
                     <Globe className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-base sm:text-[17px] 2xl:text-xl font-black text-slate-950 tracking-tight leading-tight whitespace-nowrap">
+                    <h3 className="text-base sm:text-[17px] 2xl:text-xl font-black text-slate-950 tracking-tight leading-tight">
                       SEO Optimization
                     </h3>
                     <p className="text-[11px] sm:text-xs font-bold text-blue-600 tracking-wide truncate mt-0.5">
@@ -141,7 +141,7 @@ export const SEOAEOSection: React.FC = () => {
                     <Bot className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-base sm:text-[17px] 2xl:text-xl font-black text-slate-950 tracking-tight leading-tight whitespace-nowrap">
+                    <h3 className="text-base sm:text-[17px] 2xl:text-xl font-black text-slate-950 tracking-tight leading-tight">
                       AEO Optimization
                     </h3>
                     <p className="text-[11px] sm:text-xs font-bold text-purple-600 tracking-wide truncate mt-0.5">
@@ -217,7 +217,7 @@ export const SEOAEOSection: React.FC = () => {
                     <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-base sm:text-[17px] 2xl:text-xl font-black text-slate-950 tracking-tight leading-tight whitespace-nowrap">
+                    <h3 className="text-base sm:text-[17px] 2xl:text-xl font-black text-slate-950 tracking-tight leading-tight">
                       GEO Optimization
                     </h3>
                     <p className="text-[11px] sm:text-xs font-bold text-amber-600 tracking-wide truncate mt-0.5">

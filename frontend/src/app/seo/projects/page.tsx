@@ -280,7 +280,7 @@ export default function SeoProjectsPage() {
                     placeholder="e.g. My Company Website"
                     value={newProjectName}
                     onChange={(e) => setNewProjectName(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-lg text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500"
                   />
                 </div>
 
@@ -292,7 +292,7 @@ export default function SeoProjectsPage() {
                     placeholder="e.g. https://example.com or example.com"
                     value={newProjectDomain}
                     onChange={(e) => setNewProjectDomain(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 font-mono"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-lg text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 font-mono"
                   />
                 </div>
 

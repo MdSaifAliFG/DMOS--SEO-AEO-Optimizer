@@ -170,7 +170,7 @@ async def send_password_reset_code(
     expiration_minutes: int = 15,
 ) -> bool:
     """Sends a formatted password reset code email."""
-    subject = f"{code} is your SeoSensing verification code"
+    subject = f"{code} is your Zobay Rank verification code"
     text_content = (
         f"Your password reset verification code is: {code}\n"
         f"This code will expire in {expiration_minutes} minutes.\n"
@@ -187,3 +187,196 @@ async def send_password_reset_code(
         html_content=html_content,
         text_content=text_content,
     )
+
+
+def generate_contact_admin_notification_html(
+    name: str,
+    email: str,
+    subject: str,
+    message: str,
+    company: Optional[str] = None,
+    phone: Optional[str] = None,
+) -> str:
+    """Generates an email template sent to platform administrators when a contact inquiry is submitted."""
+    company_row = f"""
+    <tr>
+      <td style="padding: 6px 0; color: #64748b; font-size: 13px; width: 110px;"><strong>Company:</strong></td>
+      <td style="padding: 6px 0; color: #f1f5f9; font-size: 13px;">{company}</td>
+    </tr>""" if company else ""
+
+    phone_row = f"""
+    <tr>
+      <td style="padding: 6px 0; color: #64748b; font-size: 13px; width: 110px;"><strong>Phone:</strong></td>
+      <td style="padding: 6px 0; color: #f1f5f9; font-size: 13px;">{phone}</td>
+    </tr>""" if phone else ""
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>New Contact Inquiry — {subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #030712; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #f8fafc;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #030712; padding: 40px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" max-width="580" cellspacing="0" cellpadding="0" border="0" style="max-width: 580px; background-color: #0f172a; border-radius: 20px; border: 1px solid #1e293b; overflow: hidden;">
+          <tr>
+            <td style="padding: 30px 32px 18px 32px; text-align: center; background: linear-gradient(180deg, rgba(37, 99, 235, 0.14) 0%, rgba(15, 23, 42, 0) 100%);">
+              <div style="display: inline-block; padding: 8px 16px; border-radius: 10px; background: #1e293b; border: 1px solid #334155; margin-bottom: 8px;">
+                <span style="font-size: 18px; font-weight: 800; color: #ffffff;">
+                  Zob<span style="color: #60a5fa; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ay Rank</span>
+                </span>
+              </div>
+              <h2 style="margin: 6px 0 0 0; font-size: 20px; font-weight: 700; color: #ffffff;">
+                New Website Contact Inquiry
+              </h2>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 32px 28px 32px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 20px; border-bottom: 1px solid #1e293b; padding-bottom: 16px;">
+                <tr>
+                  <td style="padding: 6px 0; color: #64748b; font-size: 13px; width: 110px;"><strong>Name:</strong></td>
+                  <td style="padding: 6px 0; color: #f1f5f9; font-size: 13px; font-weight: 600;">{name}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; color: #64748b; font-size: 13px; width: 110px;"><strong>Email:</strong></td>
+                  <td style="padding: 6px 0; color: #60a5fa; font-size: 13px;"><a href="mailto:{email}" style="color: #60a5fa; text-decoration: none;">{email}</a></td>
+                </tr>
+                {company_row}
+                {phone_row}
+                <tr>
+                  <td style="padding: 6px 0; color: #64748b; font-size: 13px; width: 110px;"><strong>Topic:</strong></td>
+                  <td style="padding: 6px 0; color: #cbd5e1; font-size: 13px;">{subject}</td>
+                </tr>
+              </table>
+              <div style="background-color: #030712; border: 1px solid #1e293b; border-radius: 12px; padding: 18px 20px; margin-top: 12px;">
+                <p style="margin: 0 0 8px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700;">Inquiry Message:</p>
+                <p style="margin: 0; font-size: 14px; line-height: 22px; color: #e2e8f0; white-space: pre-wrap;">{message}</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 16px 32px; background-color: #030712; border-top: 1px solid #1e293b; text-align: center;">
+              <p style="margin: 0; font-size: 11px; color: #475569;">
+                Dispatched by Zobay Rank Contact Engine &copy; 2026
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>"""
+
+
+def generate_contact_user_acknowledgment_html(name: str, subject: str) -> str:
+    """Generates an email acknowledgment sent to the visitor who submitted the contact inquiry."""
+    first_name = name.strip().split(" ")[0] if name else "there"
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>We Received Your Message — Zobay Rank</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #030712; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #f8fafc;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #030712; padding: 40px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" max-width="540" cellspacing="0" cellpadding="0" border="0" style="max-width: 540px; background-color: #0f172a; border-radius: 20px; border: 1px solid #1e293b; overflow: hidden;">
+          <tr>
+            <td style="padding: 32px 32px 18px 32px; text-align: center; background: linear-gradient(180deg, rgba(37, 99, 235, 0.12) 0%, rgba(15, 23, 42, 0) 100%);">
+              <div style="display: inline-block; padding: 8px 16px; border-radius: 10px; background: #1e293b; border: 1px solid #334155; margin-bottom: 8px;">
+                <span style="font-size: 18px; font-weight: 800; color: #ffffff;">
+                  Zob<span style="color: #60a5fa; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ay Rank</span>
+                </span>
+              </div>
+              <h2 style="margin: 6px 0 0 0; font-size: 20px; font-weight: 700; color: #ffffff;">
+                Thanks for Reaching Out!
+              </h2>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 32px 28px 32px;">
+              <p style="margin: 0 0 14px 0; font-size: 14px; line-height: 22px; color: #94a3b8;">
+                Hello <strong style="color: #f1f5f9;">{first_name}</strong>,
+              </p>
+              <p style="margin: 0 0 18px 0; font-size: 14px; line-height: 22px; color: #94a3b8;">
+                Thank you for contacting the Zobay Rank team regarding <strong style="color: #cbd5e1;">&ldquo;{subject}&rdquo;</strong>.
+              </p>
+              <p style="margin: 0 0 20px 0; font-size: 14px; line-height: 22px; color: #94a3b8;">
+                We have received your message and our growth &amp; engineering specialists will review your inquiry and follow up within <strong>24 business hours</strong>.
+              </p>
+              <div style="padding: 14px 18px; background-color: #1e293b80; border: 1px solid #334155; border-radius: 12px; margin-top: 16px;">
+                <p style="margin: 0; font-size: 12px; line-height: 18px; color: #94a3b8;">
+                  💡 <em>In the meantime, you can run an instant audit on any URL using our live Quick Scan engine on our homepage.</em>
+                </p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 18px 32px; background-color: #030712; border-top: 1px solid #1e293b; text-align: center;">
+              <p style="margin: 0 0 4px 0; font-size: 11px; color: #64748b;">
+                Sent by <strong>{settings.SMTP_FROM_NAME or 'Zobay Rank Team'}</strong>
+              </p>
+              <p style="margin: 0; font-size: 11px; color: #475569;">
+                &copy; 2026 Zobay Rank Platform. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>"""
+
+
+async def send_contact_inquiry_emails(
+    name: str,
+    email: str,
+    subject: str,
+    message: str,
+    company: Optional[str] = None,
+    phone: Optional[str] = None,
+) -> bool:
+    """Dispatches both administrative notification and visitor acknowledgment emails."""
+    admin_recipient = settings.SMTP_FROM or "dm@fortunehestia.in"
+    admin_subject = f"[Zobay Rank Contact] {subject} from {name}"
+    admin_html = generate_contact_admin_notification_html(
+        name=name,
+        email=email,
+        subject=subject,
+        message=message,
+        company=company,
+        phone=phone,
+    )
+    admin_text = f"New inquiry from {name} ({email})\nSubject: {subject}\nCompany: {company or 'N/A'}\nPhone: {phone or 'N/A'}\n\nMessage:\n{message}"
+
+    user_subject = f"We received your message — Zobay Rank"
+    user_html = generate_contact_user_acknowledgment_html(name=name, subject=subject)
+    user_text = f"Hello {name},\n\nThank you for reaching out to Zobay Rank regarding '{subject}'. We have received your inquiry and our team will get back to you within 24 business hours.\n\nBest regards,\nThe Zobay Rank Team"
+
+    # Send admin notification (primary)
+    admin_sent = await send_email(
+        to_email=admin_recipient,
+        subject=admin_subject,
+        html_content=admin_html,
+        text_content=admin_text,
+    )
+
+    # Send user acknowledgment (secondary)
+    try:
+        await send_email(
+            to_email=email,
+            subject=user_subject,
+            html_content=user_html,
+            text_content=user_text,
+        )
+    except Exception as exc:
+        logger.warning("Failed to send user acknowledgment to %s: %s", email, exc)
+
+    return admin_sent
+

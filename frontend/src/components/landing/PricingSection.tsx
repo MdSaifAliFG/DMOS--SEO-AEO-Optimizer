@@ -177,10 +177,10 @@ export const PricingSection: React.FC = () => {
 
           {/* Billing Cycle Switcher */}
           <div className="pt-3 flex items-center justify-center">
-            <div className="inline-flex items-center p-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 shadow-xs">
+            <div className="inline-flex max-w-full items-center p-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 shadow-xs overflow-x-auto no-scrollbar">
               <button
                 onClick={() => setBillingCycle("monthly")}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                   billingCycle === "monthly"
                     ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
                     : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -190,14 +190,14 @@ export const PricingSection: React.FC = () => {
               </button>
               <button
                 onClick={() => setBillingCycle("annual")}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                   billingCycle === "annual"
                     ? "bg-[#1D63FF] text-white shadow-xs"
                     : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 <span>Annual Billing</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-400 text-slate-950 font-extrabold uppercase">
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-extrabold uppercase shrink-0">
                   Save 20%
                 </span>
               </button>

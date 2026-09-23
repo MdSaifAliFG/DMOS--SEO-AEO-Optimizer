@@ -56,15 +56,15 @@ export const HeroSection: React.FC = () => {
             </p>
 
             {/* Side-by-Side Pill CTA Buttons */}
-            <div className="flex flex-wrap items-center gap-3.5 2xl:gap-5 pt-1">
-              <a href="#quick-scan">
-                <button className="px-7 sm:px-8 2xl:px-10 py-3.5 2xl:py-4.5 rounded-full bg-[#1D63FF] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm 2xl:text-base tracking-wide shadow-xl shadow-blue-600/40 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-3.5 2xl:gap-5 pt-1">
+              <a href="#quick-scan" className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto px-7 sm:px-8 2xl:px-10 py-3.5 2xl:py-4.5 rounded-full bg-[#1D63FF] hover:bg-blue-600 text-white font-bold text-xs sm:text-sm 2xl:text-base tracking-wide shadow-xl shadow-blue-600/40 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer text-center">
                   Try free audit
                 </button>
               </a>
 
-              <Link href={isAuthenticated ? "/overview" : "/login"}>
-                <button className="px-7 sm:px-8 2xl:px-10 py-3.5 2xl:py-4.5 rounded-full bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs sm:text-sm 2xl:text-base tracking-wide shadow-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer">
+              <Link href={isAuthenticated ? "/overview" : "/login"} className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto px-7 sm:px-8 2xl:px-10 py-3.5 2xl:py-4.5 rounded-full bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs sm:text-sm 2xl:text-base tracking-wide shadow-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer text-center">
                   Scan your website
                 </button>
               </Link>
@@ -102,8 +102,8 @@ export const HeroSection: React.FC = () => {
           </div>
 
           {/* Right Column: 2-Column Angled Isometric Dashboard Collage (6 cols) */}
-          <div className="lg:col-span-6 relative flex justify-center lg:justify-end overflow-visible">
-            <div className="relative w-full max-w-[480px] sm:max-w-[520px] 2xl:max-w-[640px] 3xl:max-w-[720px] select-none scale-[0.84] sm:scale-95 lg:scale-100 2xl:scale-115 3xl:scale-125 origin-center sm:origin-top-right 2xl:origin-center transform -rotate-[12deg] hover:-rotate-[8deg] transition-transform duration-500">
+          <div className="lg:col-span-6 relative flex justify-center lg:justify-end overflow-hidden sm:overflow-visible">
+            <div className="relative w-full max-w-[480px] sm:max-w-[520px] 2xl:max-w-[640px] 3xl:max-w-[720px] select-none scale-[0.72] xs:scale-[0.82] sm:scale-95 lg:scale-100 2xl:scale-115 3xl:scale-125 origin-center sm:origin-top-right 2xl:origin-center transform -rotate-[8deg] sm:-rotate-[12deg] hover:-rotate-[4deg] sm:hover:-rotate-[8deg] transition-transform duration-500">
               <div className="grid grid-cols-2 gap-4 sm:gap-5 items-start">
 
                 {/* Column 1 (Left Tilted Column) */}

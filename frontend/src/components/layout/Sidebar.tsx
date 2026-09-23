@@ -120,12 +120,18 @@ export const Sidebar: React.FC<{
   return (
     <aside
       className={cn(
-        "bg-white dark:bg-[#0c121e] border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen sticky top-0 z-30 transition-all duration-200 select-none",
+        "shrink-0 transition-all duration-200 select-none",
         isCollapsed ? "w-16" : "w-64",
         className
       )}
     >
-      {/* Brand Header */}
+      <div
+        className={cn(
+          "fixed top-0 left-0 bottom-0 h-screen bg-white dark:bg-[#0c121e] border-r border-slate-200 dark:border-slate-800 flex flex-col z-30 transition-all duration-200 select-none",
+          isCollapsed ? "w-16" : "w-64"
+        )}
+      >
+        {/* Brand Header */}
       <div
         suppressHydrationWarning
         className={cn(
@@ -328,6 +334,7 @@ export const Sidebar: React.FC<{
           <LogOut className="w-4 h-4 shrink-0" />
           {!isCollapsed && <span>Logout</span>}
         </button>
+      </div>
       </div>
     </aside>
   );

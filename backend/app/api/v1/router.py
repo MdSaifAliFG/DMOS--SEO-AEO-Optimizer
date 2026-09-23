@@ -12,6 +12,7 @@ from app.api.v1.endpoints import (
     integrations,
     settings,
     billing,
+    contact,
 )
 
 api_router = APIRouter()
@@ -28,5 +29,6 @@ api_router.include_router(public_scan.router)
 api_router.include_router(integrations.router)
 api_router.include_router(settings.router)
 api_router.include_router(billing.router)
+api_router.include_router(contact.router)
 
 

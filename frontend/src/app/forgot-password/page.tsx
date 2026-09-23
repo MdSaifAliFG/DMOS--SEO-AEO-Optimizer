@@ -243,7 +243,7 @@ export default function ForgotPasswordPage() {
 
       {/* Main Password Reset Card */}
       <div className="w-full max-w-[430px] relative z-10 my-auto">
-        <div className="bg-white dark:bg-[#0f172a] rounded-3xl p-6 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.55)] border border-slate-100 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
+        <div className="bg-white dark:bg-[#0f172a] rounded-3xl p-5 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.55)] border border-slate-100 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white">
           
           {/* Brand Header */}
           <div className="text-center space-y-1.5 flex flex-col items-center">
@@ -285,7 +285,7 @@ export default function ForgotPasswordPage() {
                   Password Reset Complete
                 </h1>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-normal max-w-xs">
-                  Your password has been securely updated. You can now sign in to SeoSensing Platform.
+                  Your password has been securely updated. You can now sign in to Zobay Rank.
                 </p>
               </>
             )}
@@ -319,7 +319,7 @@ export default function ForgotPasswordPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@company.com"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/10 transition-all shadow-xs"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-base sm:text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/10 transition-all shadow-xs"
                   />
                 </div>
               </div>
@@ -408,7 +408,7 @@ export default function ForgotPasswordPage() {
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                     placeholder="Enter 6-digit code"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/10 transition-all shadow-xs font-mono font-bold tracking-wider"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-base sm:text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/10 transition-all shadow-xs font-mono font-bold tracking-wider"
                   />
                 </div>
               </div>
@@ -435,7 +435,7 @@ export default function ForgotPasswordPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="8 to 16 characters"
-                    className="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/10 transition-all shadow-xs font-mono"
+                    className="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-base sm:text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/10 transition-all shadow-xs font-mono"
                   />
                   <button
                     type="button"
@@ -472,7 +472,7 @@ export default function ForgotPasswordPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Repeat new password"
-                    className="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/10 transition-all shadow-xs font-mono"
+                    className="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-base sm:text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-blue-600 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/10 transition-all shadow-xs font-mono"
                   />
                   <button
                     type="button"

@@ -143,12 +143,12 @@ export default function SeoPagesPage() {
           </div>
 
           {projects.length > 0 && (
-            <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 shrink-0">
-              <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Active Website:</span>
+            <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 shrink-0 max-w-full overflow-hidden">
+              <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 shrink-0">Active Website:</span>
               <select
                 value={selectedProjectId}
                 onChange={(e) => handleProjectChange(e.target.value)}
-                className="bg-transparent text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer truncate max-w-[200px] sm:max-w-none"
               >
                 {projects.map((p) => (
                   <option key={p.id} value={p.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">

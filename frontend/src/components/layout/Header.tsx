@@ -291,37 +291,42 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
   const headerInfo = getPageHeaderInfo();
 
   return (
-    <header className="h-16 2xl:h-20 px-3 sm:px-4 md:px-8 2xl:px-12 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c121e] sticky top-0 z-20 flex items-center justify-between gap-2 sm:gap-6 2xl:gap-8 shadow-xs transition-colors duration-200">
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0">
+    <header className="h-16 2xl:h-20 px-3 sm:px-4 md:px-8 2xl:px-12 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c121e] sticky top-0 z-20 flex items-center justify-between gap-2 sm:gap-4 md:gap-6 2xl:gap-8 shadow-xs transition-colors duration-200">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 md:flex-initial">
         {/* Mobile menu trigger */}
         <button
           onClick={onOpenMobileNav}
-          className="lg:hidden p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          className="lg:hidden p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
           aria-label="Open menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         {/* Dynamic Page Title & Subtitle */}
-        <div className="flex flex-col justify-center min-w-0 max-w-[110px] xs:max-w-[160px] sm:max-w-none">
+        <div className="flex flex-col justify-center min-w-0">
           <h1 className="text-sm sm:text-base md:text-lg 2xl:text-xl font-bold text-slate-900 dark:text-white leading-tight truncate">
             {headerInfo.title}
           </h1>
           {headerInfo.subtitle ? (
-            <p className="text-[11px] 2xl:text-xs text-slate-500 dark:text-slate-400 hidden md:block leading-tight truncate mt-0.5 max-w-sm lg:max-w-md 2xl:max-w-xl">
+            <p className="text-[10px] 2xl:text-xs text-slate-500 dark:text-slate-400 hidden md:block leading-tight truncate mt-0.5 max-w-sm lg:max-w-md 2xl:max-w-xl">
               {headerInfo.subtitle}
             </p>
           ) : null}
         </div>
       </div>
 
-      {/* Center Global Search Bar */}
-      <div className="flex-1 max-w-[160px] xs:max-w-[220px] sm:max-w-sm md:max-w-md lg:max-w-xl 2xl:max-w-2xl 3xl:max-w-3xl mx-1 sm:mx-4 min-w-0 flex justify-center">
+      {/* Center Global Search Bar (Desktop) */}
+      <div className="hidden md:flex flex-1 max-w-sm md:max-w-md lg:max-w-xl 2xl:max-w-2xl 3xl:max-w-3xl mx-4 min-w-0 justify-center">
         <GlobalSearch />
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        {/* Mobile Search Button */}
+        <div className="md:hidden">
+          <GlobalSearch isMobileButton />
+        </div>
+
         {/* Plan Tier Badge */}
         <Link
           href="/billing"
@@ -337,14 +342,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
         {/* Real-time Credit Balance Badge */}
         <Link
           href="/billing"
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors shadow-2xs cursor-pointer group"
+          className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors shadow-2xs cursor-pointer group"
           title="Available Credits (Click to top up or view history)"
         >
-          <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500 group-hover:scale-110 transition-transform" />
+          <Zap className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-500 fill-amber-500 group-hover:scale-110 transition-transform shrink-0" />
           <span>
             {billingSummary !== null
-              ? `${billingSummary.available_credits.toLocaleString()} Credits`
-              : "Credits"}
+              ? billingSummary.available_credits.toLocaleString()
+              : "0"}
+            <span className="hidden sm:inline"> Credits</span>
           </span>
         </Link>
 
@@ -369,7 +375,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
 
           {/* Notifications Dropdown Panel */}
           {isNotificationMenuOpen && (
-            <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-xs sm:w-96 sm:max-w-none bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
+            <div className="fixed sm:absolute right-2 sm:right-0 top-16 sm:top-auto sm:mt-2 w-[calc(100vw-1rem)] max-w-sm sm:w-96 sm:max-w-none bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
               {/* Dropdown Header */}
               <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/80">
                 <div className="flex items-center gap-2">

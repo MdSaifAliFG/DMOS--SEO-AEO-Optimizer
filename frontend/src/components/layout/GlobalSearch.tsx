@@ -417,7 +417,11 @@ const SEARCH_DATABASE: SearchItem[] = [
   },
 ];
 
-export const GlobalSearch: React.FC = () => {
+export interface GlobalSearchProps {
+  isMobileButton?: boolean;
+}
+
+export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isMobileButton = false }) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -546,6 +550,102 @@ export const GlobalSearch: React.FC = () => {
       activeElement.scrollIntoView({ block: "nearest" });
     }
   }, [selectedIndex]);
+
+  if (isMobileButton) {
+    return (
+      <div ref={containerRef} className="relative">
+        <button
+          type="button"
+          onClick={() => {
+            setIsOpen(true);
+            setTimeout(() => inputRef.current?.focus(), 60);
+          }}
+          className="p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          title="Search"
+          aria-label="Search"
+        >
+          <Search className="w-4 h-4" />
+        </button>
+
+        {isOpen && (
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs p-3 flex flex-col justify-start pt-16 animate-in fade-in">
+            <div className="w-full max-w-lg mx-auto bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+              {/* Mobile Search Input Header */}
+              <div className="p-3 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 bg-slate-50/80 dark:bg-slate-900/80">
+                <Search className="w-4 h-4 text-blue-600 shrink-0" />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search platform..."
+                  className="flex-1 bg-transparent text-base sm:text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Suggestions / Results */}
+              <div
+                ref={listRef}
+                className="overflow-y-auto divide-y divide-slate-50 dark:divide-slate-800/60 p-1 flex-1"
+              >
+                {filteredItems.length > 0 ? (
+                  filteredItems.map((item) => {
+                    const IconComponent = item.icon;
+                    const iconBgClass =
+                      item.category === "SEO"
+                        ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400"
+                        : item.category === "AEO"
+                          ? "bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400"
+                          : item.category === "Actions"
+                            ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400";
+
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={() => handleSelectItem(item)}
+                        className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${iconBgClass}`}>
+                            <IconComponent className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                              {item.title}
+                            </p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                              {item.description}
+                            </p>
+                          </div>
+                        </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-2" />
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="py-8 px-4 text-center">
+                    <Search className="w-6 h-6 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+                    <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                      No matching results found
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="relative w-full">

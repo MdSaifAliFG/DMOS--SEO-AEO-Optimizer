@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -75,10 +75,27 @@ export interface MobileNavProps {
 
 export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
+  const prevPathnameRef = useRef(pathname);
 
+  // Close the drawer only when actual route navigation occurs
   useEffect(() => {
-    onClose();
+    if (prevPathnameRef.current !== pathname) {
+      prevPathnameRef.current = pathname;
+      onClose();
+    }
   }, [pathname, onClose]);
+
+  // Prevent background body scroll while drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -141,7 +158,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose }) => {
                         key={iIdx}
                         href={item.href}
                         className={cn(
-                          "flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors",
+                          "flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-colors",
                           active
                             ? isAeoGroup
                               ? "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-semibold border border-purple-200 dark:border-purple-800/60"

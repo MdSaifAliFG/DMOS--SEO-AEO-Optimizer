@@ -8,6 +8,7 @@ import { SEOAEOSection } from "@/components/landing/SEOAEOSection";
 import { QuickScanSection } from "@/components/landing/QuickScanSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { FAQSection } from "@/components/landing/FAQSection";
+import { ContactSection } from "@/components/landing/ContactSection";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
@@ -130,7 +131,10 @@ export default function LandingPage() {
         {/* 6. Frequently Asked Questions with Visual Support Pill Collage */}
         <FAQSection />
 
-        {/* 7. Final High-Conversion Blue CTA Strip */}
+        {/* 7. Direct Communication & Contact Form Section */}
+        <ContactSection />
+
+        {/* 8. Final High-Conversion Blue CTA Strip */}
         <FinalCTA />
       </main>
 
