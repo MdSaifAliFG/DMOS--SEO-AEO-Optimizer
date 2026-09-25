@@ -118,8 +118,7 @@ export const SEOAEOSection: React.FC = () => {
             </div>
 
             {/* Card Footer */}
-            <div className="pt-5 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-mono font-semibold">/seo/*</span>
+            <div className="pt-5 border-t border-slate-100 flex items-center justify-end">
               <Link href={isAuthenticated ? "/seo/dashboard" : "/login"}>
                 <button className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer">
                   <span>Explore SEO</span>
@@ -194,8 +193,7 @@ export const SEOAEOSection: React.FC = () => {
             </div>
 
             {/* Card Footer */}
-            <div className="pt-5 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-mono font-semibold">/aeo/*</span>
+            <div className="pt-5 border-t border-slate-100 flex items-center justify-end">
               <Link href={isAuthenticated ? "/aeo/dashboard" : "/login"}>
                 <button className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md shadow-purple-600/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer">
                   <span>Explore AEO</span>
@@ -270,8 +268,7 @@ export const SEOAEOSection: React.FC = () => {
             </div>
 
             {/* Card Footer */}
-            <div className="pt-5 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-mono font-semibold">/geo/*</span>
+            <div className="pt-5 border-t border-slate-100 flex items-center justify-end">
               <Link href={isAuthenticated ? "/geo/dashboard" : "/login"}>
                 <button className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md shadow-amber-500/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer">
                   <span>Explore GEO</span>

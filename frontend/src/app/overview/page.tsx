@@ -73,8 +73,7 @@ export default function OverviewPage() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
-              <span className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate">/seo/dashboard</span>
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end">
               <Link href="/seo/dashboard" className="shrink-0">
                 <Button variant="primary" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
                   Open SEO
@@ -110,8 +109,7 @@ export default function OverviewPage() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
-              <span className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate">/aeo/dashboard</span>
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end">
               <Link href="/aeo/dashboard" className="shrink-0">
                 <Button variant="aeo" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
                   Open AEO
@@ -147,8 +145,7 @@ export default function OverviewPage() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
-              <span className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate">/geo/dashboard</span>
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end">
               <Link href="/geo/dashboard" className="shrink-0">
                 <Button className="bg-amber-500 hover:bg-amber-600 text-white shadow-xs" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
                   Open GEO

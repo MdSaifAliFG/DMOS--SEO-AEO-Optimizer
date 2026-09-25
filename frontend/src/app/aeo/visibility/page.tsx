@@ -118,19 +118,19 @@ export default function AeoVisibilityPage() {
           </div>
         </div>
 
-        {/* Explainable Formula Banner */}
+        {/* AEO Visibility Banner */}
         <div className="p-5 rounded-2xl bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white shadow-md border border-purple-800/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/30 text-purple-200 border border-purple-400/30 uppercase">
-                Explainable Scoring Formula
+                AEO Visibility Score
               </span>
             </div>
-            <div className="font-mono text-sm sm:text-base font-bold text-purple-100">
-              AEO Score = (0.35 × Mention) + (0.25 × Citation) + (0.20 × Position) + (0.20 × Coverage)
-            </div>
+            <h2 className="text-base sm:text-lg font-bold text-white">
+              Answer Engine Visibility &amp; Citation Benchmark
+            </h2>
             <p className="text-xs text-purple-200/80 max-w-2xl">
-              Strict deterministic formula evaluating real responses collected from OpenAI, Gemini, and Perplexity engines.
+              Deterministic evaluation of real responses, source citations, and brand mentions across OpenAI, Gemini, and Perplexity engines.
             </p>
           </div>
 

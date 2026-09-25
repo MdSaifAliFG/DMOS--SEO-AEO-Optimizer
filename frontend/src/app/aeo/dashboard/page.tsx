@@ -1248,15 +1248,15 @@ export default function AeoDashboardPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">AEO Visibility Formula</h3>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">AEO Visibility Breakdown</h3>
                 </div>
                 <button onClick={() => setIsScoreModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="p-3 rounded-xl bg-purple-50/80 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-800/60 font-mono text-xs text-purple-950 dark:text-purple-200 text-center">
-                Score = (0.35 × Mention) + (0.25 × Citation) + (0.20 × Position) + (0.20 × Coverage)
+              <div className="p-3 rounded-xl bg-purple-50/80 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-800/60 text-xs text-purple-900 dark:text-purple-200 text-center font-medium">
+                Comprehensive evaluation across four core answer engine visibility dimensions:
               </div>
 
               <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
