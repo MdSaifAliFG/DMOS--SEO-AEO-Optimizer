@@ -209,8 +209,11 @@ class OpenAIAnswerProvider(AEOAnswerProvider):
 class GeminiAnswerProvider(AEOAnswerProvider):
     """Live Google Gemini Answer Engine Provider."""
 
-    def __init__(self, api_key: Optional[str] = None):
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY")
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        from app.core.config import settings
+        self.api_key = (api_key or settings.GEMINI_API_KEY or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_API_KEY") or "").strip()
+        self.model = (model or settings.GEMINI_MODEL or os.getenv("GEMINI_MODEL") or "gemini-1.5-flash").strip()
+        self.timeout = float(getattr(settings, "GEMINI_TIMEOUT_SECONDS", 30.0) or 30.0)
 
     @property
     def engine_id(self) -> str:
@@ -233,7 +236,7 @@ class GeminiAnswerProvider(AEOAnswerProvider):
         if not self.is_configured():
             return AEOProviderResponse(
                 engine=self.engine_id,
-                model="gemini-1.5-flash",
+                model=self.model,
                 answer_text="",
                 is_success=False,
                 status="not_configured",
@@ -242,8 +245,8 @@ class GeminiAnswerProvider(AEOAnswerProvider):
 
         t0 = time.perf_counter()
         try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={self.api_key}"
-            async with httpx.AsyncClient(timeout=25.0) as client:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
                 res = await client.post(
                     url,
                     headers={"Content-Type": "application/json"},
@@ -263,7 +266,7 @@ class GeminiAnswerProvider(AEOAnswerProvider):
                         usage = data.get("usageMetadata", {})
                         return AEOProviderResponse(
                             engine=self.engine_id,
-                            model="gemini-1.5-flash",
+                            model=self.model,
                             answer_text=text,
                             is_success=True,
                             status="success",
@@ -272,7 +275,7 @@ class GeminiAnswerProvider(AEOAnswerProvider):
                         )
                 return AEOProviderResponse(
                     engine=self.engine_id,
-                    model="gemini-1.5-flash",
+                    model=self.model,
                     answer_text="",
                     is_success=False,
                     status="provider_error",
@@ -282,7 +285,7 @@ class GeminiAnswerProvider(AEOAnswerProvider):
         except Exception as e:
             return AEOProviderResponse(
                 engine=self.engine_id,
-                model="gemini-1.5-flash",
+                model=self.model,
                 answer_text="",
                 is_success=False,
                 status="provider_error",

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { API_BASE_URL } from "./constants";
 
 export type NotificationType = "seo" | "aeo" | "system" | "security";
 export type NotificationSeverity = "info" | "success" | "warning" | "error";
@@ -21,136 +22,104 @@ export interface NotificationItem {
 interface NotificationContextValue {
   notifications: NotificationItem[];
   unreadCount: number;
+  isRefreshing: boolean;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   removeNotification: (id: string) => void;
   clearAll: () => void;
+  refreshNotifications: () => Promise<void>;
   addNotification: (
     item: Omit<NotificationItem, "id" | "timestamp" | "createdAt" | "read"> & {
       read?: boolean;
     }
   ) => void;
-  resetDefaultNotifications: () => void;
 }
 
-const STORAGE_KEY = "zobayrank_global_notifications_v1";
-
-const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: "notif_1",
-    title: "Full Website Crawl Completed",
-    message: "48 pages audited on zobayrank.internal. 12 on-page issues and 2 broken redirects discovered.",
-    timestamp: "10m ago",
-    createdAt: Date.now() - 1000 * 60 * 10,
-    type: "seo",
-    severity: "success",
-    read: false,
-    link: "/seo/issues",
-    linkText: "Inspect Issues",
-  },
-  {
-    id: "notif_2",
-    title: "AEO Citation Spike (+14%)",
-    message: "Perplexity AI & ChatGPT citations jumped +14% across top commercial query clusters.",
-    timestamp: "35m ago",
-    createdAt: Date.now() - 1000 * 60 * 35,
-    type: "aeo",
-    severity: "info",
-    read: false,
-    link: "/aeo/citations",
-    linkText: "View Citations",
-  },
-  {
-    id: "notif_3",
-    title: "Missing Canonical Tags Flagged",
-    message: "3 high-traffic URLs are missing canonical tags, risking duplicate indexing penalties.",
-    timestamp: "2h ago",
-    createdAt: Date.now() - 1000 * 60 * 60 * 2,
-    type: "seo",
-    severity: "warning",
-    read: false,
-    link: "/seo/optimize/metadata",
-    linkText: "Fix Metadata",
-  },
-  {
-    id: "notif_4",
-    title: "Competitor AI Answer Gap Detected",
-    message: "A competitor gained 4 new answer snippets on target queries in AI Answer Engine radar.",
-    timestamp: "4h ago",
-    createdAt: Date.now() - 1000 * 60 * 60 * 4,
-    type: "aeo",
-    severity: "warning",
-    read: true,
-    link: "/aeo/optimization/citations",
-    linkText: "Analyze Gaps",
-  },
-  {
-    id: "notif_5",
-    title: "Zobay Rank Engine Online",
-    message: "Deterministic crawler daemon verified and healthy with sub-second response times.",
-    timestamp: "6h ago",
-    createdAt: Date.now() - 1000 * 60 * 60 * 6,
-    type: "system",
-    severity: "success",
-    read: true,
-    link: "/overview",
-    linkText: "System Hub",
-  },
-  {
-    id: "notif_6",
-    title: "SSRF Protection Check Passed",
-    message: "All outbound website crawler requests verified against 256-bit SSL and SSRF egress firewall rules.",
-    timestamp: "1d ago",
-    createdAt: Date.now() - 1000 * 60 * 60 * 24,
-    type: "security",
-    severity: "info",
-    read: true,
-  },
-];
+const READ_STORAGE_KEY = "zobayrank_read_notifications_v2";
 
 const NotificationContext = createContext<NotificationContextValue | null>(null);
 
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [notifications, setNotifications] = useState<NotificationItem[]>(DEFAULT_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Load from localStorage on mount
+  // Load read IDs from localStorage on mount
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(READ_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setNotifications(parsed);
+        if (Array.isArray(parsed)) {
+          setReadIds(new Set(parsed));
         }
       }
     } catch {
-      // Ignore JSON error
+      // Ignore localStorage errors
     } finally {
       setIsLoaded(true);
     }
   }, []);
 
-  // Sync to localStorage
+  // Sync read IDs to localStorage
   useEffect(() => {
     if (!isLoaded) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
+      localStorage.setItem(READ_STORAGE_KEY, JSON.stringify(Array.from(readIds)));
     } catch {
-      // Ignore storage error
+      // Ignore
     }
-  }, [notifications, isLoaded]);
+  }, [readIds, isLoaded]);
+
+  // Fetch authentic real-time feed from backend
+  const fetchLiveFeed = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      const res = await fetch(`${API_BASE_URL}/notifications/feed`);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setNotifications((prev) => {
+            // Apply read status based on readIds
+            return data.map((item: NotificationItem) => ({
+              ...item,
+              read: readIds.has(item.id) || item.read,
+            }));
+          });
+        }
+      }
+    } catch {
+      // Fail silently if network/backend is briefly busy
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [readIds]);
+
+  // Initial fetch and periodic polling (every 30s)
+  useEffect(() => {
+    if (isLoaded) {
+      fetchLiveFeed();
+      const interval = setInterval(fetchLiveFeed, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isLoaded, fetchLiveFeed]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const markAsRead = (id: string) => {
+    setReadIds((prev) => new Set(prev).add(id));
     setNotifications((prev) =>
       prev.map((item) => (item.id === id ? { ...item, read: true } : item))
     );
   };
 
   const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
+    setNotifications((prev) => {
+      const updated = prev.map((item) => ({ ...item, read: true }));
+      setReadIds(new Set(updated.map((u) => u.id)));
+      return updated;
+    });
   };
 
   const removeNotification = (id: string) => {
@@ -176,21 +145,18 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setNotifications((prev) => [newNotif, ...prev]);
   };
 
-  const resetDefaultNotifications = () => {
-    setNotifications(DEFAULT_NOTIFICATIONS);
-  };
-
   return (
     <NotificationContext.Provider
       value={{
         notifications,
         unreadCount,
+        isRefreshing,
         markAsRead,
         markAllAsRead,
         removeNotification,
         clearAll,
+        refreshNotifications: fetchLiveFeed,
         addNotification,
-        resetDefaultNotifications,
       }}
     >
       {children}

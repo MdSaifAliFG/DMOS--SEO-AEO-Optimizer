@@ -233,8 +233,9 @@ class GeminiGEOProvider(GEOAnswerProvider):
         return "Gemini"
 
     def check_configuration(self) -> GEOProviderStatus:
-        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        if not api_key:
+        from app.core.config import settings
+        api_key = (settings.GEMINI_API_KEY or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or "").strip()
+        if not api_key or len(api_key) < 10:
             return GEOProviderStatus.NOT_CONFIGURED
         return GEOProviderStatus.CONNECTED
 
@@ -245,11 +246,15 @@ class GeminiGEOProvider(GEOAnswerProvider):
         return True
 
     async def generate_answer(self, question: str, system_prompt: Optional[str] = None) -> Dict[str, Any]:
+        from app.core.config import settings
+        model_name = (settings.GEMINI_MODEL or os.getenv("GEMINI_MODEL") or "gemini-1.5-flash").strip()
+        timeout_sec = float(getattr(settings, "GEMINI_TIMEOUT_SECONDS", 30.0) or 30.0)
+
         status = self.check_configuration()
         if status != GEOProviderStatus.CONNECTED:
             return {
                 "provider": self.provider_name(),
-                "model": "gemini-1.5-flash",
+                "model": model_name,
                 "answer_text": "",
                 "latency_ms": 0,
                 "token_usage": {},
@@ -258,11 +263,11 @@ class GeminiGEOProvider(GEOAnswerProvider):
                 "error": "Gemini API key not configured.",
             }
 
-        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY", "")
+        api_key = (settings.GEMINI_API_KEY or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or "").strip()
         start = time.perf_counter()
         try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+            async with httpx.AsyncClient(timeout=timeout_sec) as client:
                 res = await client.post(
                     url,
                     json={
@@ -279,35 +284,34 @@ class GeminiGEOProvider(GEOAnswerProvider):
                         text = "".join(p.get("text", "") for p in parts)
                     return {
                         "provider": self.provider_name(),
-                        "model": "gemini-1.5-flash",
+                        "model": model_name,
                         "answer_text": text,
                         "latency_ms": latency,
                         "token_usage": data.get("usageMetadata", {}),
                         "raw_citations": [],
-                        "status": "COMPLETED",
+                        "status": GEOProviderStatus.CONNECTED.value,
                         "error": None,
                     }
-                else:
-                    return {
-                        "provider": self.provider_name(),
-                        "model": "gemini-1.5-flash",
-                        "answer_text": "",
-                        "latency_ms": latency,
-                        "token_usage": {},
-                        "raw_citations": [],
-                        "status": GEOProviderStatus.ERROR.value,
-                        "error": f"Gemini error {res.status_code}: {res.text[:200]}",
-                    }
-        except Exception as exc:
+                return {
+                    "provider": self.provider_name(),
+                    "model": model_name,
+                    "answer_text": "",
+                    "latency_ms": latency,
+                    "token_usage": {},
+                    "raw_citations": [],
+                    "status": "error",
+                    "error": f"Gemini API returned HTTP status {res.status_code}",
+                }
+        except Exception as e:
             return {
                 "provider": self.provider_name(),
-                "model": "gemini-1.5-flash",
+                "model": model_name,
                 "answer_text": "",
                 "latency_ms": int((time.perf_counter() - start) * 1000),
                 "token_usage": {},
                 "raw_citations": [],
-                "status": GEOProviderStatus.ERROR.value,
-                "error": str(exc),
+                "status": "error",
+                "error": str(e),
             }
 
 

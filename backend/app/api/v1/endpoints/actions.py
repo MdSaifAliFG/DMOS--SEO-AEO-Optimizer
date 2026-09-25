@@ -305,6 +305,43 @@ async def optimize_content(
             )
         )
 
+    # Gemini Semantic Content & Gap Analysis Enrichment
+    from app.services.ai.intelligence_service import AIIntelligenceService
+    provider = AIIntelligenceService.get_provider()
+    if provider.is_configured():
+        try:
+            body_sample = ((page.meta_description or "") + "\n" + (page.title or "")) if page else ""
+            semantic_res = await provider.analyze_seo_content(
+                page_url=url,
+                page_title=page.title if page else "",
+                headings=headings_dict,
+                body_text_sample=body_sample,
+                target_keyword=None,
+            )
+            if semantic_res:
+                for rec_item in semantic_res.recommendations:
+                    recs.append(
+                        ContentRecommendationItem(
+                            title=f"AI Semantic: {rec_item.area}",
+                            description=f"{rec_item.observation} {rec_item.recommendation}",
+                            category="Semantic Quality & Intent",
+                            priority=rec_item.impact,
+                            impact=f"+{2.0 if rec_item.impact == 'high' else 1.0} pts",
+                        )
+                    )
+                for gap in semantic_res.content_gaps[:3]:
+                    recs.append(
+                        ContentRecommendationItem(
+                            title=f"Content Gap: {gap[:50]}",
+                            description=f"Address missing subtopic '{gap}' to improve topical coverage and search intent match.",
+                            category="Topical Authority",
+                            priority="medium",
+                            impact="+1.5 pts",
+                        )
+                    )
+        except Exception:
+            pass
+
     return ContentOptimizationResponse(
         url=url,
         word_count=word_count,

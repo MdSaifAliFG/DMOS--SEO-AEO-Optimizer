@@ -172,22 +172,160 @@ class RuleBasedSEOAIProvider(SEOAIProvider):
         return suggestions
 
 
+class GeminiSEOAIProvider(SEOAIProvider):
+    """
+    Google Gemini SEO Metadata & Content Optimization Provider.
+    Enriches title, description, and content suggestions using centralized Gemini intelligence.
+    Gracefully falls back to RuleBasedSEOAIProvider if Gemini is unavailable or not configured.
+    """
+
+    def __init__(self):
+        self._fallback = RuleBasedSEOAIProvider()
+        self._last_active_provider = "rule_based"
+
+    @property
+    def provider_name(self) -> str:
+        return self._last_active_provider
+
+    async def generate_titles(
+        self,
+        current_title: Optional[str],
+        target_url: str,
+        target_keyword: Optional[str] = None,
+        brand_name: Optional[str] = None,
+        snippet: Optional[str] = None,
+    ) -> List[TitleSuggestion]:
+        from app.services.ai.intelligence_service import AIIntelligenceService
+
+        provider = AIIntelligenceService.get_provider()
+        if not provider.is_configured():
+            self._last_active_provider = "rule_based"
+            return await self._fallback.generate_titles(
+                current_title=current_title,
+                target_url=target_url,
+                target_keyword=target_keyword,
+                brand_name=brand_name,
+                snippet=snippet,
+            )
+
+        try:
+            res = await provider.optimize_seo_metadata(
+                current_title=current_title,
+                current_description=None,
+                page_url=target_url,
+                target_keyword=target_keyword,
+                brand_name=brand_name,
+                snippet=snippet,
+            )
+            if res and res.title_suggestions:
+                suggestions = []
+                for item in res.title_suggestions:
+                    t_text = item.get("title", "").strip()
+                    if not t_text:
+                        continue
+                    c_len = len(t_text)
+                    status = "optimal" if 45 <= c_len <= 60 else "too_short" if c_len < 45 else "too_long"
+                    suggestions.append(
+                        TitleSuggestion(
+                            title=t_text,
+                            character_count=c_len,
+                            length_status=status,
+                            keyword_presence=bool(target_keyword and target_keyword.lower() in t_text.lower()),
+                            brand_presence=bool(brand_name and brand_name.lower() in t_text.lower()),
+                        )
+                    )
+                if suggestions:
+                    self._last_active_provider = "gemini"
+                    return suggestions
+        except Exception:
+            pass
+
+        self._last_active_provider = "rule_based"
+        return await self._fallback.generate_titles(
+            current_title=current_title,
+            target_url=target_url,
+            target_keyword=target_keyword,
+            brand_name=brand_name,
+            snippet=snippet,
+        )
+
+    async def generate_descriptions(
+        self,
+        current_description: Optional[str],
+        target_url: str,
+        target_keyword: Optional[str] = None,
+        brand_name: Optional[str] = None,
+        snippet: Optional[str] = None,
+    ) -> List[DescriptionSuggestion]:
+        from app.services.ai.intelligence_service import AIIntelligenceService
+
+        provider = AIIntelligenceService.get_provider()
+        if not provider.is_configured():
+            self._last_active_provider = "rule_based"
+            return await self._fallback.generate_descriptions(
+                current_description=current_description,
+                target_url=target_url,
+                target_keyword=target_keyword,
+                brand_name=brand_name,
+                snippet=snippet,
+            )
+
+        try:
+            res = await provider.optimize_seo_metadata(
+                current_title=None,
+                current_description=current_description,
+                page_url=target_url,
+                target_keyword=target_keyword,
+                brand_name=brand_name,
+                snippet=snippet,
+            )
+            if res and res.description_suggestions:
+                suggestions = []
+                for item in res.description_suggestions:
+                    d_text = item.get("description", "").strip()
+                    if not d_text:
+                        continue
+                    c_len = len(d_text)
+                    status = "optimal" if 120 <= c_len <= 160 else "too_short" if c_len < 120 else "too_long"
+                    suggestions.append(
+                        DescriptionSuggestion(
+                            description=d_text,
+                            character_count=c_len,
+                            length_status=status,
+                            keyword_presence=bool(target_keyword and target_keyword.lower() in d_text.lower()),
+                            cta_presence=any(
+                                kw in d_text.lower()
+                                for kw in ["discover", "explore", "learn", "start", "try", "get", "boost"]
+                            ),
+                            readability_score="Good",
+                        )
+                    )
+                if suggestions:
+                    self._last_active_provider = "gemini"
+                    return suggestions
+        except Exception:
+            pass
+
+        self._last_active_provider = "rule_based"
+        return await self._fallback.generate_descriptions(
+            current_description=current_description,
+            target_url=target_url,
+            target_keyword=target_keyword,
+            brand_name=brand_name,
+            snippet=snippet,
+        )
+
+
 class SEOAIProviderFactory:
-    """Factory selecting either OpenAI or Rule-Based provider based on environment configuration."""
+    """Factory selecting centralized Gemini or Rule-Based provider based on configuration."""
 
     @classmethod
     def get_provider(cls) -> SEOAIProvider:
-        provider_name = os.getenv("SEO_AI_PROVIDER", "rule_based").lower()
-        api_key = os.getenv("SEO_AI_API_KEY", "").strip()
+        from app.core.config import settings
 
-        # If OpenAI is configured and API key exists, we can use it or fall back gracefully
-        if provider_name == "openai" and api_key:
-            try:
-                # Optional OpenAI integration wrapper
-                # If dependencies or connection fails, fallback to RuleBased
-                return RuleBasedSEOAIProvider()
-            except Exception:
-                return RuleBasedSEOAIProvider()
+        ai_provider = (settings.AI_PROVIDER or os.getenv("AI_PROVIDER", "gemini")).lower()
+        if ai_provider == "gemini":
+            return GeminiSEOAIProvider()
 
         # Default fallback
         return RuleBasedSEOAIProvider()

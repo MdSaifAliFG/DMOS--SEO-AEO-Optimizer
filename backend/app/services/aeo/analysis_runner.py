@@ -191,6 +191,29 @@ class AEOAnalysisRunner:
                     )
                     all_raw_citations.extend(extracted_cits)
 
+                    # Centralized Gemini semantic intelligence & ground-truth validation
+                    from app.services.ai.intelligence_service import AIIntelligenceService
+                    if resp.answer_text and resp.is_success:
+                        comp_names = [
+                            c.get("name", "") if isinstance(c, dict) else str(c)
+                            for c in (project.competitors or [])
+                        ]
+                        try:
+                            semantic_eval = await AIIntelligenceService.analyze_and_validate_aeo_answer(
+                                question=q.question_text,
+                                answer_text=resp.answer_text,
+                                brand_name=project.name,
+                                domain=project.domain,
+                                competitors=comp_names,
+                                aliases=project.brand_aliases,
+                            )
+                            if semantic_eval and semantic_eval.verification_status == "VERIFIED":
+                                if semantic_eval.brand_position and not mention_res.get("position"):
+                                    mention_res["position"] = semantic_eval.brand_position
+                                    detected_positions.append(semantic_eval.brand_position)
+                        except Exception as ai_err:
+                            logger.debug(f"[AEO Runner] Gemini semantic enrichment skipped: {ai_err}")
+
                     # Persist Answer Record
                     ans_obj = AeoAnswer(
                         project_id=project.id,

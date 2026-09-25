@@ -121,6 +121,15 @@ class Settings(BaseSettings):
     CREDIT_COST_SCHEDULED_MONITORING: int = 2
     CREDIT_COST_COMPREHENSIVE_AUDIT: int = 30
 
+    # Central AI Provider (Gemini Integration)
+    AI_PROVIDER: str = "gemini"
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-1.5-flash"
+    GEMINI_TIMEOUT_SECONDS: int = 30
+    GEMINI_MAX_RETRIES: int = 2
+    AI_CACHE_ENABLED: bool = True
+    AI_RATE_LIMIT_PER_MINUTE: int = 60
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

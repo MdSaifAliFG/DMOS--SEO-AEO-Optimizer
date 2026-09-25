@@ -18,7 +18,7 @@ import {
   Activity,
   ShieldCheck,
   ArrowRight,
-  Plus,
+  RotateCw,
 } from "lucide-react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { useNotifications, NotificationType } from "@/lib/notifications";
@@ -27,12 +27,12 @@ export default function NotificationsPage() {
   const {
     notifications,
     unreadCount,
+    isRefreshing,
     markAsRead,
     markAllAsRead,
     removeNotification,
     clearAll,
-    addNotification,
-    resetDefaultNotifications,
+    refreshNotifications,
   } = useNotifications();
 
   const [activeTab, setActiveTab] = useState<"all" | "unread" | NotificationType>("all");
@@ -69,45 +69,6 @@ export default function NotificationsPage() {
       security: notifications.filter((n) => n.type === "security").length,
     };
   }, [notifications, unreadCount]);
-
-  const handleCreateTestAlert = () => {
-    const types: NotificationType[] = ["seo", "aeo", "system", "security"];
-    const randomType = types[Math.floor(Math.random() * types.length)];
-
-    const samples = {
-      seo: {
-        title: "New SEO Issue Detected",
-        message: "Robots.txt blocked 2 essential JavaScript asset URLs during deterministic website crawl.",
-        severity: "warning" as const,
-        link: "/seo/issues",
-        linkText: "View Robots Report",
-      },
-      aeo: {
-        title: "ChatGPT Mention Added",
-        message: "Your brand was cited in 3 new high-intent answer prompts for 'top technical SEO crawlers'.",
-        severity: "success" as const,
-        link: "/aeo/citations",
-        linkText: "View Citations",
-      },
-      system: {
-        title: "Crawler Daemon Synchronized",
-        message: "FastAPI crawler worker finished 124 asynchronous concurrent URL evaluations.",
-        severity: "info" as const,
-        link: "/overview",
-        linkText: "Engine Status",
-      },
-      security: {
-        title: "SSRF Firewall Verified",
-        message: "Egress sandbox completed zero-trust network packet inspection with 0 anomalies.",
-        severity: "success" as const,
-      },
-    };
-
-    addNotification({
-      type: randomType,
-      ...samples[randomType],
-    });
-  };
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
@@ -178,11 +139,12 @@ export default function NotificationsPage() {
 
           <div className="flex flex-wrap items-center gap-2">
             <button
-              onClick={handleCreateTestAlert}
-              className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 dark:text-blue-300 dark:border-blue-800/60 font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+              onClick={() => refreshNotifications()}
+              disabled={isRefreshing}
+              className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 dark:text-blue-300 dark:border-blue-800/60 font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Simulate Alert</span>
+              <RotateCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+              <span>{isRefreshing ? "Checking..." : "Refresh Feed"}</span>
             </button>
 
             {unreadCount > 0 && (
@@ -195,20 +157,13 @@ export default function NotificationsPage() {
               </button>
             )}
 
-            {notifications.length > 0 ? (
+            {notifications.length > 0 && (
               <button
                 onClick={clearAll}
                 className="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 dark:bg-slate-800/80 dark:hover:bg-rose-950/50 dark:border-slate-700 dark:text-slate-400 dark:hover:text-rose-400 dark:hover:border-rose-800/60 font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Clear all</span>
-              </button>
-            ) : (
-              <button
-                onClick={resetDefaultNotifications}
-                className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-all cursor-pointer"
-              >
-                Restore Demo Alerts
               </button>
             )}
           </div>
@@ -408,10 +363,12 @@ export default function NotificationsPage() {
                   Reset Filters
                 </button>
                 <button
-                  onClick={handleCreateTestAlert}
-                  className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-semibold text-white transition-all cursor-pointer"
+                  onClick={() => refreshNotifications()}
+                  disabled={isRefreshing}
+                  className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-semibold text-white transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                 >
-                  Generate Alert
+                  <RotateCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+                  <span>Check for Updates</span>
                 </button>
               </div>
             </div>

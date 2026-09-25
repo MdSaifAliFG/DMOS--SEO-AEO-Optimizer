@@ -80,3 +80,13 @@ async def get_health_diagnostics(
 ) -> SystemHealthDiagnosticsResponse:
     """Retrieve live database roundtrip latency, multi-pillar engine states, and SMTP relay health."""
     return await SystemSettingsService.get_health_diagnostics(db)
+
+
+@router.get(
+    "/ai-provider-status",
+    summary="Get centralized AI Provider status (Gemini)",
+)
+async def get_ai_provider_status():
+    """Retrieve centralized AI intelligence layer status, configured model, and availability without exposing secrets."""
+    from app.services.ai.intelligence_service import AIIntelligenceService
+    return AIIntelligenceService.get_provider_status()

@@ -158,6 +158,25 @@ class GEOAnalysisRunner:
                                     competitors=project.competitors or [],
                                 )
 
+                                # Centralized Gemini semantic intelligence & ground-truth validation
+                                from app.services.ai.intelligence_service import AIIntelligenceService
+                                try:
+                                    geo_ai_res = await AIIntelligenceService.analyze_and_validate_geo_answer(
+                                        question=q.question,
+                                        answer_text=ans_text,
+                                        brand_name=project.brand_name or project.name,
+                                        domain=project.domain,
+                                        competitors=[str(c.get("name") if isinstance(c, dict) else c) for c in (project.competitors or [])],
+                                        aliases=project.brand_aliases or [],
+                                    )
+                                    if geo_ai_res and geo_ai_res.verification_status == "VERIFIED":
+                                        rec_info["recommendation_strength"] = geo_ai_res.recommendation_strength
+                                        rec_info["recommended"] = geo_ai_res.brand_recommended
+                                        mention_info["sentiment"] = geo_ai_res.positioning_sentiment
+                                        mention_info["confidence"] = geo_ai_res.confidence
+                                except Exception as ai_err:
+                                    logger.debug(f"[GEO Runner] Gemini semantic enrichment skipped: {ai_err}")
+
                                 answer_obj = GeoAnswer(
                                     project_id=project.id,
                                     question_id=q.id,
