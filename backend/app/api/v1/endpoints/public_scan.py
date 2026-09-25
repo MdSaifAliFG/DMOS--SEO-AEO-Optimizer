@@ -172,7 +172,8 @@ def run_seo_checks(
     headers: Dict[str, str],
     status_code: int,
     response_time_ms: int,
-    robots_text: Optional[str] = None
+    robots_text: Optional[str] = None,
+    ssl_untrusted: bool = False,
 ) -> tuple[List[ScanIssue], int, int]:
     """
     Runs exhaustive Technical, On-Page, Performance, and Security SEO checks.
@@ -520,6 +521,17 @@ def run_seo_checks(
             why="Google uses HTTPS as an explicit search ranking signal and flags non-HTTPS sites as insecure.",
             how_to_fix="Install an SSL certificate and redirect all HTTP traffic to HTTPS.",
             business_impact="Crucial security foundation — non-HTTPS loses browser trust immediately",
+        )
+    )
+
+    check(
+        not ssl_untrusted,
+        lambda: ScanIssue(
+            severity="critical", pillar="seo", code="SEO030B", badge="Fix",
+            label="SSL/TLS Certificate is untrusted, self-signed, or invalid",
+            why="Search engines and modern browsers display severe security warnings or refuse to index sites with invalid SSL certificates.",
+            how_to_fix="Install a valid SSL/TLS certificate signed by a recognized Certificate Authority (such as Let's Encrypt).",
+            business_impact="Critical security penalty — browsers show full-screen security warnings to prospective visitors",
         )
     )
 
@@ -1142,44 +1154,86 @@ async def quick_scan(payload: QuickScanRequest) -> QuickScanResponse:
         raise HTTPException(status_code=422, detail=f"Invalid or unsafe URL: {err}")
 
     headers_req = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 SeoSensing-Scan/1.0",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 (compatible; ZobayRankBot/1.0; +https://rank.zobay.in/bot)",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
         "Cache-Control": "no-cache",
     }
 
-    # Fetch seed page & robots.txt concurrently
+    # Fetch seed page & robots.txt with SSL fallback and robust error handling
     parsed_seed = urlparse(url)
     robots_url = f"{parsed_seed.scheme}://{parsed_seed.netloc}/robots.txt"
 
-    async with httpx.AsyncClient(timeout=14.0, follow_redirects=True, headers=headers_req) as client:
+    ssl_untrusted = False
+    page_res = None
+    ssl_error_detected = False
+
+    # Step 1: Attempt standard fetch with SSL verification
+    async with httpx.AsyncClient(timeout=14.0, follow_redirects=True, headers=headers_req, verify=True) as client:
         try:
-            page_task = client.get(url)
-            robots_task = client.get(robots_url)
-            page_res, robots_res = await asyncio.gather(page_task, robots_task, return_exceptions=True)
+            page_res = await client.get(url)
+        except Exception as ex:
+            ex_str = str(ex)
+            if "CERTIFICATE_VERIFY_FAILED" in ex_str or "SSLError" in ex_str or "self-signed" in ex_str or "certificate" in ex_str.lower():
+                ssl_error_detected = True
+                logger.warning("SSL verification failed for %s: %s. Retrying with verify=False.", url, ex)
+            else:
+                page_res = ex
 
-            if isinstance(page_res, Exception):
-                logger.warning("Quick scan fetch error for %s: %s", url, page_res)
-                raise HTTPException(status_code=400, detail=f"Could not connect to {url}: {str(page_res)}")
+    # Step 2: Fall back to verify=False if SSL check failed
+    if ssl_error_detected or (isinstance(page_res, Exception) and ("SSL" in str(page_res) or "certificate" in str(page_res).lower())):
+        async with httpx.AsyncClient(timeout=14.0, follow_redirects=True, headers=headers_req, verify=False) as client:
+            try:
+                page_res = await client.get(url)
+                ssl_untrusted = True
+            except Exception as ex:
+                page_res = ex
 
-            fetch_time_ms = int((time.time() - start) * 1000)
-            html = page_res.text
-            final_url = str(page_res.url)
-            headers = dict(page_res.headers)
-            status_code = page_res.status_code
+    # Step 3: If HTTPS connection failed entirely, try HTTP fallback
+    if isinstance(page_res, Exception) and url.startswith("https://"):
+        http_url = "http://" + url[8:]
+        logger.info("HTTPS failed for %s (%s). Attempting HTTP fallback to %s", url, page_res, http_url)
+        async with httpx.AsyncClient(timeout=14.0, follow_redirects=True, headers=headers_req, verify=False) as client:
+            try:
+                page_res = await client.get(http_url)
+            except Exception:
+                pass  # Keep original exception if HTTP also fails
 
-            robots_text = robots_res.text if not isinstance(robots_res, Exception) and robots_res.status_code == 200 else None
-        except httpx.TimeoutException:
-            raise HTTPException(status_code=408, detail="Request timed out. Target website did not respond in time.")
-        except httpx.ConnectError:
-            raise HTTPException(status_code=503, detail="Could not establish connection to the target website.")
+    # Step 4: Handle fatal connection outcomes with clean, user-friendly messages
+    if isinstance(page_res, Exception):
+        logger.warning("Quick scan fetch error for %s: %s", url, page_res)
+        ex_msg = str(page_res)
+        if isinstance(page_res, httpx.TimeoutException) or "timed out" in ex_msg.lower():
+            raise HTTPException(status_code=408, detail=f"Request timed out. Target website ({url}) did not respond within 14 seconds.")
+        elif isinstance(page_res, httpx.ConnectError) or "connection" in ex_msg.lower():
+            raise HTTPException(status_code=502, detail=f"Could not connect to {url}. The server is unreachable or refused the connection.")
+        elif isinstance(page_res, httpx.HTTPStatusError):
+            raise HTTPException(status_code=page_res.response.status_code, detail=f"Target website returned HTTP {page_res.response.status_code}.")
+        else:
+            raise HTTPException(status_code=400, detail=f"Could not connect to {url}: {ex_msg}")
+
+    fetch_time_ms = int((time.time() - start) * 1000)
+    html = page_res.text
+    final_url = str(page_res.url)
+    headers = dict(page_res.headers)
+    status_code = page_res.status_code
+
+    # Best-effort robots.txt fetch
+    robots_text = None
+    try:
+        async with httpx.AsyncClient(timeout=5.0, follow_redirects=True, headers=headers_req, verify=False) as client:
+            r_resp = await client.get(robots_url)
+            if r_resp.status_code == 200:
+                robots_text = r_resp.text
+    except Exception:
+        robots_text = None
 
     soup = BeautifulSoup(html, "html.parser")
     parsed_final = urlparse(final_url)
     domain = parsed_final.netloc
 
     # Run checks on seed page
-    seo_issues, seo_total, seo_passed = run_seo_checks(soup, html, final_url, headers, status_code, fetch_time_ms, robots_text)
+    seo_issues, seo_total, seo_passed = run_seo_checks(soup, html, final_url, headers, status_code, fetch_time_ms, robots_text, ssl_untrusted=ssl_untrusted)
     aeo_issues, aeo_total, aeo_passed = run_aeo_checks(soup, html, final_url)
     geo_issues, geo_total, geo_passed = await run_geo_checks(soup, html, final_url, robots_text)
 
@@ -1225,7 +1279,7 @@ async def quick_scan(payload: QuickScanRequest) -> QuickScanResponse:
             async def crawl_page(p_url: str):
                 try:
                     p_start = time.time()
-                    async with httpx.AsyncClient(timeout=9.0, follow_redirects=True, headers=headers_req) as cl:
+                    async with httpx.AsyncClient(timeout=9.0, follow_redirects=True, headers=headers_req, verify=False) as cl:
                         r = await cl.get(p_url)
                         p_time_ms = int((time.time() - p_start) * 1000)
                         p_html = r.text
@@ -1233,7 +1287,7 @@ async def quick_scan(payload: QuickScanRequest) -> QuickScanResponse:
                         p_headers = dict(r.headers)
                         p_status = r.status_code
 
-                    p_seo, p_seo_tot, p_seo_pass = run_seo_checks(p_soup, p_html, p_url, p_headers, p_status, p_time_ms, robots_text)
+                    p_seo, p_seo_tot, p_seo_pass = run_seo_checks(p_soup, p_html, p_url, p_headers, p_status, p_time_ms, robots_text, ssl_untrusted=ssl_untrusted)
                     p_aeo, p_aeo_tot, p_aeo_pass = run_aeo_checks(p_soup, p_html, p_url)
                     p_geo, p_geo_tot, p_geo_pass = await run_geo_checks(p_soup, p_html, p_url, robots_text)
                     p_all = p_seo + p_aeo + p_geo
