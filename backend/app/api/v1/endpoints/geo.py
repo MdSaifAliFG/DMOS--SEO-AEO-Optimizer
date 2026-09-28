@@ -73,7 +73,7 @@ from app.services.geo.scoring_engine import GEOScoringEngine
 from app.services.entitlement_service import EntitlementService
 from app.services.credit_service import CreditCostService, CreditWalletService
 from app.models.user import User
-from app.api.v1.endpoints.billing import get_optional_current_user, resolve_workspace_id
+from app.core.auth import get_optional_current_user, resolve_workspace_id
 
 router = APIRouter(prefix="/geo", tags=["GEO Engine"])
 

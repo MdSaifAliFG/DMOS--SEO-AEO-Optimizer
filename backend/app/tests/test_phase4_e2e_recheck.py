@@ -8,7 +8,7 @@ from app.models.seo_page import SeoPage
 
 
 @pytest.mark.asyncio
-async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_session: AsyncSession):
+async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_session: AsyncSession, auth_headers: dict):
     """
     Comprehensive functional recheck of the entire Phase 4 workflow:
     Project -> Audit 1 -> Issues -> Recommendations -> Actions Filter -> Status -> Notes -> Bulk ->
@@ -18,6 +18,7 @@ async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_ses
     proj_res = await client.post(
         "/api/v1/projects",
         json={"name": "Acme SaaS Platform", "domain": "acme-saas.com"},
+        headers=auth_headers,
     )
     assert proj_res.status_code == 201
     project_id = proj_res.json()["id"]

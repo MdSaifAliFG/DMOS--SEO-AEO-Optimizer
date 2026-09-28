@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.models.user import User
-from app.api.v1.endpoints.billing import get_optional_current_user
+from app.core.auth import get_optional_current_user
 from app.schemas.system_settings import (
     WorkspaceSettingsUpdate,
     NotificationSettingsUpdate,

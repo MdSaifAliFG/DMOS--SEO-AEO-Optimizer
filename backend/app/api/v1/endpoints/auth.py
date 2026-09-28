@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
+from app.core.auth import create_access_token
 from app.core.database import get_db
 from app.core.security import (
     get_password_hash,
@@ -97,7 +98,7 @@ async def signup(
             name=user.full_name,
             role="admin" if user.is_superuser else "member",
         ),
-        token=f"sess_{user.id}_{secrets.token_hex(16)}",
+        token=create_access_token(user.id),
     )
 
 
@@ -150,7 +151,7 @@ async def login(
                 name=user.full_name,
                 role="admin" if user.is_superuser else "member",
             ),
-            token=f"sess_{user.id}_{secrets.token_hex(16)}",
+            token=create_access_token(user.id),
         )
 
     # Verify password hash
@@ -192,7 +193,7 @@ async def login(
             name=user.full_name,
             role="admin" if user.is_superuser else "member",
         ),
-        token=f"sess_{user.id}_{secrets.token_hex(16)}",
+        token=create_access_token(user.id),
     )
 
 

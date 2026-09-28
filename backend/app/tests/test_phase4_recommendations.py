@@ -75,12 +75,13 @@ def test_impact_calculator_bounds_and_cap():
 
 
 @pytest.mark.asyncio
-async def test_action_center_e2e_flow(client: AsyncClient, db_session: AsyncSession):
+async def test_action_center_e2e_flow(client: AsyncClient, db_session: AsyncSession, auth_headers: dict):
     """Test full Phase 4 lifecycle: issue generation -> recommendations -> status update -> bulk -> verify -> summary."""
     # 1. Create a project
     proj_res = await client.post(
         "/api/v1/projects",
         json={"name": "Optimization Action Center Target", "domain": "action-center.test"},
+        headers=auth_headers,
     )
     assert proj_res.status_code == 201
     project_id = proj_res.json()["id"]

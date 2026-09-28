@@ -1,16 +1,19 @@
 import pytest
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.auth import create_access_token
 
 
 @pytest.mark.asyncio
-async def test_create_and_get_project(client: AsyncClient):
+async def test_create_and_get_project(client: AsyncClient, auth_headers: dict):
     payload = {
         "name": "Stripe Tech Portal",
         "domain": "https://stripe.com/",
         "description": "Payment platform domain",
         "settings": {"crawl_depth": 3},
     }
-    response = await client.post("/api/v1/projects", json=payload)
+    response = await client.post("/api/v1/projects", json=payload, headers=auth_headers)
     assert response.status_code == 201
     data = response.json()
     assert data["name"] == "Stripe Tech Portal"
@@ -18,22 +21,22 @@ async def test_create_and_get_project(client: AsyncClient):
     project_id = data["id"]
 
     # Get by ID
-    get_res = await client.get(f"/api/v1/projects/{project_id}")
+    get_res = await client.get(f"/api/v1/projects/{project_id}", headers=auth_headers)
     assert get_res.status_code == 200
     assert get_res.json()["id"] == project_id
 
 
 @pytest.mark.asyncio
-async def test_duplicate_domain_rejected(client: AsyncClient):
+async def test_duplicate_domain_rejected(client: AsyncClient, auth_headers: dict):
     payload = {
         "name": "Shopify Store",
         "domain": "shopify.com",
     }
-    res1 = await client.post("/api/v1/projects", json=payload)
+    res1 = await client.post("/api/v1/projects", json=payload, headers=auth_headers)
     assert res1.status_code == 201
 
     # Duplicate should return 409
-    res2 = await client.post("/api/v1/projects", json=payload)
+    res2 = await client.post("/api/v1/projects", json=payload, headers=auth_headers)
     assert res2.status_code == 409
 
 
@@ -47,11 +50,13 @@ async def test_list_and_search_projects(client: AsyncClient, db_session: AsyncSe
     user2 = User(id="u2_test", email="user_b@test.local", full_name="User B", is_active=True)
     db_session.add_all([user1, user2])
     await db_session.commit()
+    h1 = {"Authorization": f"Bearer {create_access_token('u1_test')}"}
+    h2 = {"Authorization": f"Bearer {create_access_token('u2_test')}"}
 
     # Create two projects across test users
-    r1 = await client.post("/api/v1/projects", json={"name": "Alpha Corp", "domain": "alpha.io"}, headers={"X-User-Id": "u1_test"})
+    r1 = await client.post("/api/v1/projects", json={"name": "Alpha Corp", "domain": "alpha.io"}, headers=h1)
     assert r1.status_code == 201
-    r2 = await client.post("/api/v1/projects", json={"name": "Beta Inc", "domain": "beta.org"}, headers={"X-User-Id": "u2_test"})
+    r2 = await client.post("/api/v1/projects", json={"name": "Beta Inc", "domain": "beta.org"}, headers=h2)
     assert r2.status_code == 201
 
     # List all
@@ -69,13 +74,13 @@ async def test_list_and_search_projects(client: AsyncClient, db_session: AsyncSe
 
 
 @pytest.mark.asyncio
-async def test_delete_project(client: AsyncClient):
-    res = await client.post("/api/v1/projects", json={"name": "To Delete", "domain": "delete-me.net"})
+async def test_delete_project(client: AsyncClient, auth_headers: dict):
+    res = await client.post("/api/v1/projects", json={"name": "To Delete", "domain": "delete-me.net"}, headers=auth_headers)
     project_id = res.json()["id"]
 
-    del_res = await client.delete(f"/api/v1/projects/{project_id}")
+    del_res = await client.delete(f"/api/v1/projects/{project_id}", headers=auth_headers)
     assert del_res.status_code == 200
 
     # Getting deleted project should return 404
-    get_res = await client.get(f"/api/v1/projects/{project_id}")
+    get_res = await client.get(f"/api/v1/projects/{project_id}", headers=auth_headers)
     assert get_res.status_code == 404

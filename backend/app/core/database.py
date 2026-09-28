@@ -92,7 +92,7 @@ if "sqlite" in database_url:
 try:
     engine = create_async_engine(
         database_url,
-        echo=settings.DEBUG,
+        echo=(settings.DEBUG and settings.ENVIRONMENT == "development"),
         future=True,
         pool_pre_ping=True,
         connect_args=connect_args,
@@ -102,7 +102,7 @@ except Exception as e:
     fallback_url = "sqlite+aiosqlite:///./dmos_dev.db"
     engine = create_async_engine(
         fallback_url,
-        echo=settings.DEBUG,
+        echo=(settings.DEBUG and settings.ENVIRONMENT == "development"),
         future=True,
         connect_args={"check_same_thread": False},
     )
@@ -134,7 +134,18 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_db() -> None:
-    """Initialize database tables and run lightweight column schema migrations."""
+    """Initialize database tables and run lightweight column schema migrations.
+
+    Deployment path uses Alembic (``alembic upgrade head``). Startup DDL runs
+    only for local SQLite development, and is skipped entirely when
+    ``SKIP_STARTUP_DDL`` is set or the environment is staging/production.
+    """
+    if settings.SKIP_STARTUP_DDL or settings.ENVIRONMENT in {"staging", "production"}:
+        logger.info("Skipping startup DDL (Alembic owns schema in this environment).")
+        return
+    if "sqlite" not in database_url:
+        logger.info("Skipping startup DDL for non-SQLite dev database; use Alembic.")
+        return
     async with engine.begin() as conn:
         # Import all models to ensure they are registered with Base.metadata
         import app.models  # noqa: F401

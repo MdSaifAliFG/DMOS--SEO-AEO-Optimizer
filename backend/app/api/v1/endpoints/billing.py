@@ -5,6 +5,7 @@ from sqlalchemy import select, func, desc, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.auth import get_optional_current_user, resolve_workspace_id
 from app.models.user import User
 from app.models.billing import (
     Plan,
@@ -47,62 +48,6 @@ from app.services.stripe_service import StripeService, ONE_TIME_CREDIT_PACKS
 from app.services.razorpay_service import RazorpayService, ONE_TIME_CREDIT_PACKS as RZP_CREDIT_PACKS
 
 router = APIRouter(prefix="/billing", tags=["Billing & Monetization"])
-
-
-async def get_optional_current_user(
-    request: Request,
-    db: AsyncSession = Depends(get_db),
-) -> Optional[User]:
-    """Resolves authenticated user from session/header with strict user isolation."""
-    # 1. Check explicit user identity headers
-    x_user_email = request.headers.get("X-User-Email", "").strip().lower()
-    if x_user_email:
-        stmt = select(User).where(func.lower(User.email) == x_user_email)
-        res = await db.execute(stmt)
-        u = res.scalar_one_or_none()
-        if u:
-            return u
-
-    x_user_id = request.headers.get("X-User-Id", "").strip()
-    if x_user_id:
-        stmt = select(User).where(User.id == x_user_id)
-        res = await db.execute(stmt)
-        u = res.scalar_one_or_none()
-        if u:
-            return u
-
-    # 2. Check Authorization header
-    auth_header = request.headers.get("Authorization", "")
-    if auth_header.startswith("Bearer "):
-        token = auth_header.replace("Bearer ", "").strip()
-        target_id = token
-        if token.startswith("sess_"):
-            parts = token.split("_")
-            if len(parts) >= 2:
-                target_id = parts[1]
-
-        stmt = select(User).where(
-            or_(
-                User.id == token,
-                User.id == target_id,
-                func.lower(User.email) == token.lower(),
-            )
-        )
-        res = await db.execute(stmt)
-        u = res.scalar_one_or_none()
-        if u:
-            return u
-
-    # 3. Fallback to latest registered active user or global
-    stmt = select(User).where(User.is_active == True).order_by(User.created_at.desc()).limit(1)
-    res = await db.execute(stmt)
-    return res.scalar_one_or_none()
-
-
-async def resolve_workspace_id(user: Optional[User] = None) -> str:
-    if user and user.id:
-        return str(user.id)
-    return "global_workspace"
 
 
 

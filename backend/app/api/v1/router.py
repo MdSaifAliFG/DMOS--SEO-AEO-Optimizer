@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from app.core.config import settings as app_settings
 from app.api.v1.endpoints import (
     actions,
     aeo,
@@ -32,5 +33,11 @@ api_router.include_router(settings.router)
 api_router.include_router(billing.router)
 api_router.include_router(contact.router)
 api_router.include_router(notifications.router)
+
+# DEV-ONLY bootstrap: never mounted in staging/production.
+if app_settings.ENVIRONMENT not in {"staging", "production"}:
+    from app.api.v1.endpoints import dev_auth
+
+    api_router.include_router(dev_auth.router)
 
 

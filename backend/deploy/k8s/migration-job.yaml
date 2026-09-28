@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rank-api-migrate
+  namespace: rank-dev
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: rank-api:v0.1.0
+          command: ["alembic", "upgrade", "head"]
+          env:
+            - name: ENVIRONMENT
+              value: "development"
+            - name: SKIP_STARTUP_DDL
+              value: "true"
+            - name: DATABASE_URL
+              valueFrom: { secretKeyRef: { name: rank-api-secrets, key: DATABASE_URL } }
+            - name: SYNC_DATABASE_URL
+              valueFrom: { secretKeyRef: { name: rank-api-secrets, key: SYNC_DATABASE_URL } }
+            - name: SECRET_KEY
+              valueFrom: { secretKeyRef: { name: rank-api-secrets, key: SECRET_KEY } }
