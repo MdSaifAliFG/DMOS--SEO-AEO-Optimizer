@@ -158,11 +158,12 @@ class TestAEOAnalyticsEngines:
 class TestAEOApiEndpoints:
     """Test FastAPI REST endpoints for AEO Phase 5."""
 
-    async def test_create_and_manage_aeo_project(self, client: AsyncClient, db_session: AsyncSession):
+    async def test_create_and_manage_aeo_project(self, client: AsyncClient, db_session: AsyncSession, auth_headers: dict):
         # 1. SSRF prevention
         ssrf_res = await client.post(
             "/api/v1/aeo/projects",
             json={"name": "SSRF Test", "domain": "http://127.0.0.1:8000"},
+            headers=auth_headers,
         )
         assert ssrf_res.status_code == 400
 
@@ -176,6 +177,7 @@ class TestAEOApiEndpoints:
                 "target_audience": "Software Developers",
                 "competitors": [{"name": "Copilot", "domain": "copilot.microsoft.com"}],
             },
+            headers=auth_headers,
         )
         assert create_res.status_code == 201
         project = create_res.json()
@@ -192,6 +194,7 @@ class TestAEOApiEndpoints:
         analyze_res = await client.post(
             f"/api/v1/aeo/projects/{project_id}/analyze",
             json={"allow_test_mode": True, "engines": ["chatgpt", "gemini"]},
+            headers=auth_headers,
         )
         assert analyze_res.status_code == 202
         analysis = analyze_res.json()

@@ -171,7 +171,8 @@ async def test_action_center_e2e_flow(client: AsyncClient, db_session: AsyncSess
 
     # 3. Generate recommendations via API
     gen_res = await client.post(
-        f"/api/v1/seo/actions/generate?scan_id={scan.id}&project_id={project_id}"
+        f"/api/v1/seo/actions/generate?scan_id={scan.id}&project_id={project_id}",
+        headers=auth_headers,
     )
     assert gen_res.status_code == 200
     gen_data = gen_res.json()
@@ -203,6 +204,7 @@ async def test_action_center_e2e_flow(client: AsyncClient, db_session: AsyncSess
     patch_res = await client.patch(
         f"/api/v1/seo/actions/{action_id}",
         json={"status": "in_progress", "notes": "Work assigned to marketing team"},
+        headers=auth_headers,
     )
     assert patch_res.status_code == 200
     assert patch_res.json()["status"] == "in_progress"
@@ -213,6 +215,7 @@ async def test_action_center_e2e_flow(client: AsyncClient, db_session: AsyncSess
     bulk_res = await client.post(
         "/api/v1/seo/actions/bulk",
         json={"action_ids": all_action_ids[:2], "status": "fixed", "notes": "Bulk fix applied"},
+        headers=auth_headers,
     )
     assert bulk_res.status_code == 200
     assert bulk_res.json()["updated_count"] == 2
@@ -229,7 +232,7 @@ async def test_action_center_e2e_flow(client: AsyncClient, db_session: AsyncSess
     assert len(sum_data["category_breakdown"]) >= 4
 
     # 9. Verify fix endpoint
-    verify_res = await client.post(f"/api/v1/seo/actions/{action_id}/verify")
+    verify_res = await client.post(f"/api/v1/seo/actions/{action_id}/verify", headers=auth_headers)
     assert verify_res.status_code == 200
     v_data = verify_res.json()
     assert "status" in v_data
@@ -237,7 +240,7 @@ async def test_action_center_e2e_flow(client: AsyncClient, db_session: AsyncSess
 
 
 @pytest.mark.asyncio
-async def test_seo_optimizers_endpoints(client: AsyncClient):
+async def test_seo_optimizers_endpoints(client: AsyncClient, auth_headers: dict):
     """Test Metadata, Content, and Internal Linking optimizer endpoints."""
     # 1. Title Optimizer
     title_res = await client.post(
@@ -248,6 +251,7 @@ async def test_seo_optimizers_endpoints(client: AsyncClient):
             "target_keyword": "Digital Marketing OS",
             "brand_name": "SeoSensing",
         },
+        headers=auth_headers,
     )
     assert title_res.status_code == 200
     t_data = title_res.json()
@@ -265,6 +269,7 @@ async def test_seo_optimizers_endpoints(client: AsyncClient):
             "target_keyword": "Digital Marketing OS",
             "brand_name": "SeoSensing",
         },
+        headers=auth_headers,
     )
     assert desc_res.status_code == 200
     d_data = desc_res.json()
@@ -277,6 +282,7 @@ async def test_seo_optimizers_endpoints(client: AsyncClient):
     content_res = await client.post(
         "/api/v1/seo/optimize/content",
         json={"project_id": "test-proj", "target_url": "https://example.com/landing"},
+        headers=auth_headers,
     )
     assert content_res.status_code == 200
     c_data = content_res.json()
@@ -287,6 +293,7 @@ async def test_seo_optimizers_endpoints(client: AsyncClient):
     links_res = await client.post(
         "/api/v1/seo/optimize/internal-links",
         json={"project_id": "test-proj"},
+        headers=auth_headers,
     )
     assert links_res.status_code == 200
     l_data = links_res.json()

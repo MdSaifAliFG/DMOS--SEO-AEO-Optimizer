@@ -70,7 +70,7 @@ async def test_full_end_to_end_phase1_flow(client: AsyncClient, auth_headers: di
     assert proj_scans["scans"][0]["id"] == scan_id
 
     # 7. Cancel in-flight scan or wait for lifecycle completion
-    cancel_res = await client.post(f"/api/v1/scans/{scan_id}/cancel")
+    cancel_res = await client.post(f"/api/v1/scans/{scan_id}/cancel", headers=auth_headers)
     assert cancel_res.status_code == 200
     assert cancel_res.json()["status"] in ["cancelled", "completed"]
 

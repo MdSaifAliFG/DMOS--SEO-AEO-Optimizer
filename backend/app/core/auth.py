@@ -140,3 +140,13 @@ async def resolve_workspace_id(user: Optional[User] = None) -> str:
     if user and user.id:
         return str(user.id)
     return "global_workspace"
+
+
+def enforce_owner(obj: object, user: User, resource: str = "Resource") -> None:
+    """Cross-user isolation: an object owned by another user reads as missing (404)."""
+    owner_id = getattr(obj, "user_id", None)
+    if owner_id and owner_id != user.id and not user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{resource} not found",
+        )

@@ -73,7 +73,7 @@ from app.services.geo.scoring_engine import GEOScoringEngine
 from app.services.entitlement_service import EntitlementService
 from app.services.credit_service import CreditCostService, CreditWalletService
 from app.models.user import User
-from app.core.auth import get_optional_current_user, resolve_workspace_id
+from app.core.auth import enforce_owner, get_current_user, resolve_workspace_id
 
 router = APIRouter(prefix="/geo", tags=["GEO Engine"])
 
@@ -82,12 +82,12 @@ router = APIRouter(prefix="/geo", tags=["GEO Engine"])
 @router.post("/projects", response_model=GeoProjectResponse, status_code=status.HTTP_201_CREATED)
 async def create_geo_project(
     data: GeoProjectCreate,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Create a new GEO Project with default brand profile and 18-category questions."""
     workspace_id = await resolve_workspace_id(current_user)
-    user_id = current_user.id if current_user else None
+    user_id = current_user.id
 
     can_create, current_cnt, limit_cnt = await EntitlementService.can_create_project(
         db, workspace_id, user_id=user_id
@@ -131,10 +131,15 @@ async def get_geo_project(
 async def update_geo_project(
     project_id: str,
     data: GeoProjectUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Update settings or metadata of a GEO Project."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     project = await svc.update_project(project_id, data)
     if not project:
         raise HTTPException(status_code=404, detail="GEO project not found")
@@ -144,10 +149,15 @@ async def update_geo_project(
 @router.delete("/projects/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_geo_project(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Delete a GEO Project and all associated records."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     ok = await svc.delete_project(project_id)
     if not ok:
         raise HTTPException(status_code=404, detail="GEO project not found")
@@ -172,10 +182,15 @@ async def get_geo_brand_profile(
 async def update_geo_brand_profile(
     project_id: str,
     data: GeoBrandProfileUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Update canonical GEO knowledge profile."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     bp = await svc.update_brand_profile(project_id, data)
     return bp
 
@@ -184,7 +199,7 @@ async def update_geo_brand_profile(
 @router.post("/analyze", response_model=GeoAnalysisResponse, status_code=status.HTTP_202_ACCEPTED)
 async def trigger_geo_analysis(
     req: GeoAnalysisTriggerRequest,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Trigger background end-to-end GEO analysis."""
@@ -192,9 +207,10 @@ async def trigger_geo_analysis(
     project = await svc.get_project(req.project_id)
     if not project:
         raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(project, current_user, "GEO Project")
 
     workspace_id = await resolve_workspace_id(current_user)
-    user_id = current_user.id if current_user else None
+    user_id = current_user.id
 
     cost = CreditCostService.get_cost("geo_ai_query", models_count=len(req.providers or ["openai", "perplexity", "gemini"]))
     success, _ = await CreditWalletService.deduct_atomic(
@@ -284,6 +300,7 @@ async def list_geo_questions(
 @router.post("/questions/generate", response_model=List[GeoQuestionResponse], status_code=status.HTTP_201_CREATED)
 async def generate_geo_questions(
     req: GeoQuestionGenerateRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate discovery questions across 18 generative categories."""
@@ -455,6 +472,7 @@ async def get_geo_action(
 async def update_geo_action(
     action_id: str,
     data: GeoRecommendationUpdateRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Update action status or notes."""
@@ -468,6 +486,7 @@ async def update_geo_action(
 @router.post("/actions/{action_id}/verify", response_model=GeoRecommendationResponse)
 async def verify_geo_action(
     action_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Verify implemented action and record metric uplift in history."""
@@ -481,6 +500,7 @@ async def verify_geo_action(
 @router.post("/actions/{action_id}/ignore", response_model=GeoRecommendationResponse)
 async def ignore_geo_action(
     action_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Ignore an action item."""
@@ -495,6 +515,7 @@ async def ignore_geo_action(
 async def bulk_update_geo_actions(
     req: GeoRecommendationBulkRequest,
     project_id: str = Query(..., description="GEO Project ID"),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Apply bulk status updates to recommendations."""
@@ -517,6 +538,7 @@ async def get_geo_actions_summary(
 @router.post("/optimize/content", response_model=GeoOptimizeResponse)
 async def optimize_geo_content(
     req: GeoOptimizeContentRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate structured headings, direct definitions, and authority links."""
@@ -534,6 +556,7 @@ async def optimize_geo_content(
 @router.post("/optimize/answer", response_model=GeoOptimizeResponse)
 async def optimize_geo_direct_answer(
     req: GeoOptimizeAnswerRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate concise 40-80 word direct answer snippet."""
@@ -551,6 +574,7 @@ async def optimize_geo_direct_answer(
 @router.post("/optimize/entity", response_model=GeoOptimizeResponse)
 async def optimize_geo_entity(
     req: GeoOptimizeEntityRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate JSON-LD schema markup with sameAs and entity relations."""
@@ -569,6 +593,7 @@ async def optimize_geo_entity(
 @router.post("/optimize/comparison", response_model=GeoOptimizeResponse)
 async def optimize_geo_comparison(
     req: GeoOptimizeComparisonRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate side-by-side comparison structure and alternative analysis."""
@@ -585,6 +610,7 @@ async def optimize_geo_comparison(
 @router.post("/optimize/commercial", response_model=GeoOptimizeResponse)
 async def optimize_geo_commercial(
     req: GeoOptimizeCommercialRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate pricing table architecture and buyer intent structures."""
@@ -627,6 +653,7 @@ async def get_geo_monitoring_schedule(
 async def update_geo_monitoring_schedule(
     project_id: str,
     data: GeoMonitoringScheduleUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Update monitoring schedule frequency and providers."""
@@ -697,6 +724,7 @@ async def get_geo_report(
 @router.post("/reports", response_model=GeoReportResponse)
 async def generate_custom_geo_report(
     req: GeoReportGenerateRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate custom executive GEO report."""

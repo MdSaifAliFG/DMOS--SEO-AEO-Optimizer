@@ -4,6 +4,8 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
+from app.core.auth import get_current_user
+from app.models.user import User
 from app.models.project import Project
 from app.models.scan import Scan, ScanStatus
 from app.models.seo_issue import IssueSeverity, SeoIssue
@@ -226,9 +228,10 @@ async def list_seo_projects(
 @router.post("/projects", response_model=ProjectResponse, status_code=status.HTTP_201_CREATED)
 async def create_seo_project(
     data: ProjectCreate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ProjectResponse:
-    project = await ProjectService.create_project(db, data)
+    project = await ProjectService.create_project(db, data, user_id=current_user.id)
     return ProjectService.map_to_response(project)
 
 
