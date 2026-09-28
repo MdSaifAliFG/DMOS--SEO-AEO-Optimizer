@@ -9,9 +9,11 @@ class Settings(BaseSettings):
     VERSION: str = "0.2.0"
     API_V1_STR: str = "/api/v1"
     ENVIRONMENT: str = "development"
-    DEBUG: bool = True
+    DEBUG: bool = False
     PORT: int = 8000
     HOST: str = "0.0.0.0"
+    # When True, lifespan skips create_all/ALTER TABLE startup DDL (deployment path uses Alembic).
+    SKIP_STARTUP_DDL: bool = False
 
     # CORS configuration
     CORS_ORIGINS: Union[List[str], str] = [
@@ -51,9 +53,36 @@ class Settings(BaseSettings):
     CRAWLER_USER_AGENT: str = "ZobayRankBot/1.0 (+https://rank.zobay.in/bot; SEO, AEO & GEO Audit Engine)"
     SCAN_TIMEOUT_SECONDS: int = 600  # 10 minutes maximum scan lifecycle
 
-    # Security
-    SECRET_KEY: str = "dmos-phase-1-super-secret-key-change-in-production"
+    # Security — no insecure default; must come from environment in staging/production.
+    SECRET_KEY: str = ""
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
+    # Dev-only auth bootstrap secret. Empty = dev token endpoint disabled.
+    DEV_AUTH_SECRET: str = ""
+
+    # Reject known-bad placeholder secrets in every environment.
+    INSECURE_SECRET_VALUES: tuple = (
+        "",
+        "change-me",
+        "changeme",
+        "dev-secret",
+        "secret",
+        "your-secret-key",
+        "dmos-phase-1-super-secret-key-change-in-production",
+    )
+
+    @field_validator("SECRET_KEY")
+    @classmethod
+    def reject_insecure_secret(cls, v: str) -> str:
+        if v in (
+            "change-me",
+            "changeme",
+            "dev-secret",
+            "secret",
+            "your-secret-key",
+            "dmos-phase-1-super-secret-key-change-in-production",
+        ):
+            raise ValueError("SECRET_KEY uses a known-insecure default; set a real value via environment")
+        return v
 
     # SMTP Email Config (Brevo)
     SMTP_HOST: str = "smtp-relay.brevo.com"
@@ -139,4 +168,13 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+def require_deployment_secrets() -> None:
+    """Fail boot when staging/production config is unsafe. Call from lifespan."""
+    if settings.ENVIRONMENT in {"staging", "production"}:
+        if not settings.SECRET_KEY:
+            raise RuntimeError("SECRET_KEY is required in staging/production; set it via environment")
+        if settings.DEBUG:
+            raise RuntimeError("DEBUG must be false in staging/production")
 

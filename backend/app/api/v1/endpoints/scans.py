@@ -3,6 +3,8 @@ from urllib.parse import unquote
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
+from app.core.auth import get_current_user
+from app.models.user import User
 from app.schemas.scan import ScanCancelResponse, ScanResponse
 from app.schemas.seo import (
     ScanResultsResponse,
@@ -41,6 +43,7 @@ async def get_scan(
 )
 async def cancel_scan(
     scan_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ScanCancelResponse:
     """Halt an in-flight crawl execution and clean up resources."""

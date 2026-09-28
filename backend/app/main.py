@@ -13,7 +13,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from app.api.v1.router import api_router
-from app.core.config import settings
+from app.core.config import require_deployment_secrets, settings
 from app.core.database import init_db
 from app.core.redis import close_redis_pool, get_redis_pool
 
@@ -29,6 +29,7 @@ logger = logging.getLogger("zobayrank")
 async def lifespan(app: FastAPI):
     """Lifespan event handler for startup and shutdown routines."""
     logger.info("Initializing Zobay Rank SEO, AEO & GEO Backend...")
+    require_deployment_secrets()
     # Initialize DB tables
     await init_db()
     logger.info("Database schema initialized successfully.")
@@ -54,10 +55,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Configure CORS - Allow all origins for seamless Vercel / Cloud cross-origin connectivity
+# Configure CORS from settings allowlist — never wildcard for authenticated APIs.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],

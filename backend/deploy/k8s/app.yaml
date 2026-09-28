@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rank-api
+  namespace: rank-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: rank-api }
+  template:
+    metadata:
+      labels: { app: rank-api }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
+      containers:
+        - name: api
+          image: rank-api:v0.1.0
+          ports:
+            - { containerPort: 8000 }
+          env:
+            - { name: ENVIRONMENT, value: "development" }
+            - { name: DEBUG, value: "false" }
+            - { name: SKIP_STARTUP_DDL, value: "true" }
+            - name: DATABASE_URL
+              valueFrom: { secretKeyRef: { name: rank-api-secrets, key: DATABASE_URL } }
+            - name: SYNC_DATABASE_URL
+              valueFrom: { secretKeyRef: { name: rank-api-secrets, key: SYNC_DATABASE_URL } }
+            - name: SECRET_KEY
+              valueFrom: { secretKeyRef: { name: rank-api-secrets, key: SECRET_KEY } }
+            - name: DEV_AUTH_SECRET
+              valueFrom: { secretKeyRef: { name: rank-api-secrets, key: DEV_AUTH_SECRET } }
+            - name: CORS_ORIGINS
+              valueFrom: { secretKeyRef: { name: rank-api-secrets, key: CORS_ORIGINS } }
+            - name: GEMINI_API_KEY
+              valueFrom: { secretKeyRef: { name: rank-api-secrets, key: GEMINI_API_KEY } }
+          livenessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          readinessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rank-api
+  namespace: rank-dev
+spec:
+  type: ClusterIP
+  selector: { app: rank-api }
+  ports:
+    - { port: 8000, targetPort: 8000 }
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rank-api
+  namespace: rank-dev
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: api.dev.rank.zobay.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: rank-api, port: { number: 8000 } }

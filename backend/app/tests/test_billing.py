@@ -142,7 +142,7 @@ async def test_entitlement_service_limits(db_session: AsyncSession):
 
 
 @pytest.mark.asyncio
-async def test_billing_api_endpoints(client: AsyncClient, db_session: AsyncSession):
+async def test_billing_api_endpoints(client: AsyncClient, db_session: AsyncSession, auth_headers: dict):
     """Test public and authenticated billing API routes."""
     # List plans
     r_plans = await client.get("/api/v1/billing/plans")
@@ -151,7 +151,7 @@ async def test_billing_api_endpoints(client: AsyncClient, db_session: AsyncSessi
     assert len(plans) == 6
 
     # Summary
-    r_sum = await client.get("/api/v1/billing/summary")
+    r_sum = await client.get("/api/v1/billing/summary", headers=auth_headers)
     assert r_sum.status_code == 200
     summary = r_sum.json()
     assert summary["current_plan"]["code"] == "FREE"

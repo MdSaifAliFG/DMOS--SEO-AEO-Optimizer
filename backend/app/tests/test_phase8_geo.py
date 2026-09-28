@@ -25,7 +25,7 @@ from app.services.geo.scoring_engine import GEOScoringEngine
 
 
 @pytest.mark.asyncio
-async def test_geo_project_crud(client: AsyncClient):
+async def test_geo_project_crud(client: AsyncClient, auth_headers: dict):
     """Test GEO Project creation, retrieval, update, and deletion."""
     # 1. Create
     payload = {
@@ -39,7 +39,7 @@ async def test_geo_project_crud(client: AsyncClient):
         "services": ["Generative Visibility Audits"],
         "competitors": [{"name": "Semrush", "domain": "semrush.com"}, {"name": "Ahrefs", "domain": "ahrefs.com"}],
     }
-    res = await client.post("/api/v1/geo/projects", json=payload)
+    res = await client.post("/api/v1/geo/projects", json=payload, headers=auth_headers)
     assert res.status_code == 201, res.text
     data = res.json()
     project_id = data["id"]
@@ -58,7 +58,7 @@ async def test_geo_project_crud(client: AsyncClient):
     assert get_res.json()["id"] == project_id
 
     # 4. Update
-    patch_res = await client.patch(f"/api/v1/geo/projects/{project_id}", json={"description": "Updated description"})
+    patch_res = await client.patch(f"/api/v1/geo/projects/{project_id}", json={"description": "Updated description"}, headers=auth_headers)
     assert patch_res.status_code == 200
     assert patch_res.json()["description"] == "Updated description"
 
@@ -68,7 +68,7 @@ async def test_geo_project_crud(client: AsyncClient):
     assert bp_res.json()["brand_name"] == "SeoSensing"
 
     # 6. Delete
-    del_res = await client.delete(f"/api/v1/geo/projects/{project_id}")
+    del_res = await client.delete(f"/api/v1/geo/projects/{project_id}", headers=auth_headers)
     assert del_res.status_code == 204
 
 

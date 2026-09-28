@@ -8,7 +8,7 @@ from app.models.seo_page import SeoPage
 
 
 @pytest.mark.asyncio
-async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_session: AsyncSession):
+async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_session: AsyncSession, auth_headers: dict):
     """
     Comprehensive functional recheck of the entire Phase 4 workflow:
     Project -> Audit 1 -> Issues -> Recommendations -> Actions Filter -> Status -> Notes -> Bulk ->
@@ -18,6 +18,7 @@ async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_ses
     proj_res = await client.post(
         "/api/v1/projects",
         json={"name": "Acme SaaS Platform", "domain": "acme-saas.com"},
+        headers=auth_headers,
     )
     assert proj_res.status_code == 201
     project_id = proj_res.json()["id"]
@@ -128,7 +129,8 @@ async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_ses
 
     # 3. Generate Recommendations
     gen_res = await client.post(
-        f"/api/v1/seo/actions/generate?scan_id={scan1.id}&project_id={project_id}"
+        f"/api/v1/seo/actions/generate?scan_id={scan1.id}&project_id={project_id}",
+        headers=auth_headers,
     )
     assert gen_res.status_code == 200
     gen_data = gen_res.json()
@@ -136,7 +138,8 @@ async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_ses
 
     # Test duplicate generation prevention
     gen_res2 = await client.post(
-        f"/api/v1/seo/actions/generate?scan_id={scan1.id}&project_id={project_id}"
+        f"/api/v1/seo/actions/generate?scan_id={scan1.id}&project_id={project_id}",
+        headers=auth_headers,
     )
     assert gen_res2.status_code == 200
     assert gen_res2.json()["total"] == gen_data["total"]
@@ -165,6 +168,7 @@ async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_ses
     patch_res = await client.patch(
         f"/api/v1/seo/actions/{first_act_id}",
         json={"status": "in_progress", "notes": "Assigned to marketing copywriter."},
+        headers=auth_headers,
     )
     assert patch_res.status_code == 200
     assert patch_res.json()["status"] == "in_progress"
@@ -174,6 +178,7 @@ async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_ses
     invalid_patch = await client.patch(
         f"/api/v1/seo/actions/{first_act_id}",
         json={"status": "unknown_status_123"},
+        headers=auth_headers,
     )
     assert invalid_patch.status_code == 422
 
@@ -184,6 +189,7 @@ async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_ses
     bulk_res = await client.post(
         "/api/v1/seo/actions/bulk",
         json={"action_ids": all_ids[:2], "status": "fixed", "notes": "Fixed in sprint 4"},
+        headers=auth_headers,
     )
     assert bulk_res.status_code == 200
     assert bulk_res.json()["updated_count"] == 2
@@ -192,6 +198,7 @@ async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_ses
     empty_bulk = await client.post(
         "/api/v1/seo/actions/bulk",
         json={"action_ids": [], "status": "fixed"},
+        headers=auth_headers,
     )
     assert empty_bulk.status_code == 422
 
@@ -215,6 +222,7 @@ async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_ses
             "target_keyword": "SaaS Pricing",
             "brand_name": "Acme",
         },
+        headers=auth_headers,
     )
     assert title_res.status_code == 200
     assert len(title_res.json()["suggestions"]) == 3
@@ -228,6 +236,7 @@ async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_ses
             "target_keyword": "SaaS Pricing",
             "brand_name": "Acme",
         },
+        headers=auth_headers,
     )
     assert desc_res.status_code == 200
     assert len(desc_res.json()["suggestions"]) == 3
@@ -236,6 +245,7 @@ async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_ses
     content_res = await client.post(
         "/api/v1/seo/optimize/content",
         json={"project_id": project_id, "page_id": p2.id},
+        headers=auth_headers,
     )
     assert content_res.status_code == 200
     c_data = content_res.json()
@@ -247,6 +257,7 @@ async def test_complete_phase4_functional_audit_flow(client: AsyncClient, db_ses
     links_res = await client.post(
         "/api/v1/seo/optimize/internal-links",
         json={"project_id": project_id, "scan_id": scan1.id},
+        headers=auth_headers,
     )
     assert links_res.status_code == 200
     l_data = links_res.json()

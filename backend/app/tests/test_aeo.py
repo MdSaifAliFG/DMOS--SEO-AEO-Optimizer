@@ -3,7 +3,7 @@ from httpx import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_aeo_projects_and_dashboard(client: AsyncClient):
+async def test_aeo_projects_and_dashboard(client: AsyncClient, auth_headers: dict):
     """Test creating AEO project, listing, adding questions, and checking dashboard summary."""
     # 1. Create AEO Project
     create_res = await client.post(
@@ -13,6 +13,7 @@ async def test_aeo_projects_and_dashboard(client: AsyncClient):
             "domain": "stripe.com",
             "description": "Monitor Stripe presence across ChatGPT and Perplexity",
         },
+        headers=auth_headers,
     )
     assert create_res.status_code == 201
     proj_data = create_res.json()
@@ -29,6 +30,7 @@ async def test_aeo_projects_and_dashboard(client: AsyncClient):
             "category": "Payments",
             "intent": "commercial",
         },
+        headers=auth_headers,
     )
     assert q_res.status_code == 201
     q_data = q_res.json()
@@ -43,6 +45,7 @@ async def test_aeo_projects_and_dashboard(client: AsyncClient):
             "entity_name": "Stripe Connect",
             "entity_type": "Product",
         },
+        headers=auth_headers,
     )
     assert e_res.status_code == 201
     e_data = e_res.json()

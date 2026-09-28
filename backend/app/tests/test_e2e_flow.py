@@ -4,7 +4,7 @@ from httpx import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_full_end_to_end_phase1_flow(client: AsyncClient):
+async def test_full_end_to_end_phase1_flow(client: AsyncClient, auth_headers: dict):
     """
     End-to-end verification test matching PRD Step 20:
     Dashboard -> Add Website -> Create Project -> Open Project -> Start Audit ->
@@ -25,7 +25,7 @@ async def test_full_end_to_end_phase1_flow(client: AsyncClient):
             "user_agent": "SeoSensing-Bot/1.0",
         },
     }
-    create_proj_res = await client.post("/api/v1/projects", json=project_payload)
+    create_proj_res = await client.post("/api/v1/projects", json=project_payload, headers=auth_headers)
     assert create_proj_res.status_code == 201
     project = create_proj_res.json()
     project_id = project["id"]
@@ -33,7 +33,7 @@ async def test_full_end_to_end_phase1_flow(client: AsyncClient):
     assert project["domain"] == "acme-saas.com"
 
     # 3. Open Project details
-    get_proj_res = await client.get(f"/api/v1/projects/{project_id}")
+    get_proj_res = await client.get(f"/api/v1/projects/{project_id}", headers=auth_headers)
     assert get_proj_res.status_code == 200
     assert get_proj_res.json()["id"] == project_id
     assert get_proj_res.json()["total_scans"] == 0
@@ -46,6 +46,7 @@ async def test_full_end_to_end_phase1_flow(client: AsyncClient):
     create_scan_res = await client.post(
         f"/api/v1/projects/{project_id}/scans",
         json=scan_payload,
+        headers=auth_headers,
     )
     assert create_scan_res.status_code == 201
     scan = create_scan_res.json()
@@ -62,28 +63,28 @@ async def test_full_end_to_end_phase1_flow(client: AsyncClient):
     assert len(scan_details["logs"]) >= 1
 
     # 6. Verify scan appears in project scan history
-    proj_scans_res = await client.get(f"/api/v1/projects/{project_id}/scans")
+    proj_scans_res = await client.get(f"/api/v1/projects/{project_id}/scans", headers=auth_headers)
     assert proj_scans_res.status_code == 200
     proj_scans = proj_scans_res.json()
     assert proj_scans["total"] == 1
     assert proj_scans["scans"][0]["id"] == scan_id
 
     # 7. Cancel in-flight scan or wait for lifecycle completion
-    cancel_res = await client.post(f"/api/v1/scans/{scan_id}/cancel")
+    cancel_res = await client.post(f"/api/v1/scans/{scan_id}/cancel", headers=auth_headers)
     assert cancel_res.status_code == 200
     assert cancel_res.json()["status"] in ["cancelled", "completed"]
 
     # 8. Return to Project & verify updated scan history
-    proj_after_res = await client.get(f"/api/v1/projects/{project_id}")
+    proj_after_res = await client.get(f"/api/v1/projects/{project_id}", headers=auth_headers)
     assert proj_after_res.status_code == 200
     assert proj_after_res.json()["total_scans"] == 1
     assert proj_after_res.json()["latest_scan"] is not None
 
     # 9. Clean up / Delete Project
-    del_res = await client.delete(f"/api/v1/projects/{project_id}")
+    del_res = await client.delete(f"/api/v1/projects/{project_id}", headers=auth_headers)
     assert del_res.status_code == 200
     assert del_res.json()["success"] is True
 
     # 10. Verify project and its scans are removed
-    get_deleted = await client.get(f"/api/v1/projects/{project_id}")
+    get_deleted = await client.get(f"/api/v1/projects/{project_id}", headers=auth_headers)
     assert get_deleted.status_code == 404

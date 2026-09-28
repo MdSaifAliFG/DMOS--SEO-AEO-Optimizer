@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.models.user import User
-from app.api.v1.endpoints.billing import get_optional_current_user
+from app.core.auth import get_current_user, get_optional_current_user
 from app.schemas.system_settings import (
     WorkspaceSettingsUpdate,
     NotificationSettingsUpdate,
@@ -37,7 +37,7 @@ async def get_system_settings(
 )
 async def update_workspace_profile(
     data: WorkspaceSettingsUpdate,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SystemSettingsResponse:
     """Update enterprise workspace name, owner contact email, timezone, and language."""
@@ -51,6 +51,7 @@ async def update_workspace_profile(
 )
 async def update_notifications(
     data: NotificationSettingsUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SystemSettingsResponse:
     """Configure email notification triggers across SEO, AEO, and GEO optimization pillars."""
@@ -64,6 +65,7 @@ async def update_notifications(
 )
 async def update_crawler_policy(
     data: CrawlerSettingsUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SystemSettingsResponse:
     """Update global BFS crawler depth, rate-limiting delays, and worker concurrency thresholds."""
