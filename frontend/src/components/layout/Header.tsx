@@ -483,7 +483,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
               {/* Zobay Rank Engine Status Inside User Dropdown */}
               <div className="p-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                 <a
-                  href="http://localhost:8000/api/v1/docs"
+                  href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"}/docs`}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setIsUserMenuOpen(false)}

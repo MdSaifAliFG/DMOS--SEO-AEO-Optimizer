@@ -127,23 +127,17 @@ class ApiClient {
     const url = `${this.baseUrl}${endpoint}`;
     
     let authHeader: string | null = null;
-    let userEmailHeader: string | null = null;
-    let userIdHeader: string | null = null;
 
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("zobayrank_auth_session") || localStorage.getItem("dmos_auth_session");
         if (raw) {
           const session = JSON.parse(raw);
-          const token = session.token || session.id || session.email;
+          // JWT only: the backend verifies the signature and ignores
+          // everything else. Never send raw ids/emails as credentials.
+          const token = session.token;
           if (token) {
             authHeader = `Bearer ${token}`;
-          }
-          if (session.email) {
-            userEmailHeader = session.email;
-          }
-          if (session.id) {
-            userIdHeader = session.id;
           }
         }
       } catch {
@@ -155,8 +149,6 @@ class ApiClient {
       "Content-Type": "application/json",
       Accept: "application/json",
       ...(authHeader ? { Authorization: authHeader } : {}),
-      ...(userEmailHeader ? { "X-User-Email": userEmailHeader } : {}),
-      ...(userIdHeader ? { "X-User-Id": userIdHeader } : {}),
       ...(options.headers as Record<string, string>),
     };
 
