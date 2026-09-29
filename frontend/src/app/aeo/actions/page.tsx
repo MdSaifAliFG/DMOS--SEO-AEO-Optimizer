@@ -205,7 +205,7 @@ export default function AeoActionsPage() {
   // Export CSV
   const handleExportCsv = () => {
     if (!selectedProjectId) return;
-    window.open(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/v1/aeo/actions/${selectedProjectId}/export-csv`, "_blank");
+    window.open(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1"}/aeo/actions/${selectedProjectId}/export-csv`, "_blank");
   };
 
   const getPriorityBadge = (priority?: string) => {
