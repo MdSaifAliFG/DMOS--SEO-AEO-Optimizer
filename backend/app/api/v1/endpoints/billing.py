@@ -5,6 +5,7 @@ from sqlalchemy import select, func, desc, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.auth import get_current_user, resolve_workspace_id
 from app.models.user import User
 from app.models.billing import (
     Plan,
@@ -49,60 +50,6 @@ from app.services.razorpay_service import RazorpayService, ONE_TIME_CREDIT_PACKS
 router = APIRouter(prefix="/billing", tags=["Billing & Monetization"])
 
 
-async def get_optional_current_user(
-    request: Request,
-    db: AsyncSession = Depends(get_db),
-) -> Optional[User]:
-    """Resolves authenticated user from session/header with strict user isolation."""
-    # 1. Check explicit user identity headers
-    x_user_email = request.headers.get("X-User-Email", "").strip().lower()
-    if x_user_email:
-        stmt = select(User).where(func.lower(User.email) == x_user_email)
-        res = await db.execute(stmt)
-        u = res.scalar_one_or_none()
-        if u:
-            return u
-
-    x_user_id = request.headers.get("X-User-Id", "").strip()
-    if x_user_id:
-        stmt = select(User).where(User.id == x_user_id)
-        res = await db.execute(stmt)
-        u = res.scalar_one_or_none()
-        if u:
-            return u
-
-    # 2. Check Authorization header
-    auth_header = request.headers.get("Authorization", "")
-    if auth_header.startswith("Bearer "):
-        token = auth_header.replace("Bearer ", "").strip()
-        target_id = token
-        if token.startswith("sess_"):
-            parts = token.split("_")
-            if len(parts) >= 2:
-                target_id = parts[1]
-
-        stmt = select(User).where(
-            or_(
-                User.id == token,
-                User.id == target_id,
-                func.lower(User.email) == token.lower(),
-            )
-        )
-        res = await db.execute(stmt)
-        u = res.scalar_one_or_none()
-        if u:
-            return u
-
-    # 3. Unauthenticated request - return None to prevent user impersonation
-    return None
-
-
-async def resolve_workspace_id(user: Optional[User] = None) -> str:
-    if user and user.id:
-        return str(user.id)
-    return "global_workspace"
-
-
 
 @router.get("/plans", response_model=List[PlanResponse])
 async def list_plans(db: AsyncSession = Depends(get_db)):
@@ -112,7 +59,7 @@ async def list_plans(db: AsyncSession = Depends(get_db)):
 
 @router.get("/current", response_model=CurrentSubscriptionResponse)
 async def get_current_subscription(
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> CurrentSubscriptionResponse:
     """Retrieve current workspace subscription details."""
@@ -133,7 +80,7 @@ async def get_current_subscription(
 
 @router.get("/summary", response_model=BillingSummaryResponse)
 async def get_billing_summary(
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get full billing dashboard summary."""
@@ -144,7 +91,7 @@ async def get_billing_summary(
 
 @router.get("/credits", response_model=CreditWalletResponse)
 async def get_credit_wallet(
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get credit wallet balances."""
@@ -158,7 +105,7 @@ async def get_usage_history(
     module: Optional[str] = Query(None, description="SEO | AEO | GEO | SYSTEM"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """List detailed credit consumption events."""
@@ -174,7 +121,7 @@ async def get_usage_history(
 @router.get("/usage/summary", response_model=UsageSummaryResponse)
 async def get_usage_summary(
     days: Optional[int] = Query(None, description="Optional days window for usage summary"),
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get aggregated credit usage breakdown by module."""
@@ -210,7 +157,7 @@ async def get_usage_summary(
 async def get_credit_transactions(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Retrieve immutable credit ledger history."""
@@ -228,7 +175,7 @@ async def get_credit_transactions(
 
 @router.get("/invoices", response_model=List[InvoiceResponse])
 async def get_invoices(
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """List paid and historical invoices."""
@@ -247,7 +194,7 @@ async def get_credit_packs():
 @router.post("/checkout", response_model=CheckoutSessionResponse)
 async def create_subscription_checkout(
     payload: CheckoutSessionRequest,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Initiate Stripe subscription checkout."""
@@ -273,7 +220,7 @@ async def create_subscription_checkout(
 @router.post("/credits/checkout", response_model=CheckoutSessionResponse)
 async def create_credit_pack_checkout(
     payload: CreditPackCheckoutRequest,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Initiate Stripe checkout for one-time credit purchase."""
@@ -299,7 +246,7 @@ async def create_credit_pack_checkout(
 @router.post("/portal", response_model=CustomerPortalResponse)
 async def create_customer_portal(
     return_url: Optional[str] = None,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate self-serve Stripe Customer Portal link."""
@@ -314,7 +261,7 @@ async def create_customer_portal(
 @router.post("/cancel")
 async def cancel_subscription(
     payload: Optional[CancelSubscriptionRequest] = None,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Schedule subscription cancellation at period end."""
@@ -336,7 +283,7 @@ async def cancel_subscription(
 
 @router.post("/reactivate")
 async def reactivate_subscription(
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Resume a subscription that was scheduled for cancellation."""
@@ -359,7 +306,7 @@ async def reactivate_subscription(
 @router.post("/change-plan")
 async def change_plan(
     payload: ChangePlanRequest,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Change or upgrade plan tier."""
@@ -418,7 +365,7 @@ async def get_razorpay_config():
 @router.post("/razorpay/order", response_model=RazorpayOrderResponse)
 async def create_razorpay_order(
     payload: RazorpayOrderRequest,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Creates a Razorpay Order for a subscription plan upgrade or credit pack purchase."""
@@ -460,7 +407,7 @@ async def create_razorpay_order(
 @router.post("/razorpay/verify", response_model=RazorpayVerifyResponse)
 async def verify_razorpay_payment(
     payload: RazorpayVerifyRequest,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Verifies payment signature and immediately credits wallet or activates plan."""

@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
+from app.core.auth import get_current_user
+from app.models.user import User
 from app.models.project import Project
 from app.models.scan import Scan, ScanStatus
 from app.models.seo_page import SeoPage
@@ -89,6 +91,7 @@ async def get_seo_action(
 async def generate_seo_actions(
     scan_id: str = Query(...),
     project_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoRecommendationListResponse:
     recs = await RecommendationEngine.generate_recommendations_for_scan(
@@ -106,6 +109,7 @@ async def generate_seo_actions(
 async def update_seo_action(
     action_id: str,
     data: SeoRecommendationUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoRecommendationResponse:
     updated = await RecommendationEngine.update_action_status(
@@ -126,6 +130,7 @@ async def update_seo_action(
 )
 async def verify_seo_action(
     action_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> VerifyFixResponse:
     return await RecommendationEngine.verify_recommendation(db, action_id)
@@ -138,6 +143,7 @@ async def verify_seo_action(
 )
 async def ignore_seo_action(
     action_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoRecommendationResponse:
     updated = await RecommendationEngine.update_action_status(
@@ -157,6 +163,7 @@ async def ignore_seo_action(
 )
 async def bulk_update_seo_actions(
     data: SeoRecommendationBulkUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
     count = await RecommendationEngine.bulk_update_status(
@@ -202,6 +209,7 @@ async def get_optimization_history(
 )
 async def optimize_title(
     data: TitleOptimizationRequest,
+    current_user: User = Depends(get_current_user),
 ) -> TitleOptimizationResponse:
     provider = SEOAIProviderFactory.get_provider()
     suggestions = await provider.generate_titles(
@@ -225,6 +233,7 @@ async def optimize_title(
 )
 async def optimize_description(
     data: DescriptionOptimizationRequest,
+    current_user: User = Depends(get_current_user),
 ) -> DescriptionOptimizationResponse:
     provider = SEOAIProviderFactory.get_provider()
     suggestions = await provider.generate_descriptions(
@@ -250,6 +259,7 @@ async def optimize_description(
 )
 async def optimize_content(
     data: ContentOptimizationRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ContentOptimizationResponse:
     page_query = select(SeoPage)
@@ -365,6 +375,7 @@ async def optimize_content(
 )
 async def optimize_internal_links(
     data: InternalLinksOptimizationRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> InternalLinksOptimizationResponse:
     # Fetch pages for project's latest scan

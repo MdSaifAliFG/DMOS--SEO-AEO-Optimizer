@@ -9,9 +9,19 @@ from app.services.project_service import ProjectService
 from app.services.scan_service import ScanService
 from app.services.entitlement_service import EntitlementService
 from app.services.credit_service import CreditCostService, CreditWalletService
-from app.api.v1.endpoints.billing import get_optional_current_user, resolve_workspace_id
+from app.core.auth import get_current_user, get_optional_current_user, resolve_workspace_id
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
+
+
+def _enforce_project_owner(project, current_user: User) -> None:
+    """Cross-user isolation: a project owned by another user is invisible (404)."""
+    owner_id = getattr(project, "user_id", None)
+    if owner_id and owner_id != current_user.id and not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project with ID '{project.id}' not found",
+        )
 
 
 @router.post(
@@ -22,12 +32,12 @@ router = APIRouter(prefix="/projects", tags=["Projects"])
 )
 async def create_project(
     data: ProjectCreate,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ProjectResponse:
     """Register a new website domain for SEO/AEO scanning."""
     workspace_id = await resolve_workspace_id(current_user)
-    user_id = current_user.id if current_user else None
+    user_id = current_user.id
 
     # Check if domain already exists
     existing = await ProjectService.get_project_by_domain(db, data.domain)
@@ -80,6 +90,7 @@ async def list_projects(
 )
 async def get_project(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ProjectResponse:
     """Fetch project details including domain configuration and latest scan metadata."""
@@ -89,6 +100,7 @@ async def get_project(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Project with ID '{project_id}' not found",
         )
+    _enforce_project_owner(project, current_user)
     return ProjectService.map_to_response(project)
 
 
@@ -100,9 +112,17 @@ async def get_project(
 async def update_project(
     project_id: str,
     data: ProjectUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ProjectResponse:
     """Update project name, domain, or settings."""
+    existing = await ProjectService.get_project_by_id(db, project_id)
+    if not existing:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project with ID '{project_id}' not found",
+        )
+    _enforce_project_owner(existing, current_user)
     project = await ProjectService.update_project(db, project_id, data)
     if not project:
         raise HTTPException(
@@ -119,9 +139,17 @@ async def update_project(
 )
 async def delete_project(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
     """Delete a website project and all associated scan history."""
+    existing = await ProjectService.get_project_by_id(db, project_id)
+    if not existing:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project with ID '{project_id}' not found",
+        )
+    _enforce_project_owner(existing, current_user)
     deleted = await ProjectService.delete_project(db, project_id)
     if not deleted:
         raise HTTPException(
@@ -140,7 +168,7 @@ async def delete_project(
 async def create_scan_for_project(
     project_id: str,
     data: Optional[ScanCreate] = None,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ScanResponse:
     """
@@ -153,12 +181,11 @@ async def create_scan_for_project(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Project with ID '{project_id}' not found",
         )
+    _enforce_project_owner(project, current_user)
 
     scan_data = data or ScanCreate()
     workspace_id = await resolve_workspace_id(current_user)
-    if not current_user and project.user_id:
-        workspace_id = str(project.user_id)
-    user_id = current_user.id if current_user else project.user_id
+    user_id = current_user.id
 
     # If project didn't have user_id associated, bind it to active user
     if not project.user_id and user_id:
@@ -200,6 +227,7 @@ async def list_scans_for_project(
     project_id: str,
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ScanListResponse:
     """Retrieve scan execution history for a given project."""
@@ -209,6 +237,7 @@ async def list_scans_for_project(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Project with ID '{project_id}' not found",
         )
+    _enforce_project_owner(project, current_user)
 
     scans, total = await ScanService.get_scans_by_project(
         db, project_id, skip=skip, limit=limit

@@ -54,9 +54,33 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 @async_fixture(scope="function")
+async def auth_headers(db_session: AsyncSession) -> dict:
+    """Create a test user and return JWT Authorization headers for it."""
+    from app.core.auth import create_access_token
+    from app.models.user import User
+
+    user = User(
+        id="test_user",
+        email="test@test.local",
+        full_name="Test",
+        is_active=True,
+    )
+    db_session.add(user)
+    await db_session.commit()
+    return {"Authorization": f"Bearer {create_access_token('test_user')}"}
+
+
+@async_fixture(scope="function")
 async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
-        yield db_session
+        # Fresh session per request — mirrors production get_db and avoids
+        # stale identity-map state leaking between requests in one test.
+        async with TestingSessionLocal() as session:
+            try:
+                yield session
+            except Exception:
+                await session.rollback()
+                raise
 
     app.dependency_overrides[get_db] = override_get_db
 

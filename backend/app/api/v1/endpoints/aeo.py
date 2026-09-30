@@ -58,7 +58,7 @@ from app.services.aeo.intelligence.intelligence_engine import AEOIntelligenceEng
 from app.services.entitlement_service import EntitlementService
 from app.services.credit_service import CreditCostService, CreditWalletService
 from app.models.user import User
-from app.api.v1.endpoints.billing import get_optional_current_user, resolve_workspace_id
+from app.core.auth import enforce_owner, get_current_user, resolve_workspace_id
 
 router = APIRouter(prefix="/aeo", tags=["AEO Optimization"])
 
@@ -148,11 +148,11 @@ async def list_aeo_projects(
 )
 async def create_aeo_project(
     data: AeoProjectCreate,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoProjectResponse:
     workspace_id = await resolve_workspace_id(current_user)
-    user_id = current_user.id if current_user else None
+    user_id = current_user.id
 
     can_create, current_cnt, limit_cnt = await EntitlementService.can_create_project(
         db, workspace_id, user_id=user_id
@@ -251,8 +251,16 @@ async def get_aeo_project(
 async def update_aeo_project(
     project_id: str,
     data: AeoProjectUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoProjectResponse:
+    existing = await AeoService.get_project(db, project_id)
+    if not existing:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"AEO Project '{project_id}' not found",
+        )
+    enforce_owner(existing, current_user, "AEO Project")
     try:
         project = await AeoService.update_project(db, project_id, data)
     except ValueError as val_err:
@@ -300,8 +308,16 @@ async def update_aeo_project(
 )
 async def delete_aeo_project(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
+    existing = await AeoService.get_project(db, project_id)
+    if not existing:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"AEO Project '{project_id}' not found",
+        )
+    enforce_owner(existing, current_user, "AEO Project")
     success = await AeoService.delete_project(db, project_id)
     if not success:
         raise HTTPException(
@@ -321,13 +337,20 @@ async def delete_aeo_project(
 async def trigger_aeo_analysis(
     project_id: str,
     data: Optional[AeoAnalysisTriggerRequest] = None,
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoAnalysisResponse:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"AEO Project '{project_id}' not found",
+        )
+    enforce_owner(project, current_user, "AEO Project")
     engines = data.engines if data else None
     allow_test_mode = data.allow_test_mode if data else False
     workspace_id = await resolve_workspace_id(current_user)
-    user_id = current_user.id if current_user else None
+    user_id = current_user.id
 
     cost = CreditCostService.get_cost("aeo_ai_query", engines_count=len(engines or ["chatgpt", "gemini", "perplexity"]))
     success, _ = await CreditWalletService.deduct_atomic(
@@ -418,6 +441,7 @@ async def list_aeo_questions(
 )
 async def create_aeo_question(
     data: AeoQuestionCreate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoQuestionResponse:
     question = await AeoService.create_question(db, data)
@@ -432,6 +456,7 @@ async def create_aeo_question(
 async def update_aeo_question(
     question_id: str,
     data: AeoQuestionUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoQuestionResponse:
     q = await AeoService.update_question(db, question_id, data)
@@ -449,6 +474,7 @@ async def update_aeo_question(
 )
 async def delete_aeo_question(
     question_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
     success = await AeoService.delete_question(db, question_id)
@@ -468,6 +494,7 @@ async def delete_aeo_question(
 )
 async def generate_aeo_questions(
     data: AeoQuestionGenerateRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoQuestionListResponse:
     try:
@@ -613,6 +640,7 @@ async def list_aeo_citations(
 )
 async def create_aeo_citation(
     data: AeoCitationCreate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoCitationResponse:
     citation = await AeoService.create_citation(db, data)
@@ -655,6 +683,7 @@ async def list_aeo_entities(
 )
 async def create_aeo_entity(
     data: AeoEntityCreate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoEntityResponse:
     entity = await AeoService.create_entity(db, data)
@@ -741,6 +770,7 @@ async def get_aeo_actions_summary(
 )
 async def generate_aeo_actions(
     data: AeoActionGenerateRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoRecommendationListResponse:
     recs = await AeoService.generate_actions_for_project(db, data.project_id)
@@ -776,6 +806,7 @@ async def get_aeo_action_detail(
 async def update_aeo_action(
     action_id: str,
     data: AeoActionUpdateRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoRecommendationResponse:
     rec = await AeoService.update_action(
@@ -795,6 +826,7 @@ async def update_aeo_action(
 )
 async def verify_aeo_action(
     action_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
     rec, is_resolved, message = await AeoService.verify_action(db, action_id)
@@ -820,6 +852,7 @@ async def verify_aeo_action(
 )
 async def ignore_aeo_action(
     action_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoRecommendationResponse:
     rec = await AeoService.update_action(db, action_id, status="ignored")
@@ -837,6 +870,7 @@ async def ignore_aeo_action(
 )
 async def bulk_update_aeo_actions(
     data: AeoActionBulkUpdateRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
     updated_count = await AeoService.bulk_update_actions(
@@ -917,6 +951,7 @@ async def export_aeo_actions_csv(
 )
 async def get_aeo_content_gaps(
     data: AeoProjectGapRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
     return await AeoService.get_content_gaps(db, data.project_id)
@@ -928,6 +963,7 @@ async def get_aeo_content_gaps(
 )
 async def get_aeo_prompt_gaps(
     data: AeoProjectGapRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
     return await AeoService.get_prompt_gaps(db, data.project_id)
@@ -939,6 +975,7 @@ async def get_aeo_prompt_gaps(
 )
 async def get_aeo_citation_gaps(
     data: AeoProjectGapRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
     return await AeoService.get_citation_gaps(db, data.project_id)
@@ -950,6 +987,7 @@ async def get_aeo_citation_gaps(
 )
 async def get_aeo_entity_gaps(
     data: AeoProjectGapRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
     return await AeoService.get_entity_gaps(db, data.project_id)
@@ -975,6 +1013,7 @@ async def get_aeo_optimization_history(
 )
 async def optimize_aeo_content(
     data: AeoContentOptimizeRequest,
+    current_user: User = Depends(get_current_user),
 ) -> dict:
     return await AeoService.optimize_content(
         target_question=data.target_question,
@@ -991,6 +1030,7 @@ async def optimize_aeo_content(
 )
 async def optimize_aeo_direct_answer(
     data: AeoDirectAnswerOptimizeRequest,
+    current_user: User = Depends(get_current_user),
 ) -> dict:
     return await AeoService.optimize_direct_answer(
         target_question=data.target_question,
@@ -1174,6 +1214,7 @@ async def get_aeo_monitoring_schedule(
 async def run_aeo_monitoring_cycle(
     project_id: str,
     allow_test_mode: bool = Query(False),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoAnalysisResponse:
     project = await AeoService.get_project(db, project_id)
@@ -1215,6 +1256,7 @@ async def run_aeo_monitoring_cycle(
 async def update_aeo_monitoring_schedule(
     project_id: str,
     input_data: AeoMonitoringScheduleUpdateRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoMonitoringScheduleResponse:
     project = await AeoService.get_project(db, project_id)
@@ -1403,6 +1445,7 @@ async def list_aeo_alerts(
 async def update_aeo_alert(
     alert_id: str,
     input_data: AeoAlertUpdateInput,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoAlertResponse:
     if input_data.status == "acknowledged":

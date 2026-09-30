@@ -8,7 +8,7 @@ from app.services.seo.scoring import SeoScoringEngine
 
 
 @pytest.mark.asyncio
-async def test_phase2_scan_results_and_endpoints(client: AsyncClient, db_session):
+async def test_phase2_scan_results_and_endpoints(client: AsyncClient, db_session, auth_headers: dict):
     """
     Tests Phase 2 API endpoints:
     /api/v1/scans/{id}/results
@@ -17,12 +17,12 @@ async def test_phase2_scan_results_and_endpoints(client: AsyncClient, db_session
     /api/v1/scans/{id}/issues
     """
     # 1. Create a project
-    p_res = await client.post("/api/v1/projects", json={"name": "Cloudflare Dev", "domain": "cloudflare.com"})
+    p_res = await client.post("/api/v1/projects", json={"name": "Cloudflare Dev", "domain": "cloudflare.com"}, headers=auth_headers)
     assert p_res.status_code == 201
     project_id = p_res.json()["id"]
 
     # 2. Trigger scan
-    s_res = await client.post(f"/api/v1/projects/{project_id}/scans", json={"scan_type": "full_audit"})
+    s_res = await client.post(f"/api/v1/projects/{project_id}/scans", json={"scan_type": "full_audit"}, headers=auth_headers)
     assert s_res.status_code == 201
     scan_id = s_res.json()["id"]
 

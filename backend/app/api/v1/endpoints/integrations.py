@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.auth import get_current_user
+from app.models.user import User
 from app.schemas.integration import (
     IntegrationConnectRequest,
     IntegrationTestRequest,
@@ -62,6 +64,7 @@ async def test_specific_provider(
 async def connect_integration(
     provider: str,
     data: IntegrationConnectRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> IntegrationResponse:
     """Save API credentials, initialize telemetry baseline, and activate real-time synchronization."""
@@ -82,6 +85,7 @@ async def connect_integration(
 )
 async def sync_integration(
     provider: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> IntegrationSyncResponse:
     """Perform on-demand real-time sync to pull fresh search metrics or citation data."""
@@ -101,6 +105,7 @@ async def sync_integration(
 )
 async def disconnect_integration(
     provider: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> IntegrationResponse:
     """Disconnect provider, revoke active sync, and securely wipe credentials."""
