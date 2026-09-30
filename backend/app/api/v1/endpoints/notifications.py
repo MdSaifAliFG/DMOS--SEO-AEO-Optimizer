@@ -63,15 +63,18 @@ async def get_notification_feed(
 
     for s in scans:
         if s.status == ScanStatus.COMPLETED.value:
-            issue_count = s.issues_critical + s.issues_high + s.issues_medium + s.issues_low
+            # Count issues from the loaded relationship; fall back to issues_count aggregate
+            critical_count = sum(1 for i in (s.issues or []) if i.severity == "critical")
+            issue_count = s.issues_count if s.issues_count else len(s.issues or [])
+            health_score = s.overall_score or 0
             notifications.append({
                 "id": f"seo_scan_{s.id}",
                 "title": "SEO Technical Audit Completed",
-                "message": f"Crawled {s.pages_crawled} pages on {s.target_url}. Discovered {issue_count} technical issues (Health Score: {s.health_score}/100).",
+                "message": f"Crawled {s.pages_crawled} pages on {s.target_url}. Discovered {issue_count} technical issues (Health Score: {health_score}/100).",
                 "timestamp": _relative_time_str(s.completed_at or s.created_at),
                 "createdAt": int((s.completed_at or s.created_at).timestamp() * 1000) if (s.completed_at or s.created_at) else int(datetime.now(timezone.utc).timestamp() * 1000),
                 "type": "seo",
-                "severity": "warning" if (s.issues_critical > 0 or s.health_score < 70) else "success",
+                "severity": "warning" if (critical_count > 0 or health_score < 70) else "success",
                 "read": False,
                 "link": f"/seo/scans?scanId={s.id}",
                 "linkText": "View Audit Report",

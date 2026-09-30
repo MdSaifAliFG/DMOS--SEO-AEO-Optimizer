@@ -24,7 +24,7 @@ export const HeroSection: React.FC = () => {
   return (
     <section
       id="hero"
-      className="relative pt-24 pb-14 sm:pt-28 sm:pb-20 lg:py-24 2xl:py-36 3xl:py-44 bg-[#030712] text-white overflow-hidden flex items-center"
+      className="relative pt-28 pb-20 sm:pt-32 sm:pb-24 lg:py-28 2xl:py-36 3xl:py-44 bg-[#030712] text-white overflow-hidden flex items-center"
     >
       {/* Intense Royal Blue Ambient Glow Spots Scaled for 4K */}
       <div className="absolute -bottom-10 -left-10 w-[500px] sm:w-[650px] 2xl:w-[950px] 3xl:w-[1200px] h-[500px] sm:h-[650px] 2xl:h-[950px] 3xl:h-[1200px] bg-[#1D63FF]/30 rounded-full blur-[140px] 2xl:blur-[220px] pointer-events-none" />
@@ -34,10 +34,10 @@ export const HeroSection: React.FC = () => {
       {/* Subtle Dot Matrix Overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:32px_32px] 2xl:[background-size:40px_40px] opacity-15 pointer-events-none" />
 
-      <div className="max-w-7xl 2xl:max-w-[1680px] 3xl:max-w-[1920px] 4k:max-w-[2240px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 relative z-10 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 2xl:gap-14 items-center">
+      <div className="max-w-7xl xl:max-w-[1360px] 2xl:max-w-[1680px] 3xl:max-w-[1920px] 4k:max-w-[2240px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 relative z-10 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-12 2xl:gap-16 items-center">
           {/* Left Column: Heading, Subtext, CTAs, Highlights (6 cols) */}
-          <div className="lg:col-span-6 space-y-5 sm:space-y-6 2xl:space-y-8 text-left">
+          <div className="lg:col-span-6 space-y-5 sm:space-y-6 2xl:space-y-8 text-left z-10">
             {/* Small Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 2xl:px-4 py-1 2xl:py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs 2xl:text-sm font-bold tracking-wide">
               <Sparkles className="w-3.5 h-3.5 2xl:w-4 2xl:h-4 text-amber-400" />
@@ -45,9 +45,10 @@ export const HeroSection: React.FC = () => {
             </div>
 
             {/* Main Bold Heading */}
-            <h1 className="text-3xl sm:text-5xl lg:text-[54px] 2xl:text-6xl 3xl:text-7xl 4k:text-[82px] font-black tracking-tight leading-[1.08] text-white font-sans">
-              AI-Powered SEO, <br />
-              <span className="text-white">AEO &amp; GEO Optimization</span>
+            <h1 className="text-3xl sm:text-4xl lg:text-[36px] xl:text-[42px] 2xl:text-6xl 3xl:text-7xl 4k:text-[82px] font-black tracking-tight leading-[1.12] text-white font-sans">
+              <span className="inline-block whitespace-nowrap">AI-Powered SEO,</span>{" "}
+              <br className="hidden sm:inline" />
+              <span className="text-white inline-block">AEO &amp; GEO Optimization</span>
             </h1>
 
             {/* Subtitle */}
@@ -102,14 +103,17 @@ export const HeroSection: React.FC = () => {
           </div>
 
           {/* Right Column: 2-Column Angled Isometric Dashboard Collage (6 cols) */}
-          <div className="lg:col-span-6 relative flex justify-center lg:justify-end overflow-hidden sm:overflow-visible">
-            <div className="relative w-full max-w-[480px] sm:max-w-[520px] 2xl:max-w-[640px] 3xl:max-w-[720px] select-none scale-[0.72] xs:scale-[0.82] sm:scale-95 lg:scale-100 2xl:scale-115 3xl:scale-125 origin-center sm:origin-top-right 2xl:origin-center transform -rotate-[8deg] sm:-rotate-[12deg] hover:-rotate-[4deg] sm:hover:-rotate-[8deg] transition-transform duration-500">
-              <div className="grid grid-cols-2 gap-4 sm:gap-5 items-start">
+          <div className="lg:col-span-6 relative flex justify-center items-center w-full min-h-[460px] lg:min-h-[520px]">
+            {/* Ambient Back Glow behind card deck */}
+            <div className="absolute inset-0 bg-blue-500/10 rounded-3xl blur-3xl pointer-events-none -z-10" />
 
-                {/* Column 1 (Left Tilted Column) */}
+            <div className="relative w-full max-w-[450px] sm:max-w-[480px] xl:max-w-[480px] 2xl:max-w-[580px] 3xl:max-w-[680px] select-none origin-center scale-[0.76] xs:scale-[0.82] sm:scale-[0.88] lg:scale-[0.80] xl:scale-[0.84] 2xl:scale-100 3xl:scale-110 translate-x-5 sm:translate-x-8 lg:translate-x-10 xl:translate-x-12 2xl:translate-x-10 translate-y-3 sm:translate-y-4 lg:translate-y-5 xl:translate-y-6 2xl:translate-y-6 transform -rotate-[9.5deg] hover:-rotate-[6deg] transition-transform duration-500 ease-out">
+              <div className="grid grid-cols-2 gap-3.5 sm:gap-4 xl:gap-4.5 items-start">
+
+                {/* Column 1 (Left Column) */}
                 <div className="space-y-4">
                   {/* Card 1A: SEO Audit Navigation Menu Card */}
-                  <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-2xl shadow-black/80 text-slate-900 border border-slate-100 space-y-3">
+                  <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-2xl shadow-black/60 text-slate-900 border border-slate-100 space-y-3">
                     <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shadow-xs">
                       <Globe className="w-4 h-4 text-blue-600" />
                     </div>
@@ -142,18 +146,21 @@ export const HeroSection: React.FC = () => {
                   </div>
 
                   {/* Card 1B: BFS Live Crawl Square Card */}
-                  <div className="bg-white rounded-3xl p-4 shadow-2xl shadow-black/70 flex items-center gap-3.5 border border-slate-100">
+                  <div className="bg-white rounded-3xl p-4 shadow-2xl shadow-black/50 flex items-center gap-3.5 border border-slate-100">
                     <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                       <Fingerprint className="w-6 h-6" />
                     </div>
                     <div>
                       <span className="text-xs font-extrabold text-slate-900 block">Live Crawl</span>
-                      <span className="text-[10px] text-emerald-600 font-semibold">BFS Engine Active</span>
+                      <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        BFS Engine Active
+                      </span>
                     </div>
                   </div>
 
                   {/* Card 1C: Technical Audit Status Card */}
-                  <div className="bg-white rounded-3xl p-4 shadow-2xl shadow-black/70 space-y-2 border border-slate-100">
+                  <div className="bg-white rounded-3xl p-4 shadow-2xl shadow-black/50 space-y-2 border border-slate-100">
                     <div className="flex justify-between items-center text-xs">
                       <span className="text-slate-800 font-bold">Audit Status</span>
                       <span className="text-emerald-600 font-bold font-mono">200 OK</span>
@@ -168,14 +175,14 @@ export const HeroSection: React.FC = () => {
                         <span className="text-emerald-600 font-semibold">0 Critical</span>
                       </div>
                     </div>
-                    <button className="w-full py-2 rounded-xl bg-[#1D63FF] text-white text-[10px] font-bold shadow-md shadow-blue-600/30">
+                    <button className="w-full py-2 rounded-xl bg-[#1D63FF] hover:bg-blue-600 text-white text-[10px] font-bold shadow-md shadow-blue-600/30 transition-colors">
                       Run Audit
                     </button>
                   </div>
                 </div>
 
-                {/* Column 2 (Right Tilted Column - Offset slightly down) */}
-                <div className="space-y-4 pt-6 sm:pt-8">
+                {/* Column 2 (Offset slightly down for natural stagger) */}
+                <div className="space-y-4 pt-1 sm:pt-2">
                   {/* Card 2A: Royal Blue Crawled Pages Capsule */}
                   <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-3xl p-4 sm:p-5 text-white shadow-2xl relative overflow-hidden space-y-1">
                     <div className="absolute -right-3 -bottom-3 w-16 h-16 rounded-full border border-white/20 pointer-events-none" />
@@ -190,7 +197,7 @@ export const HeroSection: React.FC = () => {
                   </div>
 
                   {/* Card 2B: SEO Health Score & Category Breakdown */}
-                  <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-2xl shadow-black/70 text-slate-900 space-y-2.5 border border-slate-100">
+                  <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-2xl shadow-black/50 text-slate-900 space-y-2.5 border border-slate-100">
                     <div>
                       <span className="text-[10px] uppercase font-bold text-slate-400">SEO Health Score</span>
                       <div className="flex items-baseline gap-1.5 mt-0.5">
@@ -216,7 +223,7 @@ export const HeroSection: React.FC = () => {
                   </div>
 
                   {/* Card 2C: AI Citation Source Strip */}
-                  <div className="bg-white rounded-full px-4 py-2 shadow-2xl shadow-black/60 flex items-center gap-2 border border-slate-100">
+                  <div className="bg-white rounded-full px-4 py-2 shadow-2xl shadow-black/50 flex items-center gap-2 border border-slate-100">
                     <div className="w-5 h-5 rounded-full bg-purple-600 text-white text-[9px] font-bold flex items-center justify-center shrink-0">
                       <Bot className="w-3 h-3" />
                     </div>
@@ -227,7 +234,7 @@ export const HeroSection: React.FC = () => {
                   </div>
 
                   {/* Card 2C-GEO: 8-Factor GEO Score Strip */}
-                  <div className="bg-white rounded-full px-4 py-2 shadow-2xl shadow-black/60 flex items-center gap-2 border border-amber-200/80">
+                  <div className="bg-white rounded-full px-4 py-2 shadow-2xl shadow-black/50 flex items-center gap-2 border border-amber-200/80">
                     <div className="w-5 h-5 rounded-full bg-amber-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">
                       <Sparkles className="w-3 h-3 text-white" />
                     </div>
@@ -238,7 +245,7 @@ export const HeroSection: React.FC = () => {
                   </div>
 
                   {/* Card 2D: ChatGPT Search Engine Badge */}
-                  <div className="bg-white rounded-3xl p-4 shadow-2xl shadow-black/70 text-center space-y-1.5 border border-slate-100">
+                  <div className="bg-white rounded-3xl p-4 shadow-2xl shadow-black/50 text-center space-y-1.5 border border-slate-100">
                     <div className="w-8 h-8 rounded-full bg-purple-50 text-purple-600 mx-auto flex items-center justify-center border border-purple-200 shadow-xs">
                       <Sparkles className="w-4 h-4 text-purple-600" />
                     </div>
@@ -251,7 +258,7 @@ export const HeroSection: React.FC = () => {
                         <Star key={idx} className="w-2.5 h-2.5 fill-current" />
                       ))}
                     </div>
-                    <button className="w-full py-1.5 rounded-xl bg-[#1D63FF] text-white text-[10px] font-bold">
+                    <button className="w-full py-1.5 rounded-xl bg-[#1D63FF] hover:bg-blue-600 text-white text-[10px] font-bold transition-colors">
                       View Citations
                     </button>
                   </div>
