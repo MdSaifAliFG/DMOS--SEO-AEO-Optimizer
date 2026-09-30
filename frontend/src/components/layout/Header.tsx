@@ -328,31 +328,35 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
         </div>
 
         {/* Plan Tier Badge */}
-        <Link
-          href="/billing"
-          className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50/80 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 border border-blue-200 dark:border-blue-800/80 text-[11px] font-bold text-blue-700 dark:text-blue-300 transition-colors shadow-2xs group cursor-pointer"
-          title="Current Plan Tier (Click to manage)"
-        >
-          <Sparkles className="w-3 h-3 text-blue-500 group-hover:scale-110 transition-transform" />
-          <span className="uppercase tracking-wider">
-            {billingSummary?.current_plan?.name || "Free Plan"}
-          </span>
-        </Link>
+        {user && (
+          <Link
+            href="/billing"
+            className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50/80 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 border border-blue-200 dark:border-blue-800/80 text-[11px] font-bold text-blue-700 dark:text-blue-300 transition-colors shadow-2xs group cursor-pointer"
+            title="Current Plan Tier (Click to manage)"
+          >
+            <Sparkles className="w-3 h-3 text-blue-500 group-hover:scale-110 transition-transform" />
+            <span className="uppercase tracking-wider">
+              {billingSummary?.current_plan?.name || "Free Plan"}
+            </span>
+          </Link>
+        )}
 
         {/* Real-time Credit Balance Badge */}
-        <Link
-          href="/billing"
-          className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors shadow-2xs cursor-pointer group"
-          title="Available Credits (Click to top up or view history)"
-        >
-          <Zap className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-500 fill-amber-500 group-hover:scale-110 transition-transform shrink-0" />
-          <span>
-            {billingSummary !== null
-              ? billingSummary.available_credits.toLocaleString()
-              : "0"}
-            <span className="hidden sm:inline"> Credits</span>
-          </span>
-        </Link>
+        {user && (
+          <Link
+            href="/billing"
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors shadow-2xs cursor-pointer group"
+            title="Available Credits (Click to top up or view history)"
+          >
+            <Zap className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-500 fill-amber-500 group-hover:scale-110 transition-transform shrink-0" />
+            <span>
+              {billingSummary !== null
+                ? billingSummary.available_credits.toLocaleString()
+                : "0"}
+              <span className="hidden sm:inline"> Credits</span>
+            </span>
+          </Link>
+        )}
 
         {/* Dark Mode Toggle directly before notifications */}
         <ThemeToggle />
@@ -457,104 +461,125 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
         </div>
 
         {/* User Profile Avatar with Dropdown */}
-        <div className="relative" ref={userMenuRef}>
-          <button
-            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-            className="flex items-center gap-1.5 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
-            title="User Account Menu"
+        {!user ? (
+          <Link
+            href="/login"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-colors shadow-xs"
           >
-            <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
-              {user ? user.name.slice(0, 2).toUpperCase() : "AU"}
-            </div>
-            <ChevronDown className="w-3 h-3 text-slate-400 hidden sm:block" />
-          </button>
-
-          {/* User Menu Dropdown */}
-          {isUserMenuOpen && (
-            <div className="absolute right-0 mt-2 w-60 max-w-[calc(100vw-2rem)] bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
-              <div className="px-3.5 py-2.5 border-b border-slate-100 dark:border-slate-800">
-                <p className="text-xs font-bold text-slate-900 dark:text-white">{user?.name || "Growth Lead"}</p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{user?.email || "admin@zobayrank.internal"}</p>
-                <span className="inline-block mt-1 text-[10px] px-1.5 py-0.2 rounded font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                  {user?.role || "Enterprise Admin"}
-                </span>
+            <span>Sign In</span>
+          </Link>
+        ) : (
+          <div className="relative" ref={userMenuRef}>
+            <button
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              className="flex items-center gap-1.5 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+              title="User Account Menu"
+            >
+              <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                {user.name
+                  ? user.name
+                      .split(" ")
+                      .filter(Boolean)
+                      .map((p) => p[0])
+                      .join("")
+                      .slice(0, 2)
+                      .toUpperCase()
+                  : user.email.slice(0, 2).toUpperCase()}
               </div>
+              <ChevronDown className="w-3 h-3 text-slate-400 hidden sm:block" />
+            </button>
 
-              {/* Zobay Rank Engine Status Inside User Dropdown */}
-              <div className="p-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-                <a
-                  href="http://localhost:8000/api/v1/docs"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsUserMenuOpen(false)}
-                  title="Open FastAPI Swagger API Docs (Zobay Rank Engine)"
-                  className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700/80 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-xs text-slate-700 dark:text-slate-200 transition-all group select-none"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="relative flex h-2 w-2 shrink-0">
-                      <span
-                        className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                          health?.status === "healthy" ? "bg-emerald-400" : "bg-amber-400"
-                        }`}
-                      />
-                      <span
-                        className={`relative inline-flex rounded-full h-2 w-2 ${
-                          health?.status === "healthy" ? "bg-emerald-500" : "bg-amber-500"
-                        }`}
-                      />
-                    </span>
-                    <div className="flex flex-col min-w-0 text-left">
-                      <span className="text-[11px] font-bold text-slate-800 dark:text-slate-100 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        Zobay Rank Engine
+            {/* User Menu Dropdown */}
+            {isUserMenuOpen && (
+              <div className="absolute right-0 mt-2 w-60 max-w-[calc(100vw-2rem)] bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-1 overflow-hidden">
+                <div className="px-3.5 py-2.5 border-b border-slate-100 dark:border-slate-800">
+                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                    {user.name || user.email.split("@")[0]}
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                    {user.email}
+                  </p>
+                  <span className="inline-block mt-1 text-[10px] px-1.5 py-0.2 rounded font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 uppercase tracking-wider">
+                    {user.role === "admin" ? "Enterprise Admin" : "Active Member"}
+                  </span>
+                </div>
+
+                {/* Zobay Rank Engine Status Inside User Dropdown */}
+                <div className="p-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                  <a
+                    href="http://localhost:8000/api/v1/docs"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    title="Open FastAPI Swagger API Docs (Zobay Rank Engine)"
+                    className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700/80 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-xs text-slate-700 dark:text-slate-200 transition-all group select-none"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="relative flex h-2 w-2 shrink-0">
+                        <span
+                          className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                            health?.status === "healthy" ? "bg-emerald-400" : "bg-amber-400"
+                          }`}
+                        />
+                        <span
+                          className={`relative inline-flex rounded-full h-2 w-2 ${
+                            health?.status === "healthy" ? "bg-emerald-500" : "bg-amber-500"
+                          }`}
+                        />
                       </span>
-                      <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 leading-tight">
-                        {health?.status === "healthy" ? "Online & Healthy" : "Connecting..."}
-                      </span>
+                      <div className="flex flex-col min-w-0 text-left">
+                        <span className="text-[11px] font-bold text-slate-800 dark:text-slate-100 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          Zobay Rank Engine
+                        </span>
+                        <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 leading-tight">
+                          {health?.status === "healthy" ? "Online & Healthy" : "Connecting..."}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors shrink-0 ml-1" />
-                </a>
-              </div>
+                    <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors shrink-0 ml-1" />
+                  </a>
+                </div>
 
-              <div className="py-1">
-                <Link
-                  href="/billing"
-                  onClick={() => setIsUserMenuOpen(false)}
-                  className="flex items-center gap-2 px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
-                >
-                  <CreditCard className="w-3.5 h-3.5 text-blue-500" />
-                  <span>Billing & Subscription</span>
-                </Link>
-                <Link
-                  href="/settings"
-                  onClick={() => setIsUserMenuOpen(false)}
-                  className="flex items-center gap-2 px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <Settings className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Workspace Settings</span>
-                </Link>
-                <Link
-                  href="/integrations"
-                  onClick={() => setIsUserMenuOpen(false)}
-                  className="flex items-center gap-2 px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <Puzzle className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Integrations Hub</span>
-                </Link>
-              </div>
+                <div className="py-1">
+                  <Link
+                    href="/billing"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center gap-2 px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+                  >
+                    <CreditCard className="w-3.5 h-3.5 text-blue-500" />
+                    <span>Billing & Subscription</span>
+                  </Link>
+                  <Link
+                    href="/settings"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center gap-2 px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  >
+                    <Settings className="w-3.5 h-3.5 text-slate-400" />
+                    <span>Workspace Settings</span>
+                  </Link>
+                  <Link
+                    href="/integrations"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center gap-2 px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  >
+                    <Puzzle className="w-3.5 h-3.5 text-slate-400" />
+                    <span>Integrations Hub</span>
+                  </Link>
+                </div>
 
-              <div className="border-t border-slate-100 dark:border-slate-800 pt-1">
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors font-medium text-left cursor-pointer"
-                >
-                  <LogOut className="w-3.5 h-3.5 text-rose-500" />
-                  <span>Log Out of Zobay Rank</span>
-                </button>
+                <div className="border-t border-slate-100 dark:border-slate-800 pt-1">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors font-medium text-left cursor-pointer"
+                  >
+                    <LogOut className="w-3.5 h-3.5 text-rose-500" />
+                    <span>Log Out of Zobay Rank</span>
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

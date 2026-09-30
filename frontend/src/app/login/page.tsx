@@ -25,6 +25,7 @@ function LoginFormContent() {
   const searchParams = useSearchParams();
   const registered = searchParams.get("registered");
   const emailParam = searchParams.get("email");
+  const redirectParam = searchParams.get("redirect");
 
   const [email, setEmail] = useState(emailParam || "");
   const [password, setPassword] = useState("");
@@ -51,7 +52,11 @@ function LoginFormContent() {
     setIsLoading(true);
     try {
       await loginWithCredentials(cleanEmail, password);
-      window.location.href = "/overview";
+      const safeRedirect =
+        redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//")
+          ? redirectParam
+          : "/overview";
+      window.location.href = safeRedirect;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Invalid email or password.";
       setErrorMessage(msg);
@@ -204,7 +209,7 @@ function LoginFormContent() {
             <p className="text-xs text-slate-600 dark:text-slate-400 font-normal">
               Don&apos;t have an account?{" "}
               <Link
-                href="/signup"
+                href={redirectParam ? `/signup?redirect=${encodeURIComponent(redirectParam)}` : "/signup"}
                 className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-bold hover:underline transition-colors ml-0.5"
               >
                 Sign up

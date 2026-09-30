@@ -16,10 +16,13 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useSearchParams } from "next/navigation";
 import { SeoSensingLogo } from "@/components/brand/SeoSensingLogo";
 
-export default function SignUpPage() {
+function SignUpFormContent() {
   const { signUpWithCredentials } = useAuth();
+  const searchParams = useSearchParams();
+  const redirectParam = searchParams.get("redirect");
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -59,7 +62,11 @@ export default function SignUpPage() {
     setIsLoading(true);
     try {
       await signUpWithCredentials(cleanEmail, cleanName, password);
-      window.location.href = `/login?registered=true&email=${encodeURIComponent(cleanEmail)}`;
+      const safeRedirect =
+        redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//")
+          ? redirectParam
+          : "/overview";
+      window.location.href = safeRedirect;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to create account. Please try again.";
       setErrorMessage(msg);
@@ -228,7 +235,7 @@ export default function SignUpPage() {
             <p className="text-xs text-slate-600 dark:text-slate-400 font-normal">
               Already have an account?{" "}
               <Link
-                href="/login"
+                href={redirectParam ? `/login?redirect=${encodeURIComponent(redirectParam)}` : "/login"}
                 className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-bold hover:underline transition-colors ml-0.5"
               >
                 Sign In
@@ -255,3 +262,12 @@ export default function SignUpPage() {
     </div>
   );
 }
+
+export default function SignUpPage() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen bg-[#030712]" />}>
+      <SignUpFormContent />
+    </React.Suspense>
+  );
+}
+

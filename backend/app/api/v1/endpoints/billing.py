@@ -93,10 +93,8 @@ async def get_optional_current_user(
         if u:
             return u
 
-    # 3. Fallback to latest registered active user or global
-    stmt = select(User).where(User.is_active == True).order_by(User.created_at.desc()).limit(1)
-    res = await db.execute(stmt)
-    return res.scalar_one_or_none()
+    # 3. Unauthenticated request - return None to prevent user impersonation
+    return None
 
 
 async def resolve_workspace_id(user: Optional[User] = None) -> str:

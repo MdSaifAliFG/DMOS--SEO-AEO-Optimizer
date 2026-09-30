@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta, timezone
 import logging
 import secrets
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select, update
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.core.database import get_db
@@ -193,6 +193,75 @@ async def login(
             role="admin" if user.is_superuser else "member",
         ),
         token=f"sess_{user.id}_{secrets.token_hex(16)}",
+    )
+
+
+@router.get(
+    "/me",
+    response_model=UserOut,
+    summary="Get authenticated user profile",
+    description="Returns profile information for the verified active user session.",
+)
+async def get_current_user_profile(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    # 1. Check explicit user identity headers
+    x_user_email = request.headers.get("X-User-Email", "").strip().lower()
+    if x_user_email:
+        user_res = await db.execute(select(User).where(func.lower(User.email) == x_user_email))
+        u = user_res.scalars().first()
+        if u and u.is_active:
+            return UserOut(
+                id=u.id,
+                email=u.email,
+                name=u.full_name or u.email.split("@")[0].capitalize(),
+                role="admin" if u.is_superuser else "member",
+            )
+
+    x_user_id = request.headers.get("X-User-Id", "").strip()
+    if x_user_id:
+        user_res = await db.execute(select(User).where(User.id == x_user_id))
+        u = user_res.scalars().first()
+        if u and u.is_active:
+            return UserOut(
+                id=u.id,
+                email=u.email,
+                name=u.full_name or u.email.split("@")[0].capitalize(),
+                role="admin" if u.is_superuser else "member",
+            )
+
+    # 2. Check Authorization header
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header.replace("Bearer ", "").strip()
+        target_id = token
+        if token.startswith("sess_"):
+            parts = token.split("_")
+            if len(parts) >= 2:
+                target_id = parts[1]
+
+        user_res = await db.execute(
+            select(User).where(
+                or_(
+                    User.id == token,
+                    User.id == target_id,
+                    func.lower(User.email) == token.lower(),
+                )
+            )
+        )
+        u = user_res.scalars().first()
+        if u and u.is_active:
+            return UserOut(
+                id=u.id,
+                email=u.email,
+                name=u.full_name or u.email.split("@")[0].capitalize(),
+                role="admin" if u.is_superuser else "member",
+            )
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Not authenticated. Please sign in.",
     )
 
 
