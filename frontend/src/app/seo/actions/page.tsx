@@ -41,8 +41,10 @@ import {
   RecommendationStatus,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/useToast";
 
 export default function SeoActionsPage() {
+  const { error: toastError, success: toastSuccess } = useToast();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [scans, setScans] = useState<Scan[]>([]);
@@ -153,8 +155,9 @@ export default function SeoActionsPage() {
         const sum = await api.getSeoActionsSummary(selectedProjectId);
         setSummary(sum);
       }
+      toastSuccess("Status Updated", `Action status set to ${newStatus}`);
     } catch (err: any) {
-      alert("Failed to update status: " + err.message);
+      toastError("Failed to update status", err.message);
     }
   };
 
@@ -166,8 +169,9 @@ export default function SeoActionsPage() {
       const updated = await api.updateSeoAction(selectedAction.id, { notes: actionNotes });
       setSelectedAction(updated);
       setActions((prev) => prev.map((a) => (a.id === selectedAction.id ? updated : a)));
+      toastSuccess("Notes Saved", "Action notes saved successfully");
     } catch (err: any) {
-      alert("Failed to save notes: " + err.message);
+      toastError("Failed to save notes", err.message);
     } finally {
       setIsSavingNotes(false);
     }
@@ -192,8 +196,9 @@ export default function SeoActionsPage() {
         const sum = await api.getSeoActionsSummary(selectedProjectId);
         setSummary(sum);
       }
+      toastSuccess("Verification Completed");
     } catch (err: any) {
-      alert("Verification failed: " + err.message);
+      toastError("Verification failed", err.message);
     } finally {
       setIsVerifying(false);
     }
@@ -223,8 +228,9 @@ export default function SeoActionsPage() {
       });
       setSelectedActionIds([]);
       fetchActionsData();
+      toastSuccess("Bulk Update Completed", `Updated ${selectedActionIds.length} actions`);
     } catch (err: any) {
-      alert("Bulk update failed: " + err.message);
+      toastError("Bulk update failed", err.message);
     }
   };
 

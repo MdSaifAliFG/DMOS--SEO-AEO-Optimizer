@@ -136,6 +136,25 @@ class AEOAlertEngine:
         for alert in alerts_to_create:
             db.add(alert)
 
+        # Broadcast and persist real-time notifications for each alert
+        try:
+            from app.services.notification_service import NotificationService
+            for alert in alerts_to_create:
+                await NotificationService.create_notification(
+                    db=db,
+                    user_id=project.user_id,
+                    title=alert.title or "AEO Engine Update",
+                    message=alert.description or "Change detected across tracked AI Answer Engines.",
+                    type="aeo",
+                    severity=alert.severity if alert.severity in ("info", "success", "warning", "error") else "info",
+                    link="/aeo/monitoring",
+                    link_text="View AEO Radar",
+                    notification_id=f"aeo_alert_{alert.id}",
+                    broadcast=True,
+                )
+        except Exception as bcast_err:
+            logger.warning("Failed to broadcast real-time AEO alert: %s", bcast_err)
+
         return alerts_to_create
 
     @classmethod

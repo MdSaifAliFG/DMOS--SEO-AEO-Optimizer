@@ -164,12 +164,12 @@ class Scan(Base, TimestampMixin):
         back_populates="scan",
         cascade="all, delete-orphan",
         order_by="SeoPage.created_at",
-        lazy="selectin",
+        lazy="select",
     )
     issues: Mapped[List["SeoIssue"]] = relationship(
         "SeoIssue",
         back_populates="scan",
         cascade="all, delete-orphan",
         order_by="SeoIssue.created_at",
-        lazy="selectin",
+        lazy="select",
     )

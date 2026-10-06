@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import {
   Globe,
   FolderKanban,
@@ -32,41 +33,27 @@ import { Project, Scan, SeoDashboardSummary, SeoOptimizationSummary } from "@/li
 import { formatDate, formatTimeAgo } from "@/lib/utils";
 
 export default function SeoDashboardPage() {
-  const [summary, setSummary] = useState<SeoDashboardSummary | null>(null);
-  const [optSummary, setOptSummary] = useState<SeoOptimizationSummary | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isScoreModalOpen, setIsScoreModalOpen] = useState(false);
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const [sumData, projData] = await Promise.all([
-          api.getSeoDashboard().catch(() => null),
-          api.getProjects({ limit: 5 }).catch(() => ({ projects: [], total: 0 })),
-        ]);
-        if (isMounted) {
-          setSummary(sumData);
-          setProjects(projData.projects || []);
-        }
-        if (projData.projects && projData.projects.length > 0) {
-          const optRes = await api.getSeoActionsSummary(projData.projects[0].id).catch(() => null);
-          if (isMounted) setOptSummary(optRes);
-        }
-      } catch (err) {
-        console.error("Failed to load SEO Dashboard:", err);
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
+  const { data: projectsData, isLoading: isProjectsLoading } = useQuery({
+    queryKey: ["seo", "projects", 5],
+    queryFn: () => api.getProjects({ limit: 5 }),
+  });
+  const projects = projectsData?.projects || [];
 
-    fetchData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const { data: summary, isLoading: isSummaryLoading } = useQuery({
+    queryKey: ["seo", "dashboard"],
+    queryFn: () => api.getSeoDashboard(),
+  });
+
+  const firstProjectId = projects[0]?.id;
+  const { data: optSummary } = useQuery({
+    queryKey: ["seo", "actions-summary", firstProjectId],
+    queryFn: () => api.getSeoActionsSummary(firstProjectId!),
+    enabled: !!firstProjectId,
+  });
+
+  const isLoading = (isProjectsLoading && !projectsData) || (isSummaryLoading && !summary);
 
   const overallScore = summary?.overall_score ?? (projects.length > 0 && projects[0].latest_scan?.overall_score !== undefined ? projects[0].latest_scan.overall_score : null);
   const totalProjects = summary?.total_projects || projects.length;

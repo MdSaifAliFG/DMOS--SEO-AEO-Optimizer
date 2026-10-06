@@ -72,9 +72,10 @@ router = APIRouter(prefix="/aeo", tags=["AEO Optimization"])
 )
 async def get_aeo_dashboard(
     project_id: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoDashboardSummaryResponse:
-    data = await AeoService.get_dashboard_summary(db, project_id=project_id)
+    data = await AeoService.get_dashboard_summary(db, project_id=project_id, user_id=current_user.id)
     return AeoDashboardSummaryResponse(**data)
 
 
@@ -85,9 +86,10 @@ async def get_aeo_dashboard(
 )
 async def get_aeo_project_dashboard(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoDashboardSummaryResponse:
-    data = await AeoService.get_dashboard_summary(db, project_id=project_id)
+    data = await AeoService.get_dashboard_summary(db, project_id=project_id, user_id=current_user.id)
     return AeoDashboardSummaryResponse(**data)
 
 
@@ -101,10 +103,11 @@ async def list_aeo_projects(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     search: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoProjectListResponse:
     projects, total = await AeoService.get_projects(
-        db, skip=skip, limit=limit, search=search
+        db, skip=skip, limit=limit, search=search, user_id=current_user.id
     )
     responses = []
     for p in projects:
@@ -206,6 +209,7 @@ async def create_aeo_project(
 )
 async def get_aeo_project(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoProjectResponse:
     project = await AeoService.get_project(db, project_id)
@@ -214,6 +218,7 @@ async def get_aeo_project(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"AEO Project '{project_id}' not found",
         )
+    enforce_owner(project, current_user, "AEO Project")
     return AeoProjectResponse(
         id=project.id,
         user_id=project.user_id,
@@ -415,6 +420,7 @@ async def list_aeo_questions(
     intent: Optional[str] = Query(None),
     category: Optional[str] = Query(None),
     visibility_status: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoQuestionListResponse:
     questions, total = await AeoService.get_questions(
@@ -426,6 +432,7 @@ async def list_aeo_questions(
         intent=intent,
         category=category,
         visibility_status=visibility_status,
+        user_id=current_user.id,
     )
     return AeoQuestionListResponse(
         questions=[AeoQuestionResponse.model_validate(q) for q in questions],
@@ -525,6 +532,7 @@ async def list_aeo_answers(
     brand_mentioned: Optional[bool] = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoAnswerListResponse:
     answers, total = await AeoService.get_answers(
@@ -535,6 +543,7 @@ async def list_aeo_answers(
         brand_mentioned=brand_mentioned,
         skip=skip,
         limit=limit,
+        user_id=current_user.id,
     )
     responses = []
     for a in answers:
@@ -571,6 +580,7 @@ async def list_aeo_answers(
 )
 async def get_aeo_answer(
     answer_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoAnswerResponse:
     a = await AeoService.get_answer(db, answer_id)
@@ -579,6 +589,10 @@ async def get_aeo_answer(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Answer '{answer_id}' not found",
         )
+    project = await AeoService.get_project(db, a.project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Answer not found")
+    enforce_owner(project, current_user, "AEO Project")
     q_text = a.question.question_text if a.question else None
     return AeoAnswerResponse(
         id=a.id,
@@ -615,6 +629,7 @@ async def list_aeo_citations(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     search: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoCitationListResponse:
     citations, total = await AeoService.get_citations(
@@ -625,6 +640,7 @@ async def list_aeo_citations(
         skip=skip,
         limit=limit,
         search=search,
+        user_id=current_user.id,
     )
     return AeoCitationListResponse(
         citations=[AeoCitationResponse.model_validate(c) for c in citations],
@@ -643,6 +659,10 @@ async def create_aeo_citation(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoCitationResponse:
+    project = await AeoService.get_project(db, data.project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    enforce_owner(project, current_user, "AEO Project")
     citation = await AeoService.create_citation(db, data)
     return AeoCitationResponse.model_validate(citation)
 
@@ -659,6 +679,7 @@ async def list_aeo_entities(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     search: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoEntityListResponse:
     entities, total = await AeoService.get_entities(
@@ -668,6 +689,7 @@ async def list_aeo_entities(
         skip=skip,
         limit=limit,
         search=search,
+        user_id=current_user.id,
     )
     return AeoEntityListResponse(
         entities=[AeoEntityResponse.model_validate(e) for e in entities],
@@ -698,8 +720,13 @@ async def create_aeo_entity(
 )
 async def get_aeo_visibility(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoVisibilityResponse:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
     try:
         data = await AeoService.get_visibility_data(db, project_id)
         return AeoVisibilityResponse(**data)
@@ -727,6 +754,7 @@ async def list_aeo_actions(
     search: Optional[str] = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoRecommendationListResponse:
     recs, total = await AeoService.get_actions(
@@ -738,6 +766,7 @@ async def list_aeo_actions(
         search=search,
         skip=skip,
         limit=limit,
+        user_id=current_user.id,
     )
     return AeoRecommendationListResponse(
         recommendations=[AeoRecommendationResponse.model_validate(r) for r in recs],
@@ -752,8 +781,13 @@ async def list_aeo_actions(
 )
 async def get_aeo_actions_summary(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoActionSummaryResponse:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail=f"Project '{project_id}' not found")
+    enforce_owner(project, current_user, "AEO Project")
     data = await AeoService.get_actions_summary(db, project_id)
     if not data:
         raise HTTPException(
@@ -773,6 +807,10 @@ async def generate_aeo_actions(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoRecommendationListResponse:
+    project = await AeoService.get_project(db, data.project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    enforce_owner(project, current_user, "AEO Project")
     recs = await AeoService.generate_actions_for_project(db, data.project_id)
     return AeoRecommendationListResponse(
         recommendations=[AeoRecommendationResponse.model_validate(r) for r in recs],
@@ -787,6 +825,7 @@ async def generate_aeo_actions(
 )
 async def get_aeo_action_detail(
     action_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoRecommendationResponse:
     rec = await AeoService.get_action(db, action_id)
@@ -795,6 +834,10 @@ async def get_aeo_action_detail(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"AEO Action '{action_id}' not found",
         )
+    project = await AeoService.get_project(db, rec.project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    enforce_owner(project, current_user, "AEO Project")
     return AeoRecommendationResponse.model_validate(rec)
 
 
@@ -889,6 +932,7 @@ async def bulk_update_aeo_actions(
 )
 async def export_aeo_actions_csv(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> Response:
     project = await AeoService.get_project(db, project_id)
@@ -897,6 +941,7 @@ async def export_aeo_actions_csv(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Project '{project_id}' not found",
         )
+    enforce_owner(project, current_user, "AEO Project")
 
     recs, _ = await AeoService.get_actions(db, project_id=project_id, limit=500)
 
@@ -1039,7 +1084,6 @@ async def optimize_aeo_direct_answer(
     )
 
 
-# --- Legacy Recommendations & Reports ---
 @router.get(
     "/recommendations/{project_id}",
     response_model=AeoRecommendationListResponse,
@@ -1047,8 +1091,13 @@ async def optimize_aeo_direct_answer(
 )
 async def get_aeo_recommendations(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoRecommendationListResponse:
+    project = await AeoService.get_project(db, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
     recs = await AeoService.get_recommendations(db, project_id)
     return AeoRecommendationListResponse(
         recommendations=[AeoRecommendationResponse.model_validate(r) for r in recs],
@@ -1063,6 +1112,7 @@ async def get_aeo_recommendations(
 )
 async def get_aeo_report(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
     project = await AeoService.get_project(db, project_id)
@@ -1071,6 +1121,7 @@ async def get_aeo_report(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Project '{project_id}' not found",
         )
+    enforce_owner(project, current_user, "AEO Project")
     vis_data = await AeoService.get_visibility_data(db, project_id)
     recs = await AeoService.get_recommendations(db, project_id)
     
@@ -1127,6 +1178,7 @@ async def get_aeo_report(
 )
 async def export_aeo_csv(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> Response:
     project = await AeoService.get_project(db, project_id)
@@ -1135,6 +1187,7 @@ async def export_aeo_csv(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Project '{project_id}' not found",
         )
+    enforce_owner(project, current_user, "AEO Project")
 
     output = io.StringIO()
     writer = csv.writer(output)
@@ -1186,11 +1239,13 @@ async def export_aeo_csv(
 )
 async def get_aeo_monitoring_schedule(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoMonitoringScheduleResponse:
     project = await AeoService.get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
     schedule = await AEOScheduleService.get_or_create_schedule(db, project_id)
     return AeoMonitoringScheduleResponse(
         id=schedule.id,
@@ -1220,6 +1275,7 @@ async def run_aeo_monitoring_cycle(
     project = await AeoService.get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
 
     # Reuse existing Phase 5 analysis trigger which now calls AEOMonitoringEngine on completion
     analysis = await AeoService.trigger_analysis(
@@ -1262,6 +1318,7 @@ async def update_aeo_monitoring_schedule(
     project = await AeoService.get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
 
     try:
         schedule = await AEOScheduleService.update_schedule(
@@ -1298,11 +1355,13 @@ async def update_aeo_monitoring_schedule(
 async def get_aeo_trends(
     project_id: str,
     range: str = Query("30d", pattern="^(7d|30d|90d|all)$"),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoTrendResponse:
     project = await AeoService.get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
 
     data = await AEOTrendEngine.get_project_trends(db, project_id, time_range=range)
     return AeoTrendResponse(**data)
@@ -1316,11 +1375,13 @@ async def get_aeo_trends(
 )
 async def get_aeo_engine_comparison(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoEngineComparisonResponse:
     project = await AeoService.get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
 
     data = await AEOIntelligenceEngine.get_engine_comparison(db, project_id)
     return AeoEngineComparisonResponse(**data)
@@ -1334,11 +1395,13 @@ async def get_aeo_engine_comparison(
 )
 async def get_aeo_competitors(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoCompetitorIntelligenceResponse:
     project = await AeoService.get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
 
     data = await AEOIntelligenceEngine.get_competitor_intelligence(db, project_id)
     return AeoCompetitorIntelligenceResponse(**data)
@@ -1355,11 +1418,13 @@ async def list_aeo_changes(
     severity: Optional[str] = Query(None),
     event_type: Optional[str] = Query(None),
     limit: int = Query(50, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> List[AeoChangeEventResponse]:
     project = await AeoService.get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
 
     from sqlalchemy import select, desc
     from app.models.aeo_monitoring import AeoChangeEvent
@@ -1405,11 +1470,13 @@ async def list_aeo_alerts(
     status: Optional[str] = Query(None),
     severity: Optional[str] = Query(None),
     limit: int = Query(50, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> List[AeoAlertResponse]:
     project = await AeoService.get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
 
     alerts = await AEOAlertEngine.get_alerts_for_project(
         db=db,
@@ -1487,11 +1554,13 @@ async def update_aeo_alert(
 )
 async def get_aeo_executive_intelligence(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AeoExecutiveIntelligenceResponse:
     project = await AeoService.get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
 
     data = await AEOIntelligenceEngine.get_executive_intelligence(db, project_id)
     return AeoExecutiveIntelligenceResponse(**data)
@@ -1506,11 +1575,13 @@ async def get_aeo_executive_intelligence(
 async def get_aeo_prompt_movements(
     project_id: str,
     movement: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> List[AeoPromptMovementItem]:
     project = await AeoService.get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
 
     data = await AEOIntelligenceEngine.get_prompt_movements(db, project_id, movement_filter=movement)
     return [AeoPromptMovementItem(**item) for item in data]
@@ -1524,11 +1595,13 @@ async def get_aeo_prompt_movements(
 )
 async def get_aeo_citation_movements(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> List[AeoCitationMovementItem]:
     project = await AeoService.get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
 
     data = await AEOIntelligenceEngine.get_citation_movements(db, project_id)
     return [AeoCitationMovementItem(**item) for item in data]
@@ -1542,11 +1615,13 @@ async def get_aeo_citation_movements(
 )
 async def get_aeo_entity_movements(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> List[AeoEntityMovementItem]:
     project = await AeoService.get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="AEO Project not found")
+    enforce_owner(project, current_user, "AEO Project")
 
     data = await AEOIntelligenceEngine.get_entity_movements(db, project_id)
     return [AeoEntityMovementItem(**item) for item in data]

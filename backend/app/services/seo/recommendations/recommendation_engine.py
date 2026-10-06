@@ -157,6 +157,7 @@ class RecommendationEngine:
         search: Optional[str] = None,
         skip: int = 0,
         limit: int = 50,
+        user_id: Optional[str] = None,
     ) -> Tuple[List[SeoRecommendationResponse], int]:
         # If project_id is provided but no scan_id, resolve latest completed scan
         target_scan_id = scan_id
@@ -176,6 +177,11 @@ class RecommendationEngine:
 
         query = select(SeoRecommendation).order_by(desc(SeoRecommendation.priority_score))
         count_query = select(func.count(SeoRecommendation.id))
+
+        if user_id:
+            user_proj_subq = select(Project.id).where(Project.user_id == user_id)
+            query = query.where(SeoRecommendation.project_id.in_(user_proj_subq))
+            count_query = count_query.where(SeoRecommendation.project_id.in_(user_proj_subq))
 
         if project_id:
             query = query.where(SeoRecommendation.project_id == project_id)

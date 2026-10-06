@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -49,6 +49,7 @@ import { NAVIGATION_CONFIG, NavItem } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import { SeoSensingBrand, SeoSensingLogo } from "@/components/brand/SeoSensingLogo"; // ZobayRankBrand/ZobayRankLogo aliases
+import { LogoutModal } from "./LogoutModal";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   LayoutDashboard: <LayoutDashboard className="w-4 h-4" />,
@@ -86,32 +87,118 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   Sliders: <Sliders className="w-4 h-4" />,
 };
 
-export const Sidebar: React.FC<{
+export interface SidebarProps {
   className?: string;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
-}> = ({ className, isCollapsed = false, onToggleCollapse }) => {
-  const pathname = usePathname();
-  const { user, logout } = useAuth();
+  onOpenLogoutModal?: () => void;
+}
 
-  // Accordion state for navigation groups
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+export function getActiveGroupKey(pathname: string): string {
+  if (pathname.startsWith("/aeo")) return "aeo";
+  if (pathname.startsWith("/geo")) return "geo";
+  if (
+    pathname.startsWith("/seo") ||
+    pathname.startsWith("/projects") ||
+    pathname.startsWith("/scans") ||
+    pathname.startsWith("/keywords") ||
+    pathname.startsWith("/issues")
+  ) {
+    return "seo";
+  }
+  if (
+    pathname.startsWith("/billing") ||
+    pathname.startsWith("/integrations") ||
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/notifications")
+  ) {
+    return "system";
+  }
+  if (pathname === "/overview" || pathname === "/dashboard" || pathname === "/") {
+    return "overview";
+  }
+  return "";
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({
+  className,
+  isCollapsed = false,
+  onToggleCollapse,
+  onOpenLogoutModal,
+}) => {
+  const pathname = usePathname();
+  const { user } = useAuth();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const activeItemRef = useRef<HTMLAnchorElement | null>(null);
+
+  const handleLogoutClick = () => {
+    if (onOpenLogoutModal) {
+      onOpenLogoutModal();
+    } else {
+      setShowLogoutModal(true);
+    }
+  };
+
+  const activeGroupKey = getActiveGroupKey(pathname);
+
+  // Group open state: by default, only Overview and the current active group are open.
+  // Other large groups (SEO, AEO, GEO, System) start collapsed so they don't consume the screen.
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
+    return {
+      overview: true,
+      seo: activeGroupKey === "seo" || !activeGroupKey,
+      aeo: activeGroupKey === "aeo",
+      geo: activeGroupKey === "geo",
+      system: activeGroupKey === "system",
+    };
+  });
+
+  // Whenever the active route changes to another group, automatically expand the new group
+  // and collapse non-active major groups so the active section stays visible.
+  useEffect(() => {
+    if (activeGroupKey) {
+      setOpenGroups({
+        overview: true,
+        seo: activeGroupKey === "seo",
+        aeo: activeGroupKey === "aeo",
+        geo: activeGroupKey === "geo",
+        system: activeGroupKey === "system",
+        [activeGroupKey]: true,
+      });
+    }
+  }, [pathname, activeGroupKey]);
+
+  // Keep active link scrolled into view inside the sidebar
+  useEffect(() => {
+    if (activeItemRef.current) {
+      activeItemRef.current.scrollIntoView({
+        block: "nearest",
+        inline: "nearest",
+      });
+    }
+  }, [pathname, openGroups]);
 
   const toggleGroup = (groupKey: string) => {
-    setCollapsedGroups((prev) => ({
+    setOpenGroups((prev) => ({
       ...prev,
       [groupKey]: !prev[groupKey],
     }));
   };
 
   const isLinkActive = (item: NavItem) => {
-    if (item.href === "/overview" && (pathname === "/overview" || pathname === "/dashboard")) {
+    if (item.href === "/overview" && (pathname === "/overview" || pathname === "/dashboard" || pathname === "/")) {
       return true;
     }
     if (item.href !== "/overview" && pathname === item.href) {
       return true;
     }
-    if (item.href !== "/overview" && pathname.startsWith(item.href) && item.href !== "/seo" && item.href !== "/aeo") {
+    if (
+      item.href !== "/overview" &&
+      item.href !== "/seo" &&
+      item.href !== "/aeo" &&
+      item.href !== "/geo" &&
+      pathname.startsWith(item.href + "/")
+    ) {
       return true;
     }
     return false;
@@ -191,7 +278,7 @@ export const Sidebar: React.FC<{
           const isAeoGroup = group.groupKey === "aeo";
           const isSeoGroup = group.groupKey === "seo";
           const isGeoGroup = group.groupKey === "geo";
-          const isGroupCollapsed = Boolean(collapsedGroups[group.groupKey]);
+          const isGroupOpen = Boolean(openGroups[group.groupKey]);
 
           return (
             <div key={gIdx} className="space-y-1">
@@ -199,7 +286,7 @@ export const Sidebar: React.FC<{
                 <button
                   type="button"
                   onClick={() => toggleGroup(group.groupKey)}
-                  className="w-full px-2.5 py-1 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-md transition-colors text-left cursor-pointer"
+                  className="w-full px-2.5 py-1.5 flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-800/60 rounded-lg transition-colors text-left cursor-pointer group/header"
                 >
                   <div className="flex items-center gap-1.5">
                     <h4
@@ -234,14 +321,14 @@ export const Sidebar: React.FC<{
                   </div>
                   <ChevronDown
                     className={cn(
-                      "w-3 h-3 text-slate-400 transition-transform duration-200",
-                      isGroupCollapsed && "-rotate-90"
+                      "w-3.5 h-3.5 text-slate-400 group-hover/header:text-slate-600 dark:group-hover/header:text-slate-200 transition-transform duration-200",
+                      !isGroupOpen && "-rotate-90"
                     )}
                   />
                 </button>
               )}
 
-              {!isGroupCollapsed && (
+              {(isGroupOpen || isCollapsed) && (
                 <div className="space-y-0.5 animate-in fade-in duration-150">
                   {group.items.map((item, iIdx) => {
                     const active = isLinkActive(item);
@@ -266,6 +353,7 @@ export const Sidebar: React.FC<{
                     return (
                       <Link
                         key={iIdx}
+                        ref={active ? activeItemRef : undefined}
                         href={item.href}
                         title={isCollapsed ? item.title : undefined}
                         className={cn(
@@ -321,10 +409,8 @@ export const Sidebar: React.FC<{
       <div suppressHydrationWarning className="p-2 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c121e] shrink-0">
         <button
           type="button"
-          onClick={() => {
-            logout();
-            window.location.href = "/login";
-          }}
+          onClick={handleLogoutClick}
+          data-testid="sidebar-logout-btn"
           title="Log Out of Zobay Rank"
           className={cn(
             "w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors font-medium cursor-pointer",
@@ -336,6 +422,13 @@ export const Sidebar: React.FC<{
         </button>
       </div>
       </div>
+
+      {!onOpenLogoutModal && (
+        <LogoutModal
+          isOpen={showLogoutModal}
+          onClose={() => setShowLogoutModal(false)}
+        />
+      )}
     </aside>
   );
 };

@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.auth import get_current_user
 from app.models.user import User
+from app.models.project import Project
 from app.schemas.scan import ScanCancelResponse, ScanResponse
 from app.schemas.seo import (
     ScanResultsResponse,
@@ -17,6 +18,22 @@ from app.services.scan_service import ScanService
 router = APIRouter(prefix="/scans", tags=["Scans"])
 
 
+async def _verify_scan_owner(db: AsyncSession, scan_id: str, current_user: User):
+    scan = await ScanService.get_scan_by_id(db, scan_id)
+    if not scan:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Scan with ID '{scan_id}' not found",
+        )
+    project = await db.get(Project, scan.project_id)
+    if not project or (project.user_id and project.user_id != current_user.id and not current_user.is_superuser):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Scan with ID '{scan_id}' not found",
+        )
+    return scan
+
+
 @router.get(
     "/{scan_id}",
     response_model=ScanResponse,
@@ -24,15 +41,11 @@ router = APIRouter(prefix="/scans", tags=["Scans"])
 )
 async def get_scan(
     scan_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ScanResponse:
     """Retrieve current scan progress, stage status, and event logs."""
-    scan = await ScanService.get_scan_by_id(db, scan_id)
-    if not scan:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Scan with ID '{scan_id}' not found",
-        )
+    scan = await _verify_scan_owner(db, scan_id, current_user)
     return ScanService.map_to_response(scan)
 
 
@@ -47,6 +60,7 @@ async def cancel_scan(
     db: AsyncSession = Depends(get_db),
 ) -> ScanCancelResponse:
     """Halt an in-flight crawl execution and clean up resources."""
+    await _verify_scan_owner(db, scan_id, current_user)
     result = await ScanService.cancel_scan(db, scan_id)
     if not result:
         raise HTTPException(
@@ -63,9 +77,11 @@ async def cancel_scan(
 )
 async def get_scan_results(
     scan_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ScanResultsResponse:
     """Retrieve full audit score cards, category scores, severity counts, and score breakdown."""
+    await _verify_scan_owner(db, scan_id, current_user)
     results = await ScanService.get_scan_results(db, scan_id)
     if not results:
         raise HTTPException(
@@ -87,16 +103,11 @@ async def get_scan_pages(
     search: Optional[str] = Query(None, description="Search in URL or page title"),
     status_code: Optional[int] = Query(None, description="Filter by HTTP status code"),
     indexability: Optional[bool] = Query(None, description="Filter by indexable status"),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoPageListResponse:
     """Fetch paginated list of crawled pages with extracted metadata."""
-    scan = await ScanService.get_scan_by_id(db, scan_id)
-    if not scan:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Scan with ID '{scan_id}' not found",
-        )
-
+    await _verify_scan_owner(db, scan_id, current_user)
     return await ScanService.get_scan_pages(
         db,
         scan_id=scan_id,
@@ -116,9 +127,11 @@ async def get_scan_pages(
 async def get_page_detail(
     scan_id: str,
     page_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoPageDetailResponse:
     """Retrieve detailed metadata, headings, images, links, and detected issues for a single page."""
+    await _verify_scan_owner(db, scan_id, current_user)
     decoded_id = unquote(page_id)
     page = await ScanService.get_page_detail(db, scan_id=scan_id, page_id=decoded_id)
     if not page:
@@ -142,16 +155,11 @@ async def get_scan_issues(
     category: Optional[str] = Query(None, description="Filter by category (technical, indexability, metadata, links)"),
     issue_code: Optional[str] = Query(None, description="Filter by specific issue code"),
     issue_status: Optional[str] = Query(None, alias="status", description="Filter by issue status"),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoIssueListResponse:
     """Fetch paginated list of technical SEO issues detected by the rule engine."""
-    scan = await ScanService.get_scan_by_id(db, scan_id)
-    if not scan:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Scan with ID '{scan_id}' not found",
-        )
-
+    await _verify_scan_owner(db, scan_id, current_user)
     return await ScanService.get_scan_issues(
         db,
         scan_id=scan_id,

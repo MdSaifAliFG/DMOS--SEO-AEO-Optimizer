@@ -11,6 +11,7 @@ greenlet>=3.0  # required by SQLAlchemy asyncio engine
 alembic>=1.14.0
 psycopg[binary]>=3.2.4
 psycopg2-binary>=2.9.10
+asyncpg>=0.30.0
 redis>=5.2.1
 httpx>=0.28.1
 beautifulsoup4>=4.12.3

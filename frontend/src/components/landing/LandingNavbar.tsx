@@ -8,16 +8,20 @@ import { SeoSensingLogo } from "@/components/brand/SeoSensingLogo";
 
 export const LandingNavbar: React.FC = () => {
   const { isAuthenticated } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const isLoggedIn = mounted && isAuthenticated;
 
   const navLinks = [
     { label: "Home", href: "/#hero" },
@@ -60,13 +64,13 @@ export const LandingNavbar: React.FC = () => {
 
         {/* Right CTAs (Exact match to reference style) */}
         <div className="hidden md:flex items-center gap-3 2xl:gap-4">
-          <Link href={isAuthenticated ? "/overview" : "/login"}>
+          <Link href={isLoggedIn ? "/overview" : "/login"}>
             <button className="px-5 2xl:px-7 py-2 2xl:py-2.5 rounded-lg 2xl:rounded-xl border border-white/80 text-white text-xs 2xl:text-sm font-semibold hover:bg-white/10 transition-all duration-150 cursor-pointer">
-              {isAuthenticated ? "Dashboard" : "Sign in"}
+              {isLoggedIn ? "Dashboard" : "Sign in"}
             </button>
           </Link>
 
-          <Link href={isAuthenticated ? "/settings" : "/signup"}>
+          <Link href={isLoggedIn ? "/settings" : "/signup"}>
             <button className="px-5 2xl:px-7 py-2 2xl:py-2.5 rounded-lg 2xl:rounded-xl bg-white text-slate-950 text-xs 2xl:text-sm font-bold hover:bg-slate-100 transition-all duration-150 shadow-md cursor-pointer">
               Upgrade
             </button>
@@ -102,22 +106,22 @@ export const LandingNavbar: React.FC = () => {
 
           <div className="pt-3 border-t border-white/10 flex flex-col gap-3">
             <Link
-              href={isAuthenticated ? "/overview" : "/login"}
+              href={isLoggedIn ? "/overview" : "/login"}
               onClick={() => setMobileMenuOpen(false)}
               className="w-full"
             >
               <button className="w-full py-3 rounded-xl border border-white/40 text-white text-sm font-semibold hover:bg-white/10 transition-all cursor-pointer">
-                {isAuthenticated ? "Dashboard" : "Sign in"}
+                {isLoggedIn ? "Dashboard" : "Sign in"}
               </button>
             </Link>
 
             <Link
-              href={isAuthenticated ? "/settings" : "/signup"}
+              href={isLoggedIn ? "/settings" : "/signup"}
               onClick={() => setMobileMenuOpen(false)}
               className="w-full"
             >
               <button className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer">
-                <span>{isAuthenticated ? "Settings" : "Get Started Free"}</span>
+                <span>{isLoggedIn ? "Settings" : "Get Started Free"}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </Link>

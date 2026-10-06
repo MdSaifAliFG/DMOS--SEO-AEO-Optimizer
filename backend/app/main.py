@@ -55,11 +55,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Configure CORS from settings allowlist — never wildcard for authenticated APIs.
+# Configure CORS from settings allowlist and dynamic localhost/LAN regex
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=False,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|172\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|.*\.zobay\.in|.*\.vercel\.app|.*\.onrender\.com)(:\d+)?$",
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

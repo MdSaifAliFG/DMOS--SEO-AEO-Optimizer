@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Menu,
   Bell,
@@ -24,23 +24,27 @@ import { useAuth } from "@/lib/auth";
 import { useNotifications } from "@/lib/notifications";
 import { GlobalSearch } from "./GlobalSearch";
 import { ThemeToggle } from "./ThemeToggle";
+import { LogoutModal } from "./LogoutModal";
 
 export interface HeaderProps {
   onOpenMobileNav: () => void;
+  onOpenLogoutModal?: () => void;
 }
 
 let globalBillingCacheByUser: Record<string, BillingSummary> = {};
 let globalHealthCache: HealthResponse | null = null;
 
-export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav, onOpenLogoutModal }) => {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const router = useRouter();
+  const { user } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const userKey = user?.email || user?.id || "guest";
   const [health, setHealth] = useState<HealthResponse | null>(globalHealthCache);
   const [billingSummary, setBillingSummary] = useState<BillingSummary | null>(() => globalBillingCacheByUser[userKey] || null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notificationMenuRef = useRef<HTMLDivElement>(null);
 
@@ -108,9 +112,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    window.location.href = "/login";
+  const handleLogoutClick = () => {
+    setIsUserMenuOpen(false);
+    if (onOpenLogoutModal) {
+      onOpenLogoutModal();
+    } else {
+      setShowLogoutModal(true);
+    }
   };
 
   // Determine Page Title and Subtitle based on route
@@ -400,14 +408,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
               {/* Notification Items List (Latest 4) */}
               <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-80 overflow-y-auto">
                 {notifications.length > 0 ? (
-                  notifications.slice(0, 4).map((notif) => (
+                  notifications.slice(0, 4).map((notif, idx) => (
                     <div
-                      key={notif.id}
+                      key={`${notif.id}_${idx}`}
                       onClick={() => {
                         markAsRead(notif.id);
                         if (notif.link) {
                           setIsNotificationMenuOpen(false);
-                          window.location.href = notif.link;
+                          router.push(notif.link);
                         }
                       }}
                       className={`p-3 transition-colors cursor-pointer flex items-start gap-2.5 ${
@@ -545,7 +553,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
 
               <div className="border-t border-slate-100 dark:border-slate-800 pt-1">
                 <button
-                  onClick={handleLogout}
+                  type="button"
+                  onClick={handleLogoutClick}
+                  data-testid="header-logout-btn"
                   className="w-full flex items-center gap-2 px-3.5 py-2 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors font-medium text-left cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5 text-rose-500" />
@@ -556,6 +566,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileNav }) => {
           )}
         </div>
       </div>
+
+      {!onOpenLogoutModal && (
+        <LogoutModal
+          isOpen={showLogoutModal}
+          onClose={() => setShowLogoutModal(false)}
+        />
+      )}
     </header>
   );
 };

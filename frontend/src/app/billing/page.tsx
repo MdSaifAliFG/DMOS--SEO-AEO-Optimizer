@@ -25,6 +25,7 @@ import { DashboardShell } from "@/components/layout/DashboardShell";
 import { api } from "@/lib/api-client";
 import { Plan, Subscription, CreditWallet, BillingSummary, UsageSummary } from "@/lib/types";
 import { BuyCreditsModal } from "@/components/billing/CreditModals";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { openRazorpayModal } from "@/lib/razorpay";
 
 export default function BillingPage() {
@@ -36,6 +37,7 @@ export default function BillingPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isActionLoading, setIsActionLoading] = useState<string | null>(null);
   const [isBuyCreditsOpen, setIsBuyCreditsOpen] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -158,14 +160,12 @@ export default function BillingPage() {
     }
   };
 
-  const handleCancelSubscription = async () => {
-    if (!window.confirm("Are you sure you want to cancel renewal at the end of the current billing cycle?")) {
-      return;
-    }
+  const confirmCancelSubscription = async () => {
     setIsActionLoading("cancel");
     try {
       await api.cancelSubscription("User requested cancellation via billing hub");
       setMessage({ type: "success", text: "Subscription will cancel at end of billing cycle." });
+      setIsCancelModalOpen(false);
       await loadData();
     } catch (err: any) {
       setMessage({ type: "error", text: err?.message || "Failed to cancel subscription." });
@@ -313,7 +313,7 @@ export default function BillingPage() {
           ) : currentPlanTier !== "free" ? (
             <button
               type="button"
-              onClick={handleCancelSubscription}
+              onClick={() => setIsCancelModalOpen(true)}
               className="text-[11px] text-slate-400 hover:text-rose-500 text-left transition-colors cursor-pointer"
             >
               Cancel renewal at period end
@@ -661,6 +661,31 @@ export default function BillingPage() {
         isOpen={isBuyCreditsOpen}
         onClose={() => setIsBuyCreditsOpen(false)}
         onSuccess={() => loadData()}
+      />
+
+      {/* Cancel Subscription Confirmation Modal */}
+      <ConfirmModal
+        isOpen={isCancelModalOpen}
+        onClose={() => !isActionLoading && setIsCancelModalOpen(false)}
+        onConfirm={confirmCancelSubscription}
+        title="Cancel Subscription Renewal"
+        heading="Cancel automatic plan renewal?"
+        message="Your subscription will remain active until the end of your current billing period. After that, your account will downgrade and crawling limits will apply."
+        confirmText="Confirm Cancellation"
+        cancelText="Keep Subscription"
+        variant="warning"
+        isLoading={isActionLoading === "cancel"}
+        itemDetails={
+          summary
+            ? {
+                title: `${currentPlanName} Plan`,
+                subtitle: summary.next_billing_date
+                  ? `Active until ${new Date(summary.next_billing_date).toLocaleDateString()}`
+                  : undefined,
+                badge: summary.subscription_status || "Active",
+              }
+            : undefined
+        }
       />
       </div>
     </DashboardShell>

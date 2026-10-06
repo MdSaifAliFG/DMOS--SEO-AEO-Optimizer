@@ -21,7 +21,7 @@ export function createPageMetadata({
   title,
   description,
   path,
-  ogImage = `${SITE_CONFIG.siteUrl}/brand-logo.png`,
+  ogImage = `${SITE_CONFIG.siteUrl}/og-image.png`,
   noindex = false,
   publishedTime,
   modifiedTime,

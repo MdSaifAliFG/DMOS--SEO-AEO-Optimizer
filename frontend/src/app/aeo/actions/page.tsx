@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api-client";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { AeoProject, AeoRecommendation, AeoActionSummary } from "@/lib/types";
+import { useToast } from "@/hooks/useToast";
 import {
   Sparkles,
   CheckCircle2,
@@ -29,6 +30,7 @@ import {
 } from "lucide-react";
 
 export default function AeoActionsPage() {
+  const { error: toastError, success: toastSuccess } = useToast();
   const [projects, setProjects] = useState<AeoProject[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [summary, setSummary] = useState<AeoActionSummary | null>(null);
@@ -122,8 +124,9 @@ export default function AeoActionsPage() {
         const sum = await api.getAeoActionsSummary(selectedProjectId);
         setSummary(sum);
       }
+      toastSuccess("Status Updated", `Action status set to ${newStatus}`);
     } catch (err: any) {
-      alert("Failed to update status: " + err.message);
+      toastError("Failed to update status", err.message);
     }
   };
 
@@ -134,8 +137,9 @@ export default function AeoActionsPage() {
       const updated = await api.updateAeoAction(activeAction.id, { notes: notesInput });
       setActiveAction(updated);
       setActions((prev) => prev.map((a) => (a.id === activeAction.id ? updated : a)));
+      toastSuccess("Notes Saved", "Action notes saved successfully");
     } catch (err: any) {
-      alert("Failed to save notes: " + err.message);
+      toastError("Failed to save notes", err.message);
     } finally {
       setSavingNotes(false);
     }
@@ -155,8 +159,9 @@ export default function AeoActionsPage() {
         const sum = await api.getAeoActionsSummary(selectedProjectId);
         setSummary(sum);
       }
+      toastSuccess("Verification Completed");
     } catch (err: any) {
-      alert("Verification check failed: " + err.message);
+      toastError("Verification check failed", err.message);
     } finally {
       setVerifying(false);
     }
@@ -183,8 +188,9 @@ export default function AeoActionsPage() {
       await api.bulkUpdateAeoActions(selectedActionIds, newStatus);
       setSelectedActionIds([]);
       fetchActionsData();
+      toastSuccess("Bulk Update Completed", `Updated ${selectedActionIds.length} actions`);
     } catch (err: any) {
-      alert("Bulk update failed: " + err.message);
+      toastError("Bulk update failed", err.message);
     }
   };
 
@@ -195,8 +201,9 @@ export default function AeoActionsPage() {
     try {
       await api.generateAeoActions(selectedProjectId);
       await fetchActionsData();
+      toastSuccess("Generated Recommendations", "New AEO recommendations generated");
     } catch (err: any) {
-      alert("Generation failed: " + err.message);
+      toastError("Generation failed", err.message);
     } finally {
       setGenerating(false);
     }

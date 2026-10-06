@@ -26,8 +26,10 @@ import {
   DescriptionSuggestion,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/useToast";
 
 export default function MetadataOptimizerPage() {
+  const { error } = useToast();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [pages, setPages] = useState<SEOPage[]>([]);
@@ -131,7 +133,7 @@ export default function MetadataOptimizerPage() {
       setTitleSuggestions(titleRes.suggestions || []);
       setDescriptionSuggestions(descRes.suggestions || []);
     } catch (err: any) {
-      alert(`Generation error: ${err.message}`);
+      error("Generation Error", err.message);
     } finally {
       setIsGenerating(false);
     }

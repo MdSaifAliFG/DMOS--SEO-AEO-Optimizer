@@ -26,7 +26,7 @@ services:
       - key: SKIP_STARTUP_DDL
         value: true
       - key: CORS_ORIGINS
-        value: '["https://rank.zobay.in"]'
+        value: '["https://rank.zobay.in", "https://dev.rank.zobay.in"]'
       - key: CRAWL_MAX_PAGES
         value: "50"
       - key: CRAWL_CONCURRENCY

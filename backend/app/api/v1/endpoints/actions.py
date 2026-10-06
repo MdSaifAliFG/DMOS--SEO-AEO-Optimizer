@@ -49,6 +49,7 @@ async def list_seo_actions(
     search: Optional[str] = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoRecommendationListResponse:
     recs, total = await RecommendationEngine.get_actions(
@@ -61,6 +62,7 @@ async def list_seo_actions(
         search=search,
         skip=skip,
         limit=limit,
+        user_id=current_user.id,
     )
     return SeoRecommendationListResponse(recommendations=recs, total=total)
 
@@ -72,10 +74,17 @@ async def list_seo_actions(
 )
 async def get_seo_action(
     action_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoRecommendationResponse:
     rec = await RecommendationEngine.get_action_by_id(db, action_id)
     if not rec:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Action recommendation '{action_id}' not found",
+        )
+    project = await db.get(Project, rec.project_id)
+    if not project or (project.user_id and project.user_id != current_user.id and not current_user.is_superuser):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Action recommendation '{action_id}' not found",
@@ -94,6 +103,9 @@ async def generate_seo_actions(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoRecommendationListResponse:
+    project = await db.get(Project, project_id)
+    if not project or (project.user_id and project.user_id != current_user.id and not current_user.is_superuser):
+        raise HTTPException(status_code=404, detail="Project not found")
     recs = await RecommendationEngine.generate_recommendations_for_scan(
         db, scan_id=scan_id, project_id=project_id
     )
@@ -112,6 +124,12 @@ async def update_seo_action(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoRecommendationResponse:
+    rec = await RecommendationEngine.get_action_by_id(db, action_id)
+    if not rec:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Action recommendation '{action_id}' not found")
+    project = await db.get(Project, rec.project_id)
+    if not project or (project.user_id and project.user_id != current_user.id and not current_user.is_superuser):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Action recommendation '{action_id}' not found")
     updated = await RecommendationEngine.update_action_status(
         db, action_id=action_id, status=data.status, notes=data.notes
     )
@@ -133,6 +151,12 @@ async def verify_seo_action(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> VerifyFixResponse:
+    rec = await RecommendationEngine.get_action_by_id(db, action_id)
+    if not rec:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Action recommendation '{action_id}' not found")
+    project = await db.get(Project, rec.project_id)
+    if not project or (project.user_id and project.user_id != current_user.id and not current_user.is_superuser):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Action recommendation '{action_id}' not found")
     return await RecommendationEngine.verify_recommendation(db, action_id)
 
 
@@ -146,6 +170,12 @@ async def ignore_seo_action(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoRecommendationResponse:
+    rec = await RecommendationEngine.get_action_by_id(db, action_id)
+    if not rec:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Action recommendation '{action_id}' not found")
+    project = await db.get(Project, rec.project_id)
+    if not project or (project.user_id and project.user_id != current_user.id and not current_user.is_superuser):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Action recommendation '{action_id}' not found")
     updated = await RecommendationEngine.update_action_status(
         db, action_id=action_id, status="ignored"
     )
@@ -179,8 +209,12 @@ async def bulk_update_seo_actions(
 )
 async def get_seo_actions_summary(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoOptimizationSummaryResponse:
+    project = await db.get(Project, project_id)
+    if not project or (project.user_id and project.user_id != current_user.id and not current_user.is_superuser):
+        raise HTTPException(status_code=404, detail="Project not found")
     return await RecommendationEngine.get_project_summary(db, project_id=project_id)
 
 
@@ -192,8 +226,12 @@ async def get_seo_actions_summary(
 async def get_optimization_history(
     project_id: str,
     limit: int = Query(20, ge=1, le=50),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> OptimizationHistoryListResponse:
+    project = await db.get(Project, project_id)
+    if not project or (project.user_id and project.user_id != current_user.id and not current_user.is_superuser):
+        raise HTTPException(status_code=404, detail="Project not found")
     history = await OptimizationHistoryService.get_project_history(
         db, project_id=project_id, limit=limit
     )

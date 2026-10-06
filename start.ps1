@@ -9,7 +9,7 @@ $frontendDir = Join-Path $rootDir "frontend"
 $pythonExe = Join-Path $rootDir ".venv\Scripts\python.exe"
 
 Write-Host "Launching Backend on http://localhost:8000..." -ForegroundColor Yellow
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "Set-Location '$backendDir'; & '$pythonExe' -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "Set-Location '$backendDir'; & '$pythonExe' run_server.py"
 
 Write-Host "Launching Frontend on http://localhost:3000..." -ForegroundColor Yellow
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "Set-Location '$frontendDir'; npm run dev"

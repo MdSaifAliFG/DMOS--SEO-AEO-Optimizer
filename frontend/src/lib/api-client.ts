@@ -113,45 +113,43 @@ import {
 } from "./types";
 
 
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
 class ApiClient {
   private baseUrl: string;
+  private cache = new Map<string, CacheEntry<any>>();
+  private pendingRequests = new Map<string, Promise<any>>();
+  private defaultTtlMs = 60 * 1000; // 60s cache TTL for fast module switching
 
   constructor(baseUrl: string = API_BASE_URL) {
     this.baseUrl = baseUrl;
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const url = `${this.baseUrl}${endpoint}`;
-    
-    let authHeader: string | null = null;
+  public clearCache(): void {
+    this.cache.clear();
+    this.pendingRequests.clear();
+  }
 
-    if (typeof window !== "undefined") {
-      try {
-        const raw = localStorage.getItem("zobayrank_auth_session") || localStorage.getItem("dmos_auth_session");
-        if (raw) {
-          const session = JSON.parse(raw);
-          // JWT only: the backend verifies the signature and ignores
-          // everything else. Never send raw ids/emails as credentials.
-          const token = session.token;
-          if (token) {
-            authHeader = `Bearer ${token}`;
-          }
-        }
-      } catch {
-        // Ignore JSON error
+  public invalidate(endpointPrefix?: string): void {
+    if (!endpointPrefix) {
+      this.clearCache();
+      return;
+    }
+    for (const key of this.cache.keys()) {
+      if (key.includes(endpointPrefix)) {
+        this.cache.delete(key);
       }
     }
+  }
 
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      ...(authHeader ? { Authorization: authHeader } : {}),
-      ...(options.headers as Record<string, string>),
-    };
-
+  private async executeFetch<T>(
+    url: string,
+    options: RequestInit,
+    headers: Record<string, string>
+  ): Promise<T> {
     try {
       const response = await fetch(url, {
         ...options,
@@ -208,6 +206,92 @@ class ApiClient {
         isTimeout: false,
       } as ApiError;
     }
+  }
+
+  private async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+    const method = (options.method || "GET").toUpperCase();
+
+    let authHeader: string | null = null;
+    let userId: string | null = null;
+
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("zobayrank_auth_session") || localStorage.getItem("dmos_auth_session");
+        if (raw) {
+          const session = JSON.parse(raw);
+          const token = session.token;
+          userId = session.id || null;
+          if (token) {
+            authHeader = `Bearer ${token}`;
+          }
+        }
+      } catch {
+        // Ignore JSON error
+      }
+    }
+
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      ...(authHeader ? { Authorization: authHeader } : {}),
+      ...(options.headers as Record<string, string>),
+    };
+
+    // If this is a mutating request (POST, PUT, PATCH, DELETE), execute and invalidate relevant cache
+    if (method !== "GET") {
+      const result = await this.executeFetch<T>(url, options, headers);
+      if (endpoint.startsWith("/projects") || endpoint.startsWith("/scans")) {
+        this.invalidate("/projects");
+        this.invalidate("/scans");
+        this.invalidate("/seo/dashboard");
+      } else if (endpoint.startsWith("/notifications")) {
+        this.invalidate("/notifications");
+      } else if (endpoint.startsWith("/aeo")) {
+        this.invalidate("/aeo");
+      } else if (endpoint.startsWith("/geo")) {
+        this.invalidate("/geo");
+      } else if (endpoint.startsWith("/billing") || endpoint.startsWith("/payments")) {
+        this.invalidate("/billing");
+        this.invalidate("/payments");
+      } else {
+        const rootSegment = endpoint.split("?")[0].split("/")[1];
+        if (rootSegment) {
+          this.invalidate(`/${rootSegment}`);
+        } else {
+          this.clearCache();
+        }
+      }
+      return result;
+    }
+
+    // For GET requests: use user-scoped in-memory cache and de-duplication
+    const cacheKey = `${userId || "anon"}:${url}`;
+    const cached = this.cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < this.defaultTtlMs) {
+      return cached.data as T;
+    }
+
+    // De-duplicate concurrent identical in-flight requests
+    if (this.pendingRequests.has(cacheKey)) {
+      return this.pendingRequests.get(cacheKey) as Promise<T>;
+    }
+
+    const fetchPromise = (async () => {
+      try {
+        const data = await this.executeFetch<T>(url, options, headers);
+        this.cache.set(cacheKey, { data, timestamp: Date.now() });
+        return data;
+      } finally {
+        this.pendingRequests.delete(cacheKey);
+      }
+    })();
+
+    this.pendingRequests.set(cacheKey, fetchPromise);
+    return fetchPromise;
   }
 
   // --- Health ---

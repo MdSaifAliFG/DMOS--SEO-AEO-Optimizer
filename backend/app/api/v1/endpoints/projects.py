@@ -71,11 +71,12 @@ async def list_projects(
     skip: int = Query(0, ge=0, description="Offset for pagination"),
     limit: int = Query(50, ge=1, le=100, description="Number of items to return"),
     search: Optional[str] = Query(None, description="Search term for name or domain"),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ProjectListResponse:
-    """Retrieve all monitored website projects with latest scan summaries."""
+    """Retrieve all monitored website projects with latest scan summaries for the current user."""
     projects, total = await ProjectService.get_projects(
-        db, skip=skip, limit=limit, search=search
+        db, skip=skip, limit=limit, search=search, user_id=current_user.id
     )
     return ProjectListResponse(
         projects=[ProjectService.map_to_response(p) for p in projects],

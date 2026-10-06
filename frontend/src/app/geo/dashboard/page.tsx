@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Sparkles,
   Bot,
@@ -33,10 +34,8 @@ import { api } from "@/lib/api-client";
 import { useToast } from "@/hooks/useToast";
 
 export default function GeoDashboardPage() {
-  const [data, setData] = useState<GeoDashboardData | null>(null);
-  const [projects, setProjects] = useState<GeoProject[]>([]);
+  const queryClient = useQueryClient();
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisJob, setAnalysisJob] = useState<GeoAnalysisJob | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -49,50 +48,26 @@ export default function GeoDashboardPage() {
 
   const { success, error } = useToast();
 
-  const fetchProjectsAndDashboard = async (projId?: string) => {
-    setIsLoading(true);
-    try {
-      const projRes = await api.getGeoProjects();
-      const projs = projRes.projects || [];
-      setProjects(projs);
+  const { data: projectsData, isLoading: isProjectsLoading } = useQuery({
+    queryKey: ["geo", "projects"],
+    queryFn: () => api.getGeoProjects(),
+  });
+  const projects = projectsData?.projects || [];
+  const activeProjectId = selectedProjectId || (projects[0]?.id ?? "");
 
-      const activeId = projId || (projs.length > 0 ? projs[0].id : "");
-      if (activeId) {
-        setSelectedProjectId(activeId);
-        const dash = await api.getGeoDashboard(activeId);
-        setData(dash);
-      } else {
-        setData(null);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { data, isLoading: isDashboardLoading } = useQuery({
+    queryKey: ["geo", "dashboard", activeProjectId],
+    queryFn: () => api.getGeoDashboard(activeProjectId),
+    enabled: !!activeProjectId,
+  });
 
-  useEffect(() => {
-    fetchProjectsAndDashboard();
-  }, []);
-
-  const handleProjectChange = async (newId: string) => {
-    setSelectedProjectId(newId);
-    setIsLoading(true);
-    try {
-      const dash = await api.getGeoDashboard(newId);
-      setData(dash);
-    } catch (err) {
-      error("Failed to load dashboard for project.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const isLoading = (isProjectsLoading && !projectsData) || (isDashboardLoading && !data);
 
   const handleRunAnalysis = async () => {
-    if (!selectedProjectId) return;
+    if (!activeProjectId) return;
     setIsAnalyzing(true);
     try {
-      const job = await api.triggerGeoAnalysis({ project_id: selectedProjectId });
+      const job = await api.triggerGeoAnalysis({ project_id: activeProjectId });
       setAnalysisJob(job);
       success("GEO analysis started. Gathering live generative signals across engines...");
 
@@ -111,7 +86,7 @@ export default function GeoDashboardPage() {
               error("GEO analysis failed", status.error_message || "Execution error");
             } else {
               success("GEO Analysis Complete", "Generative presence, citations, and scores updated.");
-              await handleProjectChange(selectedProjectId);
+              queryClient.invalidateQueries({ queryKey: ["geo"] });
             }
             setTimeout(() => setAnalysisJob(null), 4000);
           }
@@ -143,7 +118,8 @@ export default function GeoDashboardPage() {
       setDomain("");
       setBrandName("");
       setIndustry("");
-      fetchProjectsAndDashboard(newProj.id);
+      setSelectedProjectId(newProj.id);
+      queryClient.invalidateQueries({ queryKey: ["geo"] });
     } catch (err) {
       error("Failed to create GEO project.");
     }
@@ -187,8 +163,8 @@ export default function GeoDashboardPage() {
           <div className="flex items-center gap-3 w-full sm:w-auto">
             {projects.length > 0 && (
               <select
-                value={selectedProjectId}
-                onChange={(e) => handleProjectChange(e.target.value)}
+                value={activeProjectId}
+                onChange={(e) => setSelectedProjectId(e.target.value)}
                 className="bg-slate-800 border border-slate-700 text-white text-xs rounded-lg px-3 py-2 outline-none focus:border-amber-500"
               >
                 {projects.map((p) => (
@@ -208,7 +184,7 @@ export default function GeoDashboardPage() {
               New Project
             </Button>
 
-            {selectedProjectId && (
+            {activeProjectId && (
               <Button
                 size="sm"
                 onClick={handleRunAnalysis}

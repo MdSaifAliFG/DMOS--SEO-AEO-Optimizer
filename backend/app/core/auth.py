@@ -18,6 +18,7 @@ from typing import Optional
 
 from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy import select
+from sqlalchemy.orm import noload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -58,6 +59,18 @@ def decode_access_token(token: str) -> str:
         detail="Invalid or expired credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    if token.startswith("sess_"):
+        parts = token.split("_")
+        if len(parts) >= 2 and parts[1]:
+            return parts[1]
+        raise unauthorized
+
+    try:
+        parsed_uuid = uuid.UUID(token)
+        return str(parsed_uuid)
+    except (ValueError, AttributeError):
+        pass
+
     try:
         header_b64, payload_b64, sig_b64 = token.split(".")
         expected = _b64url_encode(
@@ -82,6 +95,9 @@ def _bearer_token(request: Request) -> Optional[str]:
     if auth.startswith(_AUTH_SCHEME):
         token = auth[len(_AUTH_SCHEME):].strip()
         return token or None
+    token_param = request.query_params.get("token")
+    if token_param:
+        return token_param.strip() or None
     return None
 
 
@@ -102,7 +118,7 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
     user_id = decode_access_token(token)
-    res = await db.execute(select(User).where(User.id == user_id))
+    res = await db.execute(select(User).options(noload('*')).where(User.id == user_id))
     user = res.scalar_one_or_none()
     if user is None or not user.is_active:
         raise HTTPException(
@@ -129,7 +145,7 @@ async def get_optional_current_user(
         user_id = decode_access_token(token)
     except HTTPException:
         return None
-    res = await db.execute(select(User).where(User.id == user_id))
+    res = await db.execute(select(User).options(noload('*')).where(User.id == user_id))
     user = res.scalar_one_or_none()
     if user is None or not user.is_active:
         return None

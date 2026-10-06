@@ -106,17 +106,19 @@ async def create_geo_project(
 
 @router.get("/projects", response_model=GeoProjectListResponse)
 async def list_geo_projects(
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """List all accessible GEO Projects."""
+    """List all accessible GEO Projects for the current user."""
     svc = GeoService(db)
-    projects = await svc.list_projects()
+    projects = await svc.list_projects(user_id=current_user.id)
     return {"projects": projects, "total": len(projects)}
 
 
 @router.get("/projects/{project_id}", response_model=GeoProjectResponse)
 async def get_geo_project(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Retrieve details of a single GEO Project."""
@@ -124,6 +126,7 @@ async def get_geo_project(
     project = await svc.get_project(project_id)
     if not project:
         raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(project, current_user, "GEO Project")
     return project
 
 
@@ -168,10 +171,15 @@ async def delete_geo_project(
 @router.get("/projects/{project_id}/brand-profile", response_model=GeoBrandProfileResponse)
 async def get_geo_brand_profile(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get canonical GEO knowledge profile."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     bp = await svc.get_brand_profile(project_id)
     if not bp:
         raise HTTPException(status_code=404, detail="Brand profile not found for project")
@@ -259,12 +267,18 @@ async def trigger_geo_analysis(
 @router.get("/analysis/{analysis_id}", response_model=GeoAnalysisResponse)
 async def get_geo_analysis_status(
     analysis_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Check progress and status of a GEO background analysis."""
     analysis = await db.get(GeoAnalysis, analysis_id)
     if not analysis:
         raise HTTPException(status_code=404, detail="Analysis job not found")
+    svc = GeoService(db)
+    project = await svc.get_project(analysis.project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(project, current_user, "GEO Project")
     return analysis
 
 
@@ -272,10 +286,15 @@ async def get_geo_analysis_status(
 @router.get("/dashboard/{project_id}", response_model=GeoDashboardResponse)
 async def get_geo_dashboard(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get aggregated dashboard metrics for a GEO Project."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     dash = await svc.get_dashboard(project_id)
     if not dash:
         raise HTTPException(status_code=404, detail="GEO project not found")
@@ -289,10 +308,15 @@ async def list_geo_questions(
     category: Optional[str] = Query(None),
     intent: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """List discovery questions generated for a GEO Project."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     questions = await svc.list_questions(project_id, category, intent, search)
     return {"questions": questions, "total": len(questions)}
 
@@ -305,6 +329,10 @@ async def generate_geo_questions(
 ):
     """Generate discovery questions across 18 generative categories."""
     svc = GeoService(db)
+    existing = await svc.get_project(req.project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     generated = await svc.generate_questions(req.project_id, req.categories, req.count_per_category)
     return generated
 
@@ -315,10 +343,15 @@ async def list_geo_answers(
     project_id: str = Query(..., description="GEO Project ID"),
     provider: Optional[str] = Query(None),
     recommended_only: bool = Query(False),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """List AI answers and recommendations."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     answers = await svc.list_answers(project_id, provider, recommended_only)
     return {"answers": answers, "total": len(answers)}
 
@@ -326,6 +359,7 @@ async def list_geo_answers(
 @router.get("/answers/{answer_id}", response_model=GeoAnswerResponse)
 async def get_geo_answer(
     answer_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get detailed analysis of a single AI answer."""
@@ -333,6 +367,10 @@ async def get_geo_answer(
     ans = await svc.get_answer(answer_id)
     if not ans:
         raise HTTPException(status_code=404, detail="Answer not found")
+    existing = await svc.get_project(ans.project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     return ans
 
 
@@ -341,10 +379,15 @@ async def get_geo_answer(
 async def list_geo_citations(
     project_id: str = Query(..., description="GEO Project ID"),
     source_type: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """List all extracted citations with source classification."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     citations = await svc.list_citations(project_id, source_type)
     metrics = svc.citation_extractor.calculate_citation_metrics(
         [{"source_type": c.source_type, "domain": c.domain} for c in citations],
@@ -365,13 +408,17 @@ async def list_geo_citations(
 async def list_geo_entities(
     project_id: str = Query(..., description="GEO Project ID"),
     entity_type: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """List recognized knowledge graph entities."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     entities = await svc.list_entities(project_id, entity_type)
-    proj = await svc.get_project(project_id)
-    consistency_score = proj.consistency_score if proj and proj.consistency_score is not None else 80
+    consistency_score = existing.consistency_score if existing and existing.consistency_score is not None else 80
     return {
         "entities": entities,
         "total": len(entities),
@@ -383,10 +430,15 @@ async def list_geo_entities(
 @router.get("/competitors/{project_id}", response_model=GeoCompetitorResponse)
 async def get_geo_competitors(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get competitor intelligence, share of voice, and competitive gap."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     return await svc.get_competitors_overview(project_id)
 
 
@@ -394,20 +446,30 @@ async def get_geo_competitors(
 @router.get("/visibility/{project_id}", response_model=GeoVisibilityResponse)
 async def get_geo_visibility(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get visibility overview, provider parity, and history."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     return await svc.get_visibility_overview(project_id)
 
 
 @router.get("/history/{project_id}", response_model=GeoHistoryResponse)
 async def get_geo_history(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get historical snapshots, change events, and verified uplift history."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     return await svc.get_history(project_id)
 
 
@@ -418,10 +480,15 @@ async def list_geo_issues(
     severity: Optional[str] = Query(None),
     category: Optional[str] = Query(None),
     status: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """List prioritized GEO issues."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     issues = await svc.list_issues(project_id, severity, category, status)
     return {"issues": issues, "total": len(issues)}
 
@@ -429,10 +496,15 @@ async def list_geo_issues(
 @router.get("/issues/{project_id}/export-csv")
 async def export_geo_issues_csv(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Export issues as CSV."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     csv_content = await svc.export_issues_csv(project_id)
     return Response(
         content=csv_content,
@@ -447,10 +519,15 @@ async def list_geo_actions(
     project_id: str = Query(..., description="GEO Project ID"),
     status: Optional[str] = Query(None),
     priority_level: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """List actionable recommendations."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     recs = await svc.list_recommendations(project_id, status, priority_level)
     return {"recommendations": recs, "total": len(recs)}
 
@@ -458,6 +535,7 @@ async def list_geo_actions(
 @router.get("/actions/{action_id}", response_model=GeoRecommendationResponse)
 async def get_geo_action(
     action_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get single action recommendation."""
@@ -465,6 +543,10 @@ async def get_geo_action(
     rec = await svc.get_recommendation(action_id)
     if not rec:
         raise HTTPException(status_code=404, detail="Action not found")
+    existing = await svc.get_project(rec.project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     return rec
 
 
@@ -477,6 +559,13 @@ async def update_geo_action(
 ):
     """Update action status or notes."""
     svc = GeoService(db)
+    rec_obj = await svc.get_recommendation(action_id)
+    if not rec_obj:
+        raise HTTPException(status_code=404, detail="Action not found")
+    existing = await svc.get_project(rec_obj.project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     rec = await svc.update_recommendation(action_id, status=data.status, notes=data.notes)
     if not rec:
         raise HTTPException(status_code=404, detail="Action not found")
@@ -491,6 +580,13 @@ async def verify_geo_action(
 ):
     """Verify implemented action and record metric uplift in history."""
     svc = GeoService(db)
+    rec_obj = await svc.get_recommendation(action_id)
+    if not rec_obj:
+        raise HTTPException(status_code=404, detail="Action not found")
+    existing = await svc.get_project(rec_obj.project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     rec = await svc.verify_recommendation(action_id)
     if not rec:
         raise HTTPException(status_code=404, detail="Action not found")
@@ -505,6 +601,13 @@ async def ignore_geo_action(
 ):
     """Ignore an action item."""
     svc = GeoService(db)
+    rec_obj = await svc.get_recommendation(action_id)
+    if not rec_obj:
+        raise HTTPException(status_code=404, detail="Action not found")
+    existing = await svc.get_project(rec_obj.project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     rec = await svc.update_recommendation(action_id, status=GeoRecommendationStatus.IGNORED.value)
     if not rec:
         raise HTTPException(status_code=404, detail="Action not found")
@@ -520,6 +623,10 @@ async def bulk_update_geo_actions(
 ):
     """Apply bulk status updates to recommendations."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     count = await svc.bulk_update_recommendations(project_id, req.recommendation_ids, req.action)
     return {"updated": count}
 
@@ -527,10 +634,15 @@ async def bulk_update_geo_actions(
 @router.get("/actions/summary/{project_id}", response_model=GeoActionSummaryResponse)
 async def get_geo_actions_summary(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get high-level summary of Action Center status counts."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     return await svc.get_action_summary(project_id)
 
 
@@ -544,6 +656,9 @@ async def optimize_geo_content(
     """Generate structured headings, direct definitions, and authority links."""
     svc = GeoService(db)
     proj = await svc.get_project(req.project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(proj, current_user, "GEO Project")
     brand = (proj.brand_name or proj.name) if proj else "The Brand"
     return svc.opt_service.optimize_content(
         brand_name=brand,
@@ -562,6 +677,9 @@ async def optimize_geo_direct_answer(
     """Generate concise 40-80 word direct answer snippet."""
     svc = GeoService(db)
     proj = await svc.get_project(req.project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(proj, current_user, "GEO Project")
     brand = (proj.brand_name or proj.name) if proj else "The Brand"
     return svc.opt_service.optimize_direct_answer(
         brand_name=brand,
@@ -580,6 +698,9 @@ async def optimize_geo_entity(
     """Generate JSON-LD schema markup with sameAs and entity relations."""
     svc = GeoService(db)
     proj = await svc.get_project(req.project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(proj, current_user, "GEO Project")
     brand = (proj.brand_name or proj.name) if proj else "The Brand"
     domain = proj.domain if proj else "example.com"
     return svc.opt_service.optimize_entity(
@@ -599,6 +720,9 @@ async def optimize_geo_comparison(
     """Generate side-by-side comparison structure and alternative analysis."""
     svc = GeoService(db)
     proj = await svc.get_project(req.project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(proj, current_user, "GEO Project")
     brand = (proj.brand_name or proj.name) if proj else "The Brand"
     return svc.opt_service.optimize_comparison(
         brand_name=brand,
@@ -616,6 +740,9 @@ async def optimize_geo_commercial(
     """Generate pricing table architecture and buyer intent structures."""
     svc = GeoService(db)
     proj = await svc.get_project(req.project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(proj, current_user, "GEO Project")
     brand = (proj.brand_name or proj.name) if proj else "The Brand"
     return svc.opt_service.optimize_commercial(
         brand_name=brand,
@@ -628,9 +755,15 @@ async def optimize_geo_commercial(
 @router.get("/monitoring/{project_id}", response_model=GeoMonitoringScheduleResponse)
 async def get_geo_monitoring_schedule(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Get monitoring schedule configuration."""
+    svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     res = await db.execute(
         select(GeoMonitoringSchedule).where(GeoMonitoringSchedule.project_id == project_id)
     )
@@ -657,6 +790,11 @@ async def update_geo_monitoring_schedule(
     db: AsyncSession = Depends(get_db),
 ):
     """Update monitoring schedule frequency and providers."""
+    svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     res = await db.execute(
         select(GeoMonitoringSchedule).where(GeoMonitoringSchedule.project_id == project_id)
     )
@@ -682,9 +820,15 @@ async def update_geo_monitoring_schedule(
 @router.get("/alerts", response_model=List[Dict[str, Any]])
 async def list_geo_alerts(
     project_id: str = Query(..., description="GEO Project ID"),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """List system alerts for a GEO Project."""
+    svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     res = await db.execute(
         select(GeoAlert)
         .where(GeoAlert.project_id == project_id)
@@ -711,10 +855,15 @@ async def list_geo_alerts(
 @router.get("/reports/{project_id}", response_model=GeoReportResponse)
 async def get_geo_report(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate executive summary GEO report."""
     svc = GeoService(db)
+    existing = await svc.get_project(project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     report = await svc.generate_report(project_id)
     if not report:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -729,6 +878,10 @@ async def generate_custom_geo_report(
 ):
     """Generate custom executive GEO report."""
     svc = GeoService(db)
+    existing = await svc.get_project(req.project_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(existing, current_user, "GEO Project")
     report = await svc.generate_report(req.project_id)
     if not report:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -739,6 +892,7 @@ async def generate_custom_geo_report(
 @router.get("/unified-intelligence/{project_id}", response_model=UnifiedSearchIntelligenceResponse)
 async def get_unified_search_intelligence(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -749,11 +903,17 @@ async def get_unified_search_intelligence(
     geo_proj = await svc.get_project(project_id)
     if not geo_proj:
         raise HTTPException(status_code=404, detail="GEO project not found")
+    enforce_owner(geo_proj, current_user, "GEO Project")
 
     domain = geo_proj.domain
 
-    # Check for corresponding SEO project by domain
-    seo_res = await db.execute(select(SeoProject).where(SeoProject.domain == domain))
+    # Check for corresponding SEO project by domain for the current user
+    seo_res = await db.execute(
+        select(SeoProject).where(
+            SeoProject.domain == domain,
+            SeoProject.user_id == current_user.id
+        )
+    )
     seo_proj = seo_res.scalar_one_or_none()
     seo_score = None
     if seo_proj:
@@ -768,8 +928,13 @@ async def get_unified_search_intelligence(
         if scan and scan.overall_score is not None:
             seo_score = scan.overall_score
 
-    # Check for corresponding AEO project by domain
-    aeo_res = await db.execute(select(AeoProject).where(AeoProject.domain == domain))
+    # Check for corresponding AEO project by domain for the current user
+    aeo_res = await db.execute(
+        select(AeoProject).where(
+            AeoProject.domain == domain,
+            AeoProject.user_id == current_user.id
+        )
+    )
     aeo_proj = aeo_res.scalar_one_or_none()
     aeo_score = aeo_proj.aeo_score if aeo_proj else None
 

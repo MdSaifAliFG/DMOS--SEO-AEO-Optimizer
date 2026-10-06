@@ -23,7 +23,7 @@ router = APIRouter(prefix="/settings", tags=["System Settings"])
     summary="Get global platform settings",
 )
 async def get_system_settings(
-    current_user: Optional[User] = Depends(get_optional_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SystemSettingsResponse:
     """Retrieve global workspace identity, notification preferences, and default crawler limits."""

@@ -57,5 +57,5 @@ class User(Base, TimestampMixin):
         "Project",
         back_populates="user",
         cascade="all, delete-orphan",
-        lazy="selectin",
+        lazy="select",
     )

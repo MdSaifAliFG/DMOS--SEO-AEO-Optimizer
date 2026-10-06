@@ -23,6 +23,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { GeoProject } from "@/lib/types";
 import { api } from "@/lib/api-client";
 import { useToast } from "@/hooks/useToast";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export default function GeoProjectsPage() {
   const [projects, setProjects] = useState<GeoProject[]>([]);
@@ -79,16 +80,21 @@ export default function GeoProjectsPage() {
     }
   };
 
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!confirm("Are you sure you want to delete this GEO project?")) return;
+  const [projectToDelete, setProjectToDelete] = useState<{ id: string; name: string; domain?: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const confirmDeleteProject = async () => {
+    if (!projectToDelete) return;
+    setIsDeleting(true);
     try {
-      await api.deleteGeoProject(id);
+      await api.deleteGeoProject(projectToDelete.id);
       success("Project deleted.");
+      setProjectToDelete(null);
       fetchProjects();
     } catch (err) {
       error("Failed to delete project.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -206,7 +212,11 @@ export default function GeoProjectsPage() {
 
                 <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between mt-4">
                   <button
-                    onClick={(e) => handleDelete(proj.id, e)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setProjectToDelete({ id: proj.id, name: proj.name, domain: proj.domain });
+                    }}
                     className="text-xs text-rose-500 hover:text-rose-700 p-1 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                     title="Delete Project"
                   >
@@ -301,6 +311,29 @@ export default function GeoProjectsPage() {
             </div>
           </div>
         )}
+        {/* Delete Project Confirmation Modal */}
+        <ConfirmModal
+          isOpen={Boolean(projectToDelete)}
+          onClose={() => !isDeleting && setProjectToDelete(null)}
+          onConfirm={confirmDeleteProject}
+          title="Confirm Project Deletion"
+          heading="Delete this GEO project?"
+          message="This action cannot be undone. All local citation audits, map pack tracks, and geographic optimization records will be permanently removed."
+          confirmText="Delete Project"
+          cancelText="Keep Project"
+          variant="danger"
+          isLoading={isDeleting}
+          itemDetails={
+            projectToDelete
+              ? {
+                  title: projectToDelete.name,
+                  subtitle: projectToDelete.domain,
+                  badge: "GEO Project",
+                  icon: <FolderKanban className="w-4 h-4 text-amber-600 dark:text-amber-400" />,
+                }
+              : undefined
+          }
+        />
       </div>
     </DashboardShell>
   );

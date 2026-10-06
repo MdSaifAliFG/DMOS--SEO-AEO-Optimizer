@@ -27,6 +27,7 @@ import { DashboardShell } from "@/components/layout/DashboardShell";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/hooks/useToast";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { API_BASE_URL } from "@/lib/constants";
 
 interface IntegrationItem {
@@ -245,23 +246,27 @@ export default function IntegrationsPage() {
     }
   };
 
-  // Disconnect Provider
-  const handleDisconnect = async (item: IntegrationItem) => {
-    if (!confirm(`Are you sure you want to disconnect ${item.name}? Telemetry sync will pause.`)) {
-      return;
-    }
+  // Disconnect Provider Confirmation State
+  const [itemToDisconnect, setItemToDisconnect] = useState<IntegrationItem | null>(null);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
 
+  const confirmDisconnect = async () => {
+    if (!itemToDisconnect) return;
+    setIsDisconnecting(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/integrations/${item.provider}/disconnect`, {
+      const res = await fetch(`${API_BASE_URL}/integrations/${itemToDisconnect.provider}/disconnect`, {
         method: "POST",
       });
       if (!res.ok) throw new Error("Failed to disconnect");
 
-      info("Integration Disconnected", `${item.name} was disconnected.`);
+      info("Integration Disconnected", `${itemToDisconnect.name} was disconnected.`);
+      setItemToDisconnect(null);
       await fetchIntegrations(true);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to disconnect";
       error("Disconnect Failed", msg);
+    } finally {
+      setIsDisconnecting(false);
     }
   };
 
@@ -632,7 +637,7 @@ export default function IntegrationsPage() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleDisconnect(item)}
+                        onClick={() => setItemToDisconnect(item)}
                         className="h-7 px-2 text-[11px] text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
                       >
                         Disconnect
@@ -874,6 +879,28 @@ export default function IntegrationsPage() {
             </div>
           </div>
         )}
+        {/* Disconnect Provider Confirmation Modal */}
+        <ConfirmModal
+          isOpen={Boolean(itemToDisconnect)}
+          onClose={() => !isDisconnecting && setItemToDisconnect(null)}
+          onConfirm={confirmDisconnect}
+          title="Disconnect Integration"
+          heading={`Disconnect ${itemToDisconnect?.name || "integration"}?`}
+          message="Telemetry sync and real-time metric updates will be paused until you reconnect this provider."
+          confirmText="Disconnect"
+          cancelText="Keep Connected"
+          variant="warning"
+          isLoading={isDisconnecting}
+          itemDetails={
+            itemToDisconnect
+              ? {
+                  title: itemToDisconnect.name,
+                  subtitle: itemToDisconnect.description,
+                  badge: itemToDisconnect.category,
+                }
+              : undefined
+          }
+        />
       </div>
     </DashboardShell>
   );

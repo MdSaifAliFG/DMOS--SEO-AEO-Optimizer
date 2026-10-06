@@ -407,6 +407,24 @@ class AEOAnalysisRunner:
             cls._add_log(analysis, "SUCCESS", "Completion", f"AEO Analysis completed with Overall Score {score_breakdown.overall_score}/100 ({score_breakdown.score_label}).")
             await db.commit()
 
+            # Real-time AEO notification dispatch
+            try:
+                from app.services.notification_service import NotificationService
+                await NotificationService.create_notification(
+                    db=db,
+                    user_id=project.user_id,
+                    title="AEO Visibility Analysis Completed",
+                    message=f"Analyzed {analysis.questions_analyzed_count} buyer questions for {project.brand_name}. Found {analysis.mentions_found_count} mentions & {analysis.citations_found_count} citations (Score: {score_breakdown.overall_score}/100).",
+                    type="aeo",
+                    severity="success",
+                    link="/aeo/visibility",
+                    link_text="View Visibility Scores",
+                    notification_id=f"aeo_ana_{analysis.id}",
+                    broadcast=True,
+                )
+            except Exception as nb_err:
+                logger.warning(f"[AEO Runner] Non-fatal error broadcasting real-time notification: {nb_err}")
+
         except Exception as exc:
             logger.exception(f"[AEO Runner] Error executing analysis {analysis_id}")
             analysis.status = AeoAnalysisStatus.FAILED.value

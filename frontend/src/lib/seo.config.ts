@@ -15,6 +15,7 @@ export const SITE_CONFIG = {
   supportEmail: "support@zobay.in",
   logoUrl: "https://rank.zobay.in/logo.png",
   faviconUrl: "https://rank.zobay.in/favicon.png",
+  ogImageUrl: "https://rank.zobay.in/og-image.png",
   twitterHandle: "@zobayrank",
   locale: "en_US",
 } as const;

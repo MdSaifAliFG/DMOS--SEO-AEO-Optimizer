@@ -39,6 +39,25 @@ class ProjectService:
         db.add(project)
         await db.commit()
         await db.refresh(project)
+
+        if user_id:
+            try:
+                from app.services.notification_service import NotificationService
+                await NotificationService.create_notification(
+                    db=db,
+                    user_id=user_id,
+                    title="New Project Configured",
+                    message=f"Project '{project.name}' ({project.domain}) has been registered and is ready for technical SEO crawling and AEO optimization.",
+                    type="seo",
+                    severity="info",
+                    link="/projects",
+                    link_text="View Project",
+                    notification_id=f"proj_created_{project.id}",
+                    broadcast=True,
+                )
+            except Exception as notif_err:
+                logger.warning("Failed to create project registration notification: %s", notif_err)
+
         return project
 
     @staticmethod
@@ -47,11 +66,18 @@ class ProjectService:
         skip: int = 0,
         limit: int = 100,
         search: Optional[str] = None,
+        user_id: Optional[str] = None,
     ) -> tuple[List[Project], int]:
-        """List all projects with total count and latest scan info."""
+        """List all projects with total count and latest scan info, scoped by user_id."""
         query = select(Project).options(
             selectinload(Project.scans)
         ).order_by(desc(Project.created_at))
+
+        count_query = select(func.count(Project.id))
+
+        if user_id:
+            query = query.where(Project.user_id == user_id)
+            count_query = count_query.where(Project.user_id == user_id)
 
         if search:
             search_filter = f"%{search.lower()}%"
@@ -59,15 +85,11 @@ class ProjectService:
                 func.lower(Project.name).like(search_filter)
                 | func.lower(Project.domain).like(search_filter)
             )
-
-        # Count total
-        count_query = select(func.count(Project.id))
-        if search:
-            search_filter = f"%{search.lower()}%"
             count_query = count_query.where(
                 func.lower(Project.name).like(search_filter)
                 | func.lower(Project.domain).like(search_filter)
             )
+
         total_res = await db.execute(count_query)
         total = total_res.scalar() or 0
 
