@@ -27,6 +27,7 @@ import { AeoProject } from "@/lib/types";
 import { api } from "@/lib/api-client";
 import { formatDate, formatTimeAgo } from "@/lib/utils";
 import { useToast } from "@/hooks/useToast";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export default function AeoProjectsPage() {
   const [projects, setProjects] = useState<AeoProject[]>([]);
@@ -115,14 +116,21 @@ export default function AeoProjectsPage() {
     }
   };
 
-  const handleDeleteProject = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete AEO project '${name}'?`)) return;
+  const [projectToDelete, setProjectToDelete] = useState<{ id: string; name: string; domain?: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const confirmDeleteProject = async () => {
+    if (!projectToDelete) return;
+    setIsDeleting(true);
     try {
-      await api.deleteAeoProject(id);
-      success("Project Deleted", `AEO Project '${name}' was deleted`);
+      await api.deleteAeoProject(projectToDelete.id);
+      success("Project Deleted", `AEO Project '${projectToDelete.name}' was deleted`);
+      setProjectToDelete(null);
       fetchProjects();
     } catch (err: any) {
       error("Failed to delete project", err.message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -262,7 +270,7 @@ export default function AeoProjectsPage() {
                       Analyze
                     </Button>
                     <button
-                      onClick={() => handleDeleteProject(project.id, project.name)}
+                      onClick={() => setProjectToDelete({ id: project.id, name: project.name, domain: project.domain })}
                       className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
                       title="Delete Project"
                     >
@@ -387,6 +395,29 @@ export default function AeoProjectsPage() {
             </div>
           </div>
         )}
+        {/* Delete Project Confirmation Modal */}
+        <ConfirmModal
+          isOpen={Boolean(projectToDelete)}
+          onClose={() => !isDeleting && setProjectToDelete(null)}
+          onConfirm={confirmDeleteProject}
+          title="Confirm Project Deletion"
+          heading="Delete this AEO project?"
+          message="This action cannot be undone. All tracked prompts, answer syntheses, citations, and visibility records associated with this project will be permanently deleted."
+          confirmText="Delete Project"
+          cancelText="Keep Project"
+          variant="danger"
+          isLoading={isDeleting}
+          itemDetails={
+            projectToDelete
+              ? {
+                  title: projectToDelete.name,
+                  subtitle: projectToDelete.domain,
+                  badge: "AEO Project",
+                  icon: <Bot className="w-4 h-4 text-purple-600 dark:text-purple-400" />,
+                }
+              : undefined
+          }
+        />
       </div>
     </DashboardShell>
   );

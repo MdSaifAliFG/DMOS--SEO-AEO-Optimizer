@@ -19,11 +19,14 @@ services:
       - key: DEBUG
         value: false
       - key: DATABASE_URL
-        value: sqlite+aiosqlite:///./dmos_prod.db
+        # Async app URL (psycopg3). Wire to a managed Postgres; never SQLite in deployment.
+        value: postgresql+psycopg://dmos_user:CHANGE_ME@postgres:5432/dmos_seo_aeo
       - key: SYNC_DATABASE_URL
-        value: sqlite:///./dmos_prod.db
+        value: postgresql://dmos_user:CHANGE_ME@postgres:5432/dmos_seo_aeo
+      - key: SKIP_STARTUP_DDL
+        value: true
       - key: CORS_ORIGINS
-        value: '["*"]'
+        value: '["https://rank.zobay.in", "https://dev.rank.zobay.in"]'
       - key: CRAWL_MAX_PAGES
         value: "50"
       - key: CRAWL_CONCURRENCY

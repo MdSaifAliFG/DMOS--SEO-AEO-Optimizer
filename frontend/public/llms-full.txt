@@ -91,18 +91,18 @@ SaaS companies, e-commerce stores, growth marketing teams, startups, and digital
 ---
 
 ## 6. Official Canonical Resource Directory
-- **Platform Root**: https://rank.zobay.in/
-- **SEO Platform**: https://rank.zobay.in/seo-optimization
-- **AEO Platform**: https://rank.zobay.in/aeo-optimization
-- **GEO Platform**: https://rank.zobay.in/geo-optimization
-- **AI Search Architecture**: https://rank.zobay.in/ai-search-optimization
-- **SEO vs AEO vs GEO Matrix**: https://rank.zobay.in/seo-vs-aeo-vs-geo
-- **Zobay Rank vs Traditional Tools**: https://rank.zobay.in/compare/zobay-rank-vs-traditional-seo-tools
-- **SaaS Use Case**: https://rank.zobay.in/use-cases/saas
-- **E-Commerce Use Case**: https://rank.zobay.in/use-cases/ecommerce
-- **Agencies Use Case**: https://rank.zobay.in/use-cases/agencies
-- **Startups Use Case**: https://rank.zobay.in/use-cases/startups
-- **Resources Hub**: https://rank.zobay.in/resources
-- **Knowledge Glossary**: https://rank.zobay.in/glossary
-- **Public FAQ**: https://rank.zobay.in/faq
-- **Company About**: https://rank.zobay.in/about-zobay-rank
+- [Platform Root](https://rank.zobay.in/): Primary web application entry point.
+- [SEO Platform](https://rank.zobay.in/seo-optimization): Technical website audit engine.
+- [AEO Platform](https://rank.zobay.in/aeo-optimization): Answer Engine Optimization and citation analysis.
+- [GEO Platform](https://rank.zobay.in/geo-optimization): 8-Factor Generative Engine Optimization radar.
+- [AI Search Architecture](https://rank.zobay.in/ai-search-optimization): Comprehensive multi-engine visibility overview.
+- [SEO vs AEO vs GEO Matrix](https://rank.zobay.in/seo-vs-aeo-vs-geo): Unified search intelligence comparison.
+- [Zobay Rank vs Traditional Tools](https://rank.zobay.in/compare/zobay-rank-vs-traditional-seo-tools): Direct comparison against legacy platforms.
+- [SaaS Optimization Playbook](https://rank.zobay.in/use-cases/saas): Playbook for SaaS and subscription businesses.
+- [E-Commerce Optimization Playbook](https://rank.zobay.in/use-cases/ecommerce): Playbook for online retailers and digital catalogs.
+- [Agencies Optimization Playbook](https://rank.zobay.in/use-cases/agencies): White-label client reporting and multi-project audits.
+- [Startups Optimization Playbook](https://rank.zobay.in/use-cases/startups): Early-stage launch and fast-index strategies.
+- [Resources Hub](https://rank.zobay.in/resources): Best practice guides and engineering references.
+- [Knowledge Glossary](https://rank.zobay.in/glossary): Industry definitions for SEO, AEO, and GEO.
+- [Public FAQ](https://rank.zobay.in/faq): Frequently asked questions.
+- [Company About](https://rank.zobay.in/about-zobay-rank): Entity information and technical platform architecture.

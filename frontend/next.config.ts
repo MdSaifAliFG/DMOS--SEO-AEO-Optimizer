@@ -8,6 +8,25 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  async redirects() {
+    return [
+      {
+        source: "/seo",
+        destination: "/seo/dashboard",
+        permanent: false,
+      },
+      {
+        source: "/aeo",
+        destination: "/aeo/dashboard",
+        permanent: false,
+      },
+      {
+        source: "/geo",
+        destination: "/geo/dashboard",
+        permanent: false,
+      },
+    ];
+  },
   async rewrites() {
     const rawBackendUrl =
       process.env.BACKEND_INTERNAL_URL ||

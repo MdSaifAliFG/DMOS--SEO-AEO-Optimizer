@@ -11,7 +11,7 @@ set "FRONTEND_DIR=%ROOT_DIR%frontend"
 set "PYTHON_EXE=%ROOT_DIR%.venv\Scripts\python.exe"
 
 echo Launching Backend on http://localhost:8000...
-start "SeoSensing Backend :8000" cmd /k "cd /d "%BACKEND_DIR%" && "%PYTHON_EXE%" -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload"
+start "SeoSensing Backend :8000" cmd /k "cd /d "%BACKEND_DIR%" && "%PYTHON_EXE%" run_server.py"
 
 echo Launching Frontend on http://localhost:3000...
 start "SeoSensing Frontend :3000" cmd /k "cd /d "%FRONTEND_DIR%" && npm run dev"

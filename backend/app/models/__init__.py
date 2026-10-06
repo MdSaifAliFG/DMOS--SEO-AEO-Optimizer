@@ -81,6 +81,7 @@ from app.models.billing import (
     UsageModule,
     BillingWebhookEvent,
 )
+from app.models.notification import UserNotificationState, UserNotification
 
 __all__ = [
     "Base",
@@ -164,6 +165,8 @@ __all__ = [
     "UsageEvent",
     "UsageModule",
     "BillingWebhookEvent",
+    "UserNotificationState",
+    "UserNotification",
 ]
 
 

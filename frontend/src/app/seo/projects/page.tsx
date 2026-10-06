@@ -24,6 +24,7 @@ import { FilterBar } from "@/components/ui/FilterBar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { StartAuditModal } from "@/components/scans/StartAuditModal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { Project } from "@/lib/types";
 import { api } from "@/lib/api-client";
 import { cleanDomain, formatDate, formatTimeAgo } from "@/lib/utils";
@@ -100,14 +101,21 @@ export default function SeoProjectsPage() {
     }
   };
 
-  const handleDeleteProject = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete project '${name}'?`)) return;
+  const [projectToDelete, setProjectToDelete] = useState<{ id: string; name: string; domain: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const confirmDeleteProject = async () => {
+    if (!projectToDelete) return;
+    setIsDeleting(true);
     try {
-      await api.deleteProject(id);
-      success("Project Deleted", `Project '${name}' was removed`);
+      await api.deleteProject(projectToDelete.id);
+      success("Project Deleted", `Project '${projectToDelete.name}' was removed`);
+      setProjectToDelete(null);
       fetchProjects();
     } catch (err: any) {
       error("Failed to delete project", err.message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -236,7 +244,7 @@ export default function SeoProjectsPage() {
                           </Button>
 
                           <button
-                            onClick={() => handleDeleteProject(proj.id, proj.name)}
+                            onClick={() => setProjectToDelete({ id: proj.id, name: proj.name, domain: proj.domain })}
                             title="Delete Project"
                             className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition-colors cursor-pointer"
                           >
@@ -399,6 +407,30 @@ export default function SeoProjectsPage() {
             }}
           />
         )}
+
+        {/* Delete Project Confirmation Modal */}
+        <ConfirmModal
+          isOpen={Boolean(projectToDelete)}
+          onClose={() => !isDeleting && setProjectToDelete(null)}
+          onConfirm={confirmDeleteProject}
+          title="Confirm Project Deletion"
+          heading="Delete this SEO project?"
+          message="This action cannot be undone. All crawl audits, technical issues, page scores, and recommendations associated with this project will be permanently deleted."
+          confirmText="Delete Project"
+          cancelText="Keep Project"
+          variant="danger"
+          isLoading={isDeleting}
+          itemDetails={
+            projectToDelete
+              ? {
+                  title: projectToDelete.name,
+                  subtitle: projectToDelete.domain,
+                  badge: "SEO Domain",
+                  icon: <Globe className="w-4 h-4 text-blue-600 dark:text-blue-400" />,
+                }
+              : undefined
+          }
+        />
       </div>
     </DashboardShell>
   );

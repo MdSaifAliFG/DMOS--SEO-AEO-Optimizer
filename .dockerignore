@@ -1,0 +1,12 @@
+.git
+.gitignore
+.venv
+.pytest_cache
+*.db
+*.sqlite*
+dmos_dev.db
+frontend/node_modules
+frontend/.next
+backend/__pycache__
+backend/.pytest_cache
+backend/dmos_dev.db

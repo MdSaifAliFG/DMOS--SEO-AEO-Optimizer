@@ -9,7 +9,7 @@ from typing import Optional, Tuple
 def get_password_hash(password: str) -> str:
     """Generate a secure cryptographic PBKDF2-SHA256 password hash with salt."""
     salt = secrets.token_hex(16)
-    iterations = 600000
+    iterations = 100000
     key = hashlib.pbkdf2_hmac(
         "sha256",
         password.encode("utf-8"),

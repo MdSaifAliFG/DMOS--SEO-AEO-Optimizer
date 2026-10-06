@@ -114,7 +114,7 @@ def test_intelligence_summary_generation():
 
 # 7. End-to-End REST Integration Flow
 @pytest.mark.asyncio
-async def test_phase7_full_integration(client: AsyncClient):
+async def test_phase7_full_integration(client: AsyncClient, auth_headers: dict):
     # Step 1: Create a dedicated test project
     proj_resp = await client.post(
         "/api/v1/aeo/projects",
@@ -124,6 +124,7 @@ async def test_phase7_full_integration(client: AsyncClient):
             "industry": "Marketing Tech",
             "description": "Continuous monitoring and competitive intelligence verification project",
         },
+        headers=auth_headers,
     )
     assert proj_resp.status_code == 201
     project_data = proj_resp.json()
@@ -138,12 +139,14 @@ async def test_phase7_full_integration(client: AsyncClient):
             "category": "Brand Overview",
             "intent": "informational",
         },
+        headers=auth_headers,
     )
     assert q_resp.status_code == 201
 
     # Step 3: Run Monitoring Cycle
     run_resp = await client.post(
         f"/api/v1/aeo/monitoring/{project_id}/run?allow_test_mode=true",
+        headers=auth_headers,
     )
     assert run_resp.status_code == 200
     assert "id" in run_resp.json()
@@ -163,6 +166,7 @@ async def test_phase7_full_integration(client: AsyncClient):
             "selected_engines": ["chatgpt", "gemini", "perplexity"],
             "alert_thresholds": {"score_drop": 8, "competitor_gain": 12},
         },
+        headers=auth_headers,
     )
     assert patch_sched.status_code == 200
     assert patch_sched.json()["frequency"] == "daily"
@@ -208,6 +212,7 @@ async def test_phase7_full_integration(client: AsyncClient):
         ack_resp = await client.patch(
             f"/api/v1/aeo/alerts/{alert_id}",
             json={"status": "acknowledged"},
+            headers=auth_headers,
         )
         assert ack_resp.status_code == 200
         assert ack_resp.json()["status"] == "acknowledged"
@@ -215,6 +220,7 @@ async def test_phase7_full_integration(client: AsyncClient):
         res_resp = await client.patch(
             f"/api/v1/aeo/alerts/{alert_id}",
             json={"status": "resolved"},
+            headers=auth_headers,
         )
         assert res_resp.status_code == 200
         assert res_resp.json()["status"] == "resolved"

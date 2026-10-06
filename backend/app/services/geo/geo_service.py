@@ -477,12 +477,20 @@ class GeoService:
         }
 
     # --- Competitors ---
-    async def get_competitors_overview(self, project_id: str) -> Dict[str, Any]:
-        project = await self.get_project(project_id)
+    async def get_competitors_overview(
+        self,
+        project_id: str,
+        project: Optional[GeoProject] = None,
+        answers: Optional[List[GeoAnswer]] = None,
+    ) -> Dict[str, Any]:
+        if not project:
+            project = await self.get_project(project_id)
         if not project:
             return {"project_id": project_id, "brand_name": "", "brand_share_of_voice": 0.0, "competitors": []}
 
-        answers = await self.list_answers(project_id)
+        if answers is None:
+            answers = await self.list_answers(project_id)
+
         ans_dicts = [
             {
                 "brand_mentioned": a.brand_mentioned,
@@ -557,10 +565,8 @@ class GeoService:
             return None
 
         brand_profile = await self.get_brand_profile(project_id)
-        questions = await self.list_questions(project_id)
         answers = await self.list_answers(project_id)
         citations = await self.list_citations(project_id)
-        entities = await self.list_entities(project_id)
         issues = await self.list_issues(project_id)
         recs = await self.list_recommendations(project_id)
 
@@ -574,7 +580,7 @@ class GeoService:
             total_answers=total_ans,
         )
 
-        comp_overview = await self.get_competitors_overview(project_id)
+        comp_overview = await self.get_competitors_overview(project_id, project=project, answers=answers)
 
         # Provider breakdown
         providers_status = geo_provider_registry.list_providers()

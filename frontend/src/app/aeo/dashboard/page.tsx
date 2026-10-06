@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Bot,
   Sparkles,
@@ -56,16 +57,12 @@ import { formatTimeAgo } from "@/lib/utils";
 import { useToast } from "@/hooks/useToast";
 
 export default function AeoDashboardPage() {
-  const [summary, setSummary] = useState<AeoDashboardSummary | null>(null);
-  const [projects, setProjects] = useState<AeoProject[]>([]);
+  const queryClient = useQueryClient();
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Phase 7 Monitoring & Intelligence State
   const [trendRange, setTrendRange] = useState<"7d" | "30d" | "90d" | "all">("30d");
-  const [trendData, setTrendData] = useState<AeoTrendResponse | null>(null);
-  const [intelligence, setIntelligence] = useState<AeoExecutiveIntelligence | null>(null);
   const [chartViewMode, setChartViewMode] = useState<"curve" | "bars">("curve");
   const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null);
 
@@ -89,50 +86,43 @@ export default function AeoDashboardPage() {
 
   const { success, error } = useToast();
 
-  const fetchDashboardData = async (projId?: string) => {
-    setIsLoading(true);
-    try {
-      const [sumData, projData, trendRes, intelRes] = await Promise.all([
-        api.getAeoDashboard(projId).catch(() => null),
-        api.getAeoProjects({ limit: 50 }).catch(() => ({ projects: [], total: 0 })),
-        projId ? api.getAeoTrends(projId, trendRange).catch(() => null) : Promise.resolve(null),
-        projId ? api.getAeoExecutiveIntelligence(projId).catch(() => null) : Promise.resolve(null),
-      ]);
-      setSummary(sumData);
-      setTrendData(trendRes);
-      setIntelligence(intelRes);
-      const projList = projData.projects || [];
-      setProjects(projList);
-      if (projList.length > 0 && !projId && !selectedProjectId) {
-        setSelectedProjectId(projList[0].id);
-      }
-    } catch (err) {
-      console.error("Failed to load AEO Dashboard:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Queries using TanStack Query
+  const { data: projectsData, isLoading: isProjectsLoading } = useQuery({
+    queryKey: ["aeo", "projects"],
+    queryFn: () => api.getAeoProjects({ limit: 50 }),
+  });
+  const projects = projectsData?.projects || [];
+  const activeProjectId = selectedProjectId || (projects[0]?.id ?? "");
 
-  useEffect(() => {
-    fetchDashboardData(selectedProjectId || undefined);
-  }, [selectedProjectId]);
+  const { data: summary, isLoading: isSummaryLoading } = useQuery({
+    queryKey: ["aeo", "dashboard", activeProjectId],
+    queryFn: () => api.getAeoDashboard(activeProjectId || undefined),
+    enabled: true,
+  });
 
-  useEffect(() => {
-    if (selectedProjectId) {
-      api.getAeoTrends(selectedProjectId, trendRange)
-        .then((res) => setTrendData(res))
-        .catch(() => {});
-    }
-  }, [selectedProjectId, trendRange]);
+  const { data: trendData } = useQuery({
+    queryKey: ["aeo", "trends", activeProjectId, trendRange],
+    queryFn: () => api.getAeoTrends(activeProjectId, trendRange),
+    enabled: !!activeProjectId,
+  });
+
+  const { data: intelligence } = useQuery({
+    queryKey: ["aeo", "intelligence", activeProjectId],
+    queryFn: () => api.getAeoExecutiveIntelligence(activeProjectId),
+    enabled: !!activeProjectId,
+  });
+
+  // Only show full skeleton when there is no data cached at all
+  const isLoading = (isProjectsLoading && !projectsData) || (isSummaryLoading && !summary);
 
   const handleRunAnalysis = async () => {
-    if (!selectedProjectId) return;
+    if (!activeProjectId) return;
     setIsAnalyzing(true);
     try {
-      await api.triggerAeoAnalysis(selectedProjectId, { allow_test_mode: true });
+      await api.triggerAeoAnalysis(activeProjectId, { allow_test_mode: true });
       success("AEO Analysis started. Processing prompt answers across connected engines...");
       setTimeout(() => {
-        fetchDashboardData(selectedProjectId);
+        queryClient.invalidateQueries({ queryKey: ["aeo"] });
         setIsAnalyzing(false);
       }, 2500);
     } catch (err: any) {
@@ -143,12 +133,12 @@ export default function AeoDashboardPage() {
 
   const handleTrackQuestionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!questionText.trim() || !selectedProjectId) return;
+    if (!questionText.trim() || !activeProjectId) return;
 
     setIsSubmittingQuestion(true);
     try {
       await api.createAeoQuestion({
-        project_id: selectedProjectId,
+        project_id: activeProjectId,
         question_text: questionText.trim(),
         category,
         intent,
@@ -156,7 +146,7 @@ export default function AeoDashboardPage() {
       success("Question added to AEO tracking.");
       setIsTrackQuestionOpen(false);
       setQuestionText("");
-      fetchDashboardData(selectedProjectId);
+      queryClient.invalidateQueries({ queryKey: ["aeo"] });
     } catch (err: any) {
       error(err.message || "Failed to add tracked question.");
     } finally {
@@ -183,6 +173,7 @@ export default function AeoDashboardPage() {
       setNewProjectIndustry("");
       setNewProjectDescription("");
       setSelectedProjectId(created.id);
+      queryClient.invalidateQueries({ queryKey: ["aeo"] });
     } catch (err: any) {
       error(err.message || "Failed to create AEO project.");
     } finally {
@@ -223,7 +214,7 @@ export default function AeoDashboardPage() {
           <div className="flex items-center gap-2.5 flex-wrap sm:shrink-0">
             {projects.length > 0 && (
               <select
-                value={selectedProjectId}
+                value={activeProjectId}
                 onChange={(e) => setSelectedProjectId(e.target.value)}
                 className="text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-400 cursor-pointer shadow-2xs"
               >

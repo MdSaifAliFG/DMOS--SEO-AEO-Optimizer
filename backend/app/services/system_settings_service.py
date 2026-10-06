@@ -33,13 +33,7 @@ class SystemSettingsService:
         result = await db.execute(stmt)
         record = result.scalar_one_or_none()
 
-        resolved_owner = current_user.email if current_user else "admin@seosensing-enterprise.internal"
-        if not current_user:
-            user_stmt = select(User).order_by(User.created_at.desc()).limit(1)
-            user_res = await db.execute(user_stmt)
-            active_user = user_res.scalar_one_or_none()
-            if active_user:
-                resolved_owner = active_user.email
+        resolved_owner = current_user.email if current_user and current_user.email else "admin@seosensing-enterprise.internal"
 
         if not record:
             record = SystemSettings(

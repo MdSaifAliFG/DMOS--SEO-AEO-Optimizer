@@ -469,6 +469,25 @@ class GEOAnalysisRunner:
                 await session.commit()
                 logger.info("GEO Analysis %s finished with status %s", analysis_id, final_status)
 
+                # Real-time GEO notification dispatch
+                try:
+                    from app.services.notification_service import NotificationService
+                    if project.user_id:
+                        await NotificationService.create_notification(
+                            db=session,
+                            user_id=project.user_id,
+                            title="GEO Generative Engine Analysis Completed",
+                            message=f"Completed generative visibility analysis across {total_ans} answers. Discovered {len(rule_issues)} optimization items (GEO Score: {project.geo_score}/100).",
+                            type="aeo",
+                            severity="success",
+                            link=f"/geo/analysis?projectId={project.id}",
+                            link_text="View GEO Audit",
+                            notification_id=f"geo_ana_{analysis_id}",
+                            broadcast=True,
+                        )
+                except Exception as geo_bcast_err:
+                    logger.warning("Failed to broadcast GEO analysis completion notification: %s", geo_bcast_err)
+
             except Exception as exc:
                 logger.exception("Error running GEO analysis %s: %s", analysis_id, exc)
                 analysis.status = GeoAnalysisStatus.FAILED.value

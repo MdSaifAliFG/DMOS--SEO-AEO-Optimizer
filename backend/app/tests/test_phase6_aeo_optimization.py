@@ -107,7 +107,7 @@ async def test_rule_based_optimizer():
 
 # 7 - 24. End-to-End REST API & Integration Tests
 @pytest.mark.asyncio
-async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
+async def test_phase6_aeo_action_center_api_flow(client: AsyncClient, auth_headers: dict):
     # 1. Create a project
     proj_resp = await client.post(
         "/api/v1/aeo/projects",
@@ -117,6 +117,7 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
             "industry": "Analytics",
             "competitors": [{"name": "CompAlpha", "domain": "compalpha.com"}],
         },
+        headers=auth_headers,
     )
     assert proj_resp.status_code == 201
     project_id = proj_resp.json()["id"]
@@ -130,6 +131,7 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
             "category": "Competitor Analysis",
             "intent": "comparison",
         },
+        headers=auth_headers,
     )
     assert q1_resp.status_code == 201
 
@@ -141,6 +143,7 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
             "category": "Pricing",
             "intent": "commercial",
         },
+        headers=auth_headers,
     )
     assert q2_resp.status_code == 201
 
@@ -148,6 +151,7 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
     an_resp = await client.post(
         f"/api/v1/aeo/projects/{project_id}/analyze",
         json={"allow_test_mode": True},
+        headers=auth_headers,
     )
     assert an_resp.status_code in [200, 202]
 
@@ -155,6 +159,7 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
     gen_resp = await client.post(
         "/api/v1/aeo/actions/generate",
         json={"project_id": project_id},
+        headers=auth_headers,
     )
     assert gen_resp.status_code == 200
     actions = gen_resp.json()["recommendations"]
@@ -181,13 +186,14 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
     patch_resp = await client.patch(
         f"/api/v1/aeo/actions/{action_id}",
         json={"status": "in_progress", "notes": "Implementation scheduled for sprint 12."},
+        headers=auth_headers,
     )
     assert patch_resp.status_code == 200
     assert patch_resp.json()["status"] == "in_progress"
     assert patch_resp.json()["notes"] == "Implementation scheduled for sprint 12."
 
     # 8. Verify action endpoint
-    verify_resp = await client.post(f"/api/v1/aeo/actions/{action_id}/verify")
+    verify_resp = await client.post(f"/api/v1/aeo/actions/{action_id}/verify", headers=auth_headers)
     assert verify_resp.status_code == 200
     assert "verification_status" in verify_resp.json()
 
@@ -195,6 +201,7 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
     bulk_resp = await client.post(
         "/api/v1/aeo/actions/bulk",
         json={"action_ids": [action_id], "status": "fixed"},
+        headers=auth_headers,
     )
     assert bulk_resp.status_code == 200
     assert bulk_resp.json()["updated_count"] == 1
@@ -211,6 +218,7 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
     content_gap_resp = await client.post(
         "/api/v1/aeo/gaps/content",
         json={"project_id": project_id},
+        headers=auth_headers,
     )
     assert content_gap_resp.status_code == 200
     assert "gaps" in content_gap_resp.json()
@@ -218,6 +226,7 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
     prompt_gap_resp = await client.post(
         "/api/v1/aeo/gaps/prompts",
         json={"project_id": project_id},
+        headers=auth_headers,
     )
     assert prompt_gap_resp.status_code == 200
     assert "opportunities" in prompt_gap_resp.json()
@@ -225,6 +234,7 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
     citation_gap_resp = await client.post(
         "/api/v1/aeo/gaps/citations",
         json={"project_id": project_id},
+        headers=auth_headers,
     )
     assert citation_gap_resp.status_code == 200
     assert "opportunities" in citation_gap_resp.json()
@@ -232,6 +242,7 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
     entity_gap_resp = await client.post(
         "/api/v1/aeo/gaps/entities",
         json={"project_id": project_id},
+        headers=auth_headers,
     )
     assert entity_gap_resp.status_code == 200
     assert "gaps" in entity_gap_resp.json()
@@ -249,6 +260,7 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
             "existing_content": "Acme AI Analytics is an enterprise AI answer optimization suite.",
             "brand_name": "Acme",
         },
+        headers=auth_headers,
     )
     assert opt_content_resp.status_code == 200
     assert "direct_answer_suggestion" in opt_content_resp.json()
@@ -260,6 +272,7 @@ async def test_phase6_aeo_action_center_api_flow(client: AsyncClient):
             "existing_content": "Acme is a tool designed for developers costing $99/mo.",
             "brand_name": "Acme",
         },
+        headers=auth_headers,
     )
     assert opt_ans_resp.status_code == 200
     assert "readiness_score" in opt_ans_resp.json()

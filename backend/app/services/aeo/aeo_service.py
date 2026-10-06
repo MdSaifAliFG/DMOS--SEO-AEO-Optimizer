@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, noload
 
 from app.models.aeo import (
     AeoAnalysis,
@@ -139,6 +139,7 @@ class AeoService:
         skip: int = 0,
         limit: int = 50,
         search: Optional[str] = None,
+        user_id: Optional[str] = None,
     ) -> tuple[List[AeoProject], int]:
         query = (
             select(AeoProject)
@@ -150,6 +151,10 @@ class AeoService:
             .order_by(desc(AeoProject.created_at))
         )
         count_query = select(func.count(AeoProject.id))
+
+        if user_id:
+            query = query.where(AeoProject.user_id == user_id)
+            count_query = count_query.where(AeoProject.user_id == user_id)
 
         if search:
             s_term = f"%{search.lower()}%"
@@ -279,6 +284,7 @@ class AeoService:
         intent: Optional[str] = None,
         category: Optional[str] = None,
         visibility_status: Optional[str] = None,
+        user_id: Optional[str] = None,
     ) -> tuple[List[AeoQuestion], int]:
         query = (
             select(AeoQuestion)
@@ -290,7 +296,15 @@ class AeoService:
         )
         count_query = select(func.count(AeoQuestion.id))
 
-        if project_id:
+        if user_id:
+            user_proj_subq = select(AeoProject.id).where(AeoProject.user_id == user_id)
+            if project_id:
+                query = query.where(AeoQuestion.project_id == project_id, AeoQuestion.project_id.in_(user_proj_subq))
+                count_query = count_query.where(AeoQuestion.project_id == project_id, AeoQuestion.project_id.in_(user_proj_subq))
+            else:
+                query = query.where(AeoQuestion.project_id.in_(user_proj_subq))
+                count_query = count_query.where(AeoQuestion.project_id.in_(user_proj_subq))
+        elif project_id:
             query = query.where(AeoQuestion.project_id == project_id)
             count_query = count_query.where(AeoQuestion.project_id == project_id)
 
@@ -406,6 +420,7 @@ class AeoService:
         brand_mentioned: Optional[bool] = None,
         skip: int = 0,
         limit: int = 50,
+        user_id: Optional[str] = None,
     ) -> tuple[List[AeoAnswer], int]:
         query = (
             select(AeoAnswer)
@@ -414,7 +429,15 @@ class AeoService:
         )
         count_query = select(func.count(AeoAnswer.id))
 
-        if project_id:
+        if user_id:
+            user_proj_subq = select(AeoProject.id).where(AeoProject.user_id == user_id)
+            if project_id:
+                query = query.where(AeoAnswer.project_id == project_id, AeoAnswer.project_id.in_(user_proj_subq))
+                count_query = count_query.where(AeoAnswer.project_id == project_id, AeoAnswer.project_id.in_(user_proj_subq))
+            else:
+                query = query.where(AeoAnswer.project_id.in_(user_proj_subq))
+                count_query = count_query.where(AeoAnswer.project_id.in_(user_proj_subq))
+        elif project_id:
             query = query.where(AeoAnswer.project_id == project_id)
             count_query = count_query.where(AeoAnswer.project_id == project_id)
 
@@ -482,11 +505,20 @@ class AeoService:
         skip: int = 0,
         limit: int = 50,
         search: Optional[str] = None,
+        user_id: Optional[str] = None,
     ) -> tuple[List[AeoCitation], int]:
         query = select(AeoCitation).order_by(desc(AeoCitation.created_at))
         count_query = select(func.count(AeoCitation.id))
 
-        if project_id:
+        if user_id:
+            user_proj_subq = select(AeoProject.id).where(AeoProject.user_id == user_id)
+            if project_id:
+                query = query.where(AeoCitation.project_id == project_id, AeoCitation.project_id.in_(user_proj_subq))
+                count_query = count_query.where(AeoCitation.project_id == project_id, AeoCitation.project_id.in_(user_proj_subq))
+            else:
+                query = query.where(AeoCitation.project_id.in_(user_proj_subq))
+                count_query = count_query.where(AeoCitation.project_id.in_(user_proj_subq))
+        elif project_id:
             query = query.where(AeoCitation.project_id == project_id)
             count_query = count_query.where(AeoCitation.project_id == project_id)
 
@@ -541,11 +573,20 @@ class AeoService:
         skip: int = 0,
         limit: int = 50,
         search: Optional[str] = None,
+        user_id: Optional[str] = None,
     ) -> tuple[List[AeoEntity], int]:
         query = select(AeoEntity).order_by(desc(AeoEntity.mentions_count))
         count_query = select(func.count(AeoEntity.id))
 
-        if project_id:
+        if user_id:
+            user_proj_subq = select(AeoProject.id).where(AeoProject.user_id == user_id)
+            if project_id:
+                query = query.where(AeoEntity.project_id == project_id, AeoEntity.project_id.in_(user_proj_subq))
+                count_query = count_query.where(AeoEntity.project_id == project_id, AeoEntity.project_id.in_(user_proj_subq))
+            else:
+                query = query.where(AeoEntity.project_id.in_(user_proj_subq))
+                count_query = count_query.where(AeoEntity.project_id.in_(user_proj_subq))
+        elif project_id:
             query = query.where(AeoEntity.project_id == project_id)
             count_query = count_query.where(AeoEntity.project_id == project_id)
 
@@ -631,47 +672,71 @@ class AeoService:
     # --- Dashboard Aggregation ---
     @staticmethod
     async def get_dashboard_summary(
-        db: AsyncSession, project_id: Optional[str] = None
+        db: AsyncSession, project_id: Optional[str] = None, user_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
-        Computes 100% real database metrics for the AEO Dashboard.
-        Never returns fabricated numbers or placeholder engine percentages.
+        Computes 100% real database metrics for the AEO Dashboard scoped to the current user.
+        Never returns fabricated numbers or cross-account data.
         """
         # Projects
-        proj_count_res = await db.execute(select(func.count(AeoProject.id)))
+        proj_count_query = select(func.count(AeoProject.id))
+        if user_id:
+            proj_count_query = proj_count_query.where(AeoProject.user_id == user_id)
+        proj_count_res = await db.execute(proj_count_query)
         total_projects = proj_count_res.scalar() or 0
 
         target_project = None
         if project_id:
-            target_project = await AeoService.get_project(db, project_id)
+            p_res = await db.execute(select(AeoProject).options(noload('*')).where(AeoProject.id == project_id))
+            target_project = p_res.scalar_one_or_none()
+            if target_project and user_id and target_project.user_id and target_project.user_id != user_id:
+                target_project = None
         elif total_projects > 0:
-            p_res = await db.execute(
-                select(AeoProject).order_by(desc(AeoProject.updated_at)).limit(1)
-            )
+            p_query = select(AeoProject).options(noload('*')).order_by(desc(AeoProject.updated_at))
+            if user_id:
+                p_query = p_query.where(AeoProject.user_id == user_id)
+            p_res = await db.execute(p_query.limit(1))
             target_project = p_res.scalar_one_or_none()
 
-        # Questions
-        q_filter = select(func.count(AeoQuestion.id))
-        if target_project:
-            q_filter = q_filter.where(AeoQuestion.project_id == target_project.id)
+        # If user has no target project (e.g. fresh account with 0 projects), return clean zeroed metrics
+        if not target_project:
+            engine_statuses = AEOProviderRegistry.get_all_engine_statuses()
+            for eng in engine_statuses:
+                eng["tracked_questions"] = 0
+                eng["visibility_rate"] = 0
+
+            return {
+                "total_projects": total_projects,
+                "active_project": None,
+                "questions_tracked": 0,
+                "total_citations": 0,
+                "brand_mention_rate": 0,
+                "average_visibility_score": 0,
+                "engine_breakdown": engine_statuses,
+                "recent_questions": [],
+                "recent_citations": [],
+                "trend": [],
+                "total_opportunities": 0,
+                "critical_opportunities": 0,
+                "high_opportunities": 0,
+            }
+
+        # Questions count
+        q_filter = select(func.count(AeoQuestion.id)).where(AeoQuestion.project_id == target_project.id)
         q_count_res = await db.execute(q_filter)
         questions_tracked = q_count_res.scalar() or 0
 
-        # Citations
-        c_filter = select(func.count(AeoCitation.id))
-        if target_project:
-            c_filter = c_filter.where(AeoCitation.project_id == target_project.id)
+        # Citations count
+        c_filter = select(func.count(AeoCitation.id)).where(AeoCitation.project_id == target_project.id)
         c_count_res = await db.execute(c_filter)
         total_citations = c_count_res.scalar() or 0
 
-        # Answers
-        ans_filter = select(AeoAnswer)
-        if target_project:
-            ans_filter = ans_filter.where(AeoAnswer.project_id == target_project.id)
+        # Answers (project columns only for fast network transfer)
+        ans_filter = select(AeoAnswer.engine, AeoAnswer.brand_mentioned).where(AeoAnswer.project_id == target_project.id)
         ans_res = await db.execute(ans_filter)
-        all_answers = list(ans_res.scalars().all())
+        all_answers = ans_res.all()
 
-        brand_mentions_count = sum(1 for a in all_answers if a.brand_mentioned)
+        brand_mentions_count = sum(1 for _, mentioned in all_answers if mentioned)
         mention_rate = (
             int(round((brand_mentions_count / len(all_answers)) * 100))
             if all_answers
@@ -682,46 +747,40 @@ class AeoService:
         engine_statuses = AEOProviderRegistry.get_all_engine_statuses()
         for eng in engine_statuses:
             eng_id = eng["engine_id"]
-            eng_ans = [a for a in all_answers if a.engine == eng_id]
+            eng_ans = [m for e, m in all_answers if e == eng_id]
             eng["tracked_questions"] = len(eng_ans)
             eng["visibility_rate"] = (
-                int(round((sum(1 for a in eng_ans if a.brand_mentioned) / len(eng_ans)) * 100))
+                int(round((sum(1 for m in eng_ans if m) / len(eng_ans)) * 100))
                 if eng_ans
                 else 0
             )
 
-        # Recent Questions
-        rq_query = select(AeoQuestion).order_by(desc(AeoQuestion.created_at)).limit(5)
-        if target_project:
-            rq_query = rq_query.where(AeoQuestion.project_id == target_project.id)
+        # Recent Questions (noload to prevent cascade child queries)
+        rq_query = select(AeoQuestion).options(noload('*')).where(AeoQuestion.project_id == target_project.id).order_by(desc(AeoQuestion.created_at)).limit(5)
         rq_res = await db.execute(rq_query)
         recent_questions = list(rq_res.scalars().all())
 
-        # Recent Citations
-        rc_query = select(AeoCitation).order_by(desc(AeoCitation.created_at)).limit(5)
-        if target_project:
-            rc_query = rc_query.where(AeoCitation.project_id == target_project.id)
+        # Recent Citations (noload to prevent cascade child queries)
+        rc_query = select(AeoCitation).options(noload('*')).where(AeoCitation.project_id == target_project.id).order_by(desc(AeoCitation.created_at)).limit(5)
         rc_res = await db.execute(rc_query)
         recent_citations = list(rc_res.scalars().all())
 
         # Historical Trend
         trend_points = []
-        if target_project:
-            snap_res = await db.execute(
-                select(AeoVisibilitySnapshot)
-                .where(AeoVisibilitySnapshot.project_id == target_project.id)
-                .order_by(AeoVisibilitySnapshot.created_at.asc())
-            )
-            for s in snap_res.scalars().all():
-                trend_points.append({
-                    "date": s.created_at.strftime("%b %d"),
-                    "score": s.overall_score,
-                })
+        snap_res = await db.execute(
+            select(AeoVisibilitySnapshot)
+            .options(noload('*'))
+            .where(AeoVisibilitySnapshot.project_id == target_project.id)
+            .order_by(AeoVisibilitySnapshot.created_at.asc())
+        )
+        for s in snap_res.scalars().all():
+            trend_points.append({
+                "date": s.created_at.strftime("%b %d"),
+                "score": s.overall_score,
+            })
 
         # Phase 6 Optimization Opportunities Aggregation
-        recs_query = select(AeoRecommendation)
-        if target_project:
-            recs_query = recs_query.where(AeoRecommendation.project_id == target_project.id)
+        recs_query = select(AeoRecommendation).options(noload('*')).where(AeoRecommendation.project_id == target_project.id)
         recs_res = await db.execute(recs_query)
         all_recs = list(recs_res.scalars().all())
 
@@ -798,12 +857,21 @@ class AeoService:
         search: Optional[str] = None,
         skip: int = 0,
         limit: int = 50,
+        user_id: Optional[str] = None,
     ) -> tuple[List[AeoRecommendation], int]:
         """Fetch filtered and paginated AEO optimization actions."""
         stmt = select(AeoRecommendation)
         count_stmt = select(func.count(AeoRecommendation.id))
 
-        if project_id:
+        if user_id:
+            user_proj_subq = select(AeoProject.id).where(AeoProject.user_id == user_id)
+            if project_id:
+                stmt = stmt.where(AeoRecommendation.project_id == project_id, AeoRecommendation.project_id.in_(user_proj_subq))
+                count_stmt = count_stmt.where(AeoRecommendation.project_id == project_id, AeoRecommendation.project_id.in_(user_proj_subq))
+            else:
+                stmt = stmt.where(AeoRecommendation.project_id.in_(user_proj_subq))
+                count_stmt = count_stmt.where(AeoRecommendation.project_id.in_(user_proj_subq))
+        elif project_id:
             stmt = stmt.where(AeoRecommendation.project_id == project_id)
             count_stmt = count_stmt.where(AeoRecommendation.project_id == project_id)
 

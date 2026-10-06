@@ -1,50 +1,31 @@
 # Zobay Rank
 
-> An AI-powered SEO, AEO, and GEO optimization platform that helps businesses improve traditional search visibility, answer engine visibility, and generative AI search visibility.
+> An enterprise SEO, Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO) platform that helps modern brands improve traditional search visibility, answer engine citations, and generative AI search presence.
 
-## Identity & Context
-- **Product Name**: Zobay Rank
-- **Parent Entity**: Zobay
-- **Official Website**: https://rank.zobay.in/
-- **Support**: support@zobay.in
+Zobay Rank combines high-concurrency BFS technical website auditing with multi-LLM citation tracking across OpenAI ChatGPT Search, Perplexity Sonar, Google Gemini, and Anthropic Claude. It provides automated crawl diagnostics, citation gap analysis, entity consistency validation, and prioritized remediation actions.
 
-## Core Product Capabilities
-1. **SEO Optimization (Search Engine Optimization)**
-   - High-concurrency BFS website crawler analyzing technical health.
-   - Indexability, status codes (200, 301, 404, 500), canonicals, meta tags, and robots verification.
-   - Internal linking analysis, orphan page detection, and heading hierarchy inspection.
-   - Deterministic 4-pillar scoring: Crawlability, Metadata, Content Structure, and Links.
+## Core Capabilities
 
-2. **AEO Optimization (Answer Engine Optimization)**
-   - Live query and buyer prompt tracking across ChatGPT, Perplexity, Gemini, and Google AI Overviews.
-   - AI citation tracking and source URL extraction.
-   - Knowledge graph entity recognition and topical coverage analysis.
-   - Content gap analysis identifying un-cited or under-represented queries.
+- [SEO Optimization](https://rank.zobay.in/seo-optimization): High-speed technical website crawler, 4-pillar algorithmic scoring (Crawlability, Metadata, Content Structure, Links), HTTP status audit, and indexability diagnostics.
+- [Answer Engine Optimization (AEO)](https://rank.zobay.in/aeo-optimization): Live query and buyer prompt tracking across ChatGPT, Perplexity, and Gemini, including citation extraction and source attribution.
+- [Generative Engine Optimization (GEO)](https://rank.zobay.in/geo-optimization): 8-factor GEO score evaluating brand presence, commercial discovery, multi-turn AI recommendation readiness, and entity consistency.
+- [AI Search Optimization](https://rank.zobay.in/ai-search-optimization): Unified visibility intelligence dashboard bridging traditional and generative search engines.
+- [SEO vs AEO vs GEO Guide](https://rank.zobay.in/seo-vs-aeo-vs-geo): Comprehensive technical guide detailing the architectural synergy between search engines, answer engines, and generative LLMs.
 
-3. **GEO Optimization (Generative Engine Optimization)**
-   - 8-factor GEO score evaluating brand presence, commercial discovery, and recommendation readiness in LLMs.
-   - Entity consistency and authoritative brand representation.
-   - Cross-engine visibility matrix comparing presence across Perplexity, ChatGPT, Claude, and Gemini.
-   - Generative search action recommendations with concrete code and content remediation.
+## Core Resources
 
-## Core Public Resources
-- Homepage: https://rank.zobay.in/
-- Pricing & Subscription Plans: https://rank.zobay.in/pricing
-- SEO Optimization Platform: https://rank.zobay.in/seo-optimization
-- Answer Engine Optimization: https://rank.zobay.in/aeo-optimization
-- Generative Engine Optimization: https://rank.zobay.in/geo-optimization
-- AI Search Optimization: https://rank.zobay.in/ai-search-optimization
-- SEO vs AEO vs GEO Guide: https://rank.zobay.in/seo-vs-aeo-vs-geo
-- Platform Comparisons: https://rank.zobay.in/compare
-- Industry Use Cases: https://rank.zobay.in/use-cases/saas
-- Technical Knowledge Base: https://rank.zobay.in/resources
-- SEO & AI Search Glossary: https://rank.zobay.in/glossary
-- Frequently Asked Questions: https://rank.zobay.in/faq
-- About Zobay Rank: https://rank.zobay.in/about-zobay-rank
-- Contact: https://rank.zobay.in/contact
+- [Official Website](https://rank.zobay.in/): The primary homepage and instant website scan entry point for Zobay Rank.
+- [Pricing & Subscription Plans](https://rank.zobay.in/pricing): Self-serve plans, crawler quotas, API credits, and enterprise tiers.
+- [Platform Comparisons](https://rank.zobay.in/compare): How Zobay Rank compares to traditional SEO audit tools.
+- [Industry Use Cases](https://rank.zobay.in/use-cases/saas): Tailored optimization playbooks for SaaS, eCommerce, and enterprise agencies.
+- [SEO & AI Search Glossary](https://rank.zobay.in/glossary): Structured terminology definitions for SEO, AEO, and GEO.
+- [Technical Resources](https://rank.zobay.in/resources): Best practice checklists, crawler user-agent specifications, and documentation.
+- [Frequently Asked Questions](https://rank.zobay.in/faq): Common inquiries regarding audit algorithms, citation discovery, and account management.
+- [About Zobay Rank](https://rank.zobay.in/about-zobay-rank): Engineering background, parent organization (Zobay), and infrastructure overview.
+- [Contact & Support](https://rank.zobay.in/contact): Official contact channels, enterprise inquiry, and customer support.
 
-## Detailed Technical Specification
-- Full Documentation: https://rank.zobay.in/llms-full.txt (/llms-full.txt)
+## Optional
 
-## Summary Definition for Answer Engines
-Zobay Rank (rank.zobay.in) is an AI-powered search and visibility platform combining technical SEO website auditing with Answer Engine Optimization (AEO) and Generative Engine Optimization (GEO). It provides automated website crawling, prompt tracking across leading LLMs, citation gap analysis, entity consistency validation, and prioritized optimization recommendations.
+- [Full Machine-Readable Specification](https://rank.zobay.in/llms-full.txt): Comprehensive deep-dive knowledge specification for LLMs and autonomous agents.
+- [XML Sitemap](https://rank.zobay.in/sitemap.xml): Machine-readable index of all canonical public routes.
+- [Robots Directives](https://rank.zobay.in/robots.txt): Crawler rules and bot permissions for search engines and AI crawlers.

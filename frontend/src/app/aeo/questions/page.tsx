@@ -24,6 +24,7 @@ import { AeoQuestion, AeoProject, AeoAnswer } from "@/lib/types";
 import { api } from "@/lib/api-client";
 import { formatTimeAgo } from "@/lib/utils";
 import { useToast } from "@/hooks/useToast";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export default function AeoQuestionsPage() {
   const [questions, setQuestions] = useState<AeoQuestion[]>([]);
@@ -122,14 +123,21 @@ export default function AeoQuestionsPage() {
     }
   };
 
-  const handleDeleteQuestion = async (qId: string) => {
-    if (!confirm("Are you sure you want to delete this tracked prompt?")) return;
+  const [questionToDelete, setQuestionToDelete] = useState<{ id: string; question_text: string; category?: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const confirmDeleteQuestion = async () => {
+    if (!questionToDelete) return;
+    setIsDeleting(true);
     try {
-      await api.deleteAeoQuestion(qId);
+      await api.deleteAeoQuestion(questionToDelete.id);
       success("Deleted", "Question removed from tracking");
+      setQuestionToDelete(null);
       fetchQuestions();
     } catch (err: any) {
       error("Failed to delete question", err.message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -333,7 +341,7 @@ export default function AeoQuestionsPage() {
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => handleDeleteQuestion(q.id)}
+                            onClick={() => setQuestionToDelete({ id: q.id, question_text: q.question_text, category: q.category })}
                             className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
                             title="Delete Prompt"
                           >
@@ -530,6 +538,28 @@ export default function AeoQuestionsPage() {
             </div>
           </div>
         )}
+        {/* Delete Prompt Confirmation Modal */}
+        <ConfirmModal
+          isOpen={Boolean(questionToDelete)}
+          onClose={() => !isDeleting && setQuestionToDelete(null)}
+          onConfirm={confirmDeleteQuestion}
+          title="Confirm Prompt Deletion"
+          heading="Delete this tracked prompt?"
+          message="This action cannot be undone. All historical AI answers, brand mention analytics, and ranking logs for this prompt will be permanently removed."
+          confirmText="Delete Prompt"
+          cancelText="Keep Prompt"
+          variant="danger"
+          isLoading={isDeleting}
+          itemDetails={
+            questionToDelete
+              ? {
+                  title: questionToDelete.question_text,
+                  badge: questionToDelete.category || "Prompt",
+                  icon: <HelpCircle className="w-4 h-4 text-purple-600 dark:text-purple-400" />,
+                }
+              : undefined
+          }
+        />
       </div>
     </DashboardShell>
   );

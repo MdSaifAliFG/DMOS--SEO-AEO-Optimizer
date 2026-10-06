@@ -4,6 +4,8 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
+from app.core.auth import get_current_user
+from app.models.user import User
 from app.models.project import Project
 from app.models.scan import Scan, ScanStatus
 from app.models.seo_issue import IssueSeverity, SeoIssue
@@ -102,42 +104,50 @@ class SeoDashboardSummaryResponse(BaseModel):
     summary="Get aggregated SEO dashboard KPIs, score trend, top issues, and crawl breakdown",
 )
 async def get_seo_dashboard_summary(
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoDashboardSummaryResponse:
-    # 1. Total projects
-    proj_res = await db.execute(select(func.count(Project.id)))
-    total_projects = proj_res.scalar() or 0
+    user_id = current_user.id
 
-    # 2. Total crawled pages across all scans
-    pages_res = await db.execute(select(func.count(SeoPage.id)))
-    total_crawled_pages = pages_res.scalar() or 0
+    # 1. Fetch user project IDs once (fast indexed lookup)
+    proj_res = await db.execute(select(Project.id).where(Project.user_id == user_id))
+    user_proj_ids = list(proj_res.scalars().all())
+    total_projects = len(user_proj_ids)
 
-    # 3. Total issues & severity counts
-    sev_res = await db.execute(
-        select(SeoIssue.severity, func.count(SeoIssue.id)).group_by(SeoIssue.severity)
-    )
-    severity_counts = {
+    default_severities = {
         IssueSeverity.CRITICAL.value: 0,
         IssueSeverity.HIGH.value: 0,
         IssueSeverity.MEDIUM.value: 0,
         IssueSeverity.LOW.value: 0,
         IssueSeverity.INFO.value: 0,
     }
-    total_issues = 0
-    for sev_name, cnt in sev_res.all():
-        if sev_name in severity_counts:
-            severity_counts[sev_name] = cnt
-        total_issues += cnt
 
-    # 4. Average or latest scan score
-    latest_scan_res = await db.execute(
+    if not user_proj_ids:
+        return SeoDashboardSummaryResponse(
+            overall_score=None,
+            score_label=None,
+            total_projects=0,
+            total_crawled_pages=0,
+            total_issues=0,
+            severity_counts=default_severities,
+            crawl_overview={"crawled": 0, "discovered": 0, "skipped": 0, "failed": 0},
+            score_trend=[],
+            top_issues=[],
+            recent_scans=[],
+        )
+
+    # 2. Fetch recent scans for user projects in a single indexed query
+    scans_res = await db.execute(
         select(Scan)
-        .where(Scan.status == ScanStatus.COMPLETED.value)
-        .order_by(desc(Scan.completed_at))
+        .where(Scan.project_id.in_(user_proj_ids))
+        .order_by(desc(Scan.created_at))
         .limit(10)
     )
-    completed_scans = latest_scan_res.scalars().all()
+    all_scans = list(scans_res.scalars().all())
+    recent_scans = [ScanService.map_to_response(s) for s in all_scans[:5]]
+    completed_scans = [s for s in all_scans if s.status == ScanStatus.COMPLETED.value]
 
+    # 3. Overall Score & Score Trend from completed scans
     avg_score = None
     if completed_scans:
         scores = [s.overall_score for s in completed_scans if s.overall_score is not None]
@@ -146,20 +156,6 @@ async def get_seo_dashboard_summary(
 
     score_label = get_score_label(avg_score) if avg_score is not None else None
 
-    # 5. Crawl Overview (Crawled, Discovered, Skipped, Failed)
-    pages_crawled_sum = sum(s.pages_crawled for s in completed_scans) if completed_scans else total_crawled_pages
-    pages_discovered_sum = sum(s.pages_discovered for s in completed_scans) if completed_scans else total_crawled_pages
-    pages_skipped_sum = sum(s.pages_skipped for s in completed_scans) if completed_scans else 0
-    pages_failed_sum = sum(s.pages_failed for s in completed_scans) if completed_scans else 0
-
-    crawl_overview = {
-        "crawled": pages_crawled_sum,
-        "discovered": max(pages_discovered_sum, pages_crawled_sum),
-        "skipped": pages_skipped_sum,
-        "failed": pages_failed_sum,
-    }
-
-    # 6. Score Trend
     score_trend = []
     for s in reversed(completed_scans[:7]):
         if s.completed_at and s.overall_score is not None:
@@ -169,30 +165,54 @@ async def get_seo_dashboard_summary(
                 "target_url": s.target_url,
             })
 
-    # 7. Top Issues (grouped by title)
-    top_issues_res = await db.execute(
-        select(SeoIssue.title, SeoIssue.severity, func.count(SeoIssue.id))
-        .group_by(SeoIssue.title, SeoIssue.severity)
-        .order_by(
-            desc(SeoIssue.severity == IssueSeverity.CRITICAL.value),
-            desc(SeoIssue.severity == IssueSeverity.HIGH.value),
-            desc(func.count(SeoIssue.id)),
-        )
-        .limit(5)
-    )
-    top_issues = []
-    for t_title, t_sev, t_cnt in top_issues_res.all():
-        top_issues.append({
-            "title": t_title,
-            "severity": t_sev,
-            "affected_pages": t_cnt,
-        })
+    # 4. Crawl Overview aggregated directly from scan stats
+    pages_crawled_sum = sum(s.pages_crawled for s in completed_scans)
+    pages_discovered_sum = sum(s.pages_discovered for s in completed_scans)
+    pages_skipped_sum = sum(s.pages_skipped for s in completed_scans)
+    pages_failed_sum = sum(s.pages_failed for s in completed_scans)
 
-    # 8. Recent Scans
-    scans_res = await db.execute(
-        select(Scan).order_by(desc(Scan.created_at)).limit(5)
-    )
-    recent_scans = [ScanService.map_to_response(s) for s in scans_res.scalars().all()]
+    crawl_overview = {
+        "crawled": pages_crawled_sum,
+        "discovered": max(pages_discovered_sum, pages_crawled_sum),
+        "skipped": pages_skipped_sum,
+        "failed": pages_failed_sum,
+    }
+    total_crawled_pages = pages_crawled_sum
+
+    # 5. Issues & Severity counts for latest completed scans (direct FK lookup, no multi-table subquery)
+    completed_scan_ids = [s.id for s in completed_scans[:5]]
+    severity_counts = dict(default_severities)
+    total_issues = 0
+    top_issues = []
+
+    if completed_scan_ids:
+        sev_res = await db.execute(
+            select(SeoIssue.severity, func.count(SeoIssue.id))
+            .where(SeoIssue.scan_id.in_(completed_scan_ids))
+            .group_by(SeoIssue.severity)
+        )
+        for sev_name, cnt in sev_res.all():
+            if sev_name in severity_counts:
+                severity_counts[sev_name] = cnt
+            total_issues += cnt
+
+        top_issues_res = await db.execute(
+            select(SeoIssue.title, SeoIssue.severity, func.count(SeoIssue.id))
+            .where(SeoIssue.scan_id.in_(completed_scan_ids))
+            .group_by(SeoIssue.title, SeoIssue.severity)
+            .order_by(
+                desc(SeoIssue.severity == IssueSeverity.CRITICAL.value),
+                desc(SeoIssue.severity == IssueSeverity.HIGH.value),
+                desc(func.count(SeoIssue.id)),
+            )
+            .limit(5)
+        )
+        for t_title, t_sev, t_cnt in top_issues_res.all():
+            top_issues.append({
+                "title": t_title,
+                "severity": t_sev,
+                "affected_pages": t_cnt,
+            })
 
     return SeoDashboardSummaryResponse(
         overall_score=avg_score,
@@ -214,9 +234,10 @@ async def list_seo_projects(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     search: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ProjectListResponse:
-    projects, total = await ProjectService.get_projects(db, skip=skip, limit=limit, search=search)
+    projects, total = await ProjectService.get_projects(db, skip=skip, limit=limit, search=search, user_id=current_user.id)
     return ProjectListResponse(
         projects=[ProjectService.map_to_response(p) for p in projects],
         total=total,
@@ -226,19 +247,23 @@ async def list_seo_projects(
 @router.post("/projects", response_model=ProjectResponse, status_code=status.HTTP_201_CREATED)
 async def create_seo_project(
     data: ProjectCreate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ProjectResponse:
-    project = await ProjectService.create_project(db, data)
+    project = await ProjectService.create_project(db, data, user_id=current_user.id)
     return ProjectService.map_to_response(project)
 
 
 @router.get("/projects/{project_id}", response_model=ProjectResponse)
 async def get_seo_project(
     project_id: str,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ProjectResponse:
     project = await ProjectService.get_project_by_id(db, project_id)
     if not project:
+        raise HTTPException(status_code=404, detail="SEO Project not found")
+    if project.user_id and project.user_id != current_user.id and not current_user.is_superuser:
         raise HTTPException(status_code=404, detail="SEO Project not found")
     return ProjectService.map_to_response(project)
 
@@ -251,15 +276,21 @@ async def get_seo_keywords(
     project_id: Optional[str] = Query(None),
     scan_id: Optional[str] = Query(None),
     limit: int = Query(50, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoKeywordListResponse:
     target_scan_id = scan_id
+    user_proj_subq = select(Project.id).where(Project.user_id == current_user.id)
 
     if not target_scan_id and project_id:
-        # Find latest completed scan for project
+        # Find latest completed scan for project (verifying project ownership)
         res = await db.execute(
             select(Scan)
-            .where(Scan.project_id == project_id, Scan.status == ScanStatus.COMPLETED.value)
+            .where(
+                Scan.project_id == project_id,
+                Scan.project_id.in_(user_proj_subq),
+                Scan.status == ScanStatus.COMPLETED.value
+            )
             .order_by(desc(Scan.completed_at))
             .limit(1)
         )
@@ -268,10 +299,13 @@ async def get_seo_keywords(
             target_scan_id = latest.id
 
     if not target_scan_id:
-        # Fallback to absolute latest completed scan
+        # Fallback to latest completed scan for this user's projects
         res = await db.execute(
             select(Scan)
-            .where(Scan.status == ScanStatus.COMPLETED.value)
+            .where(
+                Scan.project_id.in_(user_proj_subq),
+                Scan.status == ScanStatus.COMPLETED.value
+            )
             .order_by(desc(Scan.completed_at))
             .limit(1)
         )
@@ -290,13 +324,26 @@ async def get_seo_keywords(
 @router.post("/keywords/extract", response_model=SeoKeywordListResponse, summary="Extract keywords from crawl")
 async def extract_seo_keywords(
     data: KeywordExtractRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoKeywordListResponse:
+    user_proj_subq = select(Project.id).where(Project.user_id == current_user.id)
     target_scan_id = data.scan_id
-    if not target_scan_id and data.project_id:
+
+    if target_scan_id:
+        scan_chk = await db.execute(
+            select(Scan).where(Scan.id == target_scan_id, Scan.project_id.in_(user_proj_subq))
+        )
+        if not scan_chk.scalar_one_or_none():
+            raise HTTPException(status_code=404, detail="Scan not found or access denied")
+    elif data.project_id:
         res = await db.execute(
             select(Scan)
-            .where(Scan.project_id == data.project_id, Scan.status == ScanStatus.COMPLETED.value)
+            .where(
+                Scan.project_id == data.project_id,
+                Scan.project_id.in_(user_proj_subq),
+                Scan.status == ScanStatus.COMPLETED.value
+            )
             .order_by(desc(Scan.completed_at))
             .limit(1)
         )
@@ -324,14 +371,27 @@ async def get_seo_links(
     search: Optional[str] = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=200),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoLinkListResponse:
-    target_scan_id = scan_id
+    user_proj_subq = select(Project.id).where(Project.user_id == current_user.id)
+    target_scan_id = None
+
+    if scan_id:
+        scan_chk = await db.execute(
+            select(Scan).where(Scan.id == scan_id, Scan.project_id.in_(user_proj_subq))
+        )
+        if scan_chk.scalar_one_or_none():
+            target_scan_id = scan_id
 
     if not target_scan_id and project_id:
         res = await db.execute(
             select(Scan)
-            .where(Scan.project_id == project_id, Scan.status == ScanStatus.COMPLETED.value)
+            .where(
+                Scan.project_id == project_id,
+                Scan.project_id.in_(user_proj_subq),
+                Scan.status == ScanStatus.COMPLETED.value
+            )
             .order_by(desc(Scan.completed_at))
             .limit(1)
         )
@@ -340,9 +400,13 @@ async def get_seo_links(
             target_scan_id = latest.id
 
     if not target_scan_id:
+        # Fallback only to latest completed scan for current user
         res = await db.execute(
             select(Scan)
-            .where(Scan.status == ScanStatus.COMPLETED.value)
+            .where(
+                Scan.project_id.in_(user_proj_subq),
+                Scan.status == ScanStatus.COMPLETED.value
+            )
             .order_by(desc(Scan.completed_at))
             .limit(1)
         )
@@ -435,14 +499,27 @@ async def get_seo_links(
 async def get_seo_technical_diagnostics(
     project_id: Optional[str] = Query(None),
     scan_id: Optional[str] = Query(None),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> SeoTechnicalDiagnosticsResponse:
-    target_scan_id = scan_id
+    user_proj_subq = select(Project.id).where(Project.user_id == current_user.id)
+    target_scan_id = None
+
+    if scan_id:
+        scan_chk = await db.execute(
+            select(Scan).where(Scan.id == scan_id, Scan.project_id.in_(user_proj_subq))
+        )
+        if scan_chk.scalar_one_or_none():
+            target_scan_id = scan_id
 
     if not target_scan_id and project_id:
         res = await db.execute(
             select(Scan)
-            .where(Scan.project_id == project_id, Scan.status == ScanStatus.COMPLETED.value)
+            .where(
+                Scan.project_id == project_id,
+                Scan.project_id.in_(user_proj_subq),
+                Scan.status == ScanStatus.COMPLETED.value
+            )
             .order_by(desc(Scan.completed_at))
             .limit(1)
         )
@@ -451,9 +528,13 @@ async def get_seo_technical_diagnostics(
             target_scan_id = latest.id
 
     if not target_scan_id:
+        # Fallback only to latest completed scan for current user
         res = await db.execute(
             select(Scan)
-            .where(Scan.status == ScanStatus.COMPLETED.value)
+            .where(
+                Scan.project_id.in_(user_proj_subq),
+                Scan.status == ScanStatus.COMPLETED.value
+            )
             .order_by(desc(Scan.completed_at))
             .limit(1)
         )

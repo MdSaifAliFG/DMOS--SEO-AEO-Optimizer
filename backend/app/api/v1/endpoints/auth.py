@@ -3,9 +3,10 @@ import logging
 import secrets
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import func, or_, select, update
+from sqlalchemy.orm import noload
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.config import settings
 from app.core.database import get_db
+from app.core.auth import create_access_token, get_current_user
 from app.core.security import (
     get_password_hash,
     is_account_locked,
@@ -55,7 +56,7 @@ async def signup(
         )
 
     # Check if user already exists
-    user_res = await db.execute(select(User).where(User.email == clean_email))
+    user_res = await db.execute(select(User).options(noload('*')).where(User.email == clean_email))
     user = user_res.scalars().first()
 
     if user and user.hashed_password:
@@ -84,7 +85,6 @@ async def signup(
         db.add(user)
 
     await db.commit()
-    await db.refresh(user)
 
     logger.info("New user account registered: %s", clean_email)
 
@@ -97,7 +97,7 @@ async def signup(
             name=user.full_name,
             role="admin" if user.is_superuser else "member",
         ),
-        token=f"sess_{user.id}_{secrets.token_hex(16)}",
+        token=create_access_token(user.id),
     )
 
 
@@ -115,7 +115,7 @@ async def login(
     clean_email = payload.email.strip().lower()
     clean_password = payload.password
 
-    user_res = await db.execute(select(User).where(User.email == clean_email))
+    user_res = await db.execute(select(User).options(noload('*')).where(User.email == clean_email))
     user = user_res.scalars().first()
 
     if not user:
@@ -140,7 +140,6 @@ async def login(
         user.failed_login_attempts = 0
         user.locked_until = None
         await db.commit()
-        await db.refresh(user)
         return AuthResponse(
             success=True,
             message="Authentication successful.",
@@ -150,7 +149,7 @@ async def login(
                 name=user.full_name,
                 role="admin" if user.is_superuser else "member",
             ),
-            token=f"sess_{user.id}_{secrets.token_hex(16)}",
+            token=create_access_token(user.id),
         )
 
     # Verify password hash
@@ -175,11 +174,11 @@ async def login(
                 detail=f"Invalid email or password. {remaining_attempts} attempt{'s' if remaining_attempts != 1 else ''} remaining before a 15-minute account lockout.",
             )
 
-    # Password is correct - reset failed attempts & lockout
-    user.failed_login_attempts = 0
-    user.locked_until = None
-    await db.commit()
-    await db.refresh(user)
+    # Password is correct - reset failed attempts & lockout only if needed
+    if user.failed_login_attempts > 0 or user.locked_until is not None:
+        user.failed_login_attempts = 0
+        user.locked_until = None
+        await db.commit()
 
     logger.info("User logged in successfully: %s", clean_email)
 
@@ -192,7 +191,7 @@ async def login(
             name=user.full_name,
             role="admin" if user.is_superuser else "member",
         ),
-        token=f"sess_{user.id}_{secrets.token_hex(16)}",
+        token=create_access_token(user.id),
     )
 
 
@@ -203,65 +202,13 @@ async def login(
     description="Returns profile information for the verified active user session.",
 )
 async def get_current_user_profile(
-    request: Request,
-    db: AsyncSession = Depends(get_db),
-):
-    # 1. Check explicit user identity headers
-    x_user_email = request.headers.get("X-User-Email", "").strip().lower()
-    if x_user_email:
-        user_res = await db.execute(select(User).where(func.lower(User.email) == x_user_email))
-        u = user_res.scalars().first()
-        if u and u.is_active:
-            return UserOut(
-                id=u.id,
-                email=u.email,
-                name=u.full_name or u.email.split("@")[0].capitalize(),
-                role="admin" if u.is_superuser else "member",
-            )
-
-    x_user_id = request.headers.get("X-User-Id", "").strip()
-    if x_user_id:
-        user_res = await db.execute(select(User).where(User.id == x_user_id))
-        u = user_res.scalars().first()
-        if u and u.is_active:
-            return UserOut(
-                id=u.id,
-                email=u.email,
-                name=u.full_name or u.email.split("@")[0].capitalize(),
-                role="admin" if u.is_superuser else "member",
-            )
-
-    # 2. Check Authorization header
-    auth_header = request.headers.get("Authorization", "")
-    if auth_header.startswith("Bearer "):
-        token = auth_header.replace("Bearer ", "").strip()
-        target_id = token
-        if token.startswith("sess_"):
-            parts = token.split("_")
-            if len(parts) >= 2:
-                target_id = parts[1]
-
-        user_res = await db.execute(
-            select(User).where(
-                or_(
-                    User.id == token,
-                    User.id == target_id,
-                    func.lower(User.email) == token.lower(),
-                )
-            )
-        )
-        u = user_res.scalars().first()
-        if u and u.is_active:
-            return UserOut(
-                id=u.id,
-                email=u.email,
-                name=u.full_name or u.email.split("@")[0].capitalize(),
-                role="admin" if u.is_superuser else "member",
-            )
-
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Not authenticated. Please sign in.",
+    current_user: User = Depends(get_current_user),
+) -> UserOut:
+    return UserOut(
+        id=current_user.id,
+        email=current_user.email,
+        name=current_user.full_name or current_user.email.split("@")[0].capitalize(),
+        role="admin" if current_user.is_superuser else "member",
     )
 
 

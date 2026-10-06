@@ -3,12 +3,13 @@ from datetime import datetime, timezone
 import logging
 import time
 from typing import Any, Dict, List, Optional
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 from app.core.config import settings
 from app.core.database import AsyncSessionLocal
 from app.models.scan import Scan, ScanStatus
 from app.models.project import Project
+from app.models.seo_page import SeoPage
 from app.services.crawler.crawler import WebsiteCrawler
 from app.services.seo.analyzer import SeoAnalyzer
 from app.services.seo.scoring import SeoScoringEngine
@@ -221,6 +222,29 @@ class ScanRunner:
                 if not ok:
                     return
 
+                # Real-time crawl started dispatch
+                try:
+                    from app.models.project import Project
+                    from app.services.notification_service import NotificationService
+
+                    proj_uid_res = await session.execute(select(Project.user_id).where(Project.id == scan.project_id))
+                    p_user_id = proj_uid_res.scalar_one_or_none()
+                    if p_user_id:
+                        await NotificationService.create_notification(
+                            db=session,
+                            user_id=p_user_id,
+                            title="SEO Crawl in Progress",
+                            message=f"Crawling started on {scan.target_url}. Discovering sitemaps, indexing pages, and checking technical health.",
+                            type="seo",
+                            severity="info",
+                            link=f"/seo/scans?scanId={scan_id}",
+                            link_text="Live Crawl Progress",
+                            notification_id=f"seo_scan_run_{scan_id}",
+                            broadcast=True,
+                        )
+                except Exception as bcast_start_err:
+                    logger.warning("Failed to broadcast scan start notification: %s", bcast_start_err)
+
                 crawl_limit = crawl_settings.get("crawl_limit", 100)
                 respect_robots = crawl_settings.get("respect_robots", True)
                 follow_external = crawl_settings.get("follow_external_links", False)
@@ -270,12 +294,25 @@ class ScanRunner:
                 if not ok:
                     return
 
+                # Query freshly committed pages with their images and links preloaded via selectinload
+                # to prevent MissingGreenlet / lazy load failures during synchronous rule evaluation.
+                pages_res = await session.execute(
+                    select(SeoPage)
+                    .where(SeoPage.scan_id == scan_id)
+                    .options(
+                        selectinload(SeoPage.images),
+                        selectinload(SeoPage.links),
+                    )
+                    .order_by(SeoPage.created_at)
+                )
+                analyzable_pages = list(pages_res.scalars().all())
+
                 # Execute SEO rules on crawled pages
                 issues = await SeoAnalyzer.analyze_scan(
                     db=session,
                     scan_id=scan_id,
                     project_domain=project_domain,
-                    pages=crawl_result.pages,
+                    pages=analyzable_pages if analyzable_pages else crawl_result.pages,
                     robots_result=crawl_result.robots_result,
                     sitemap_result=crawl_result.sitemap_result,
                 )
@@ -328,6 +365,7 @@ class ScanRunner:
                             "sitemaps": crawl_result.sitemap_result.to_dict(),
                             "duration_seconds": crawl_result.crawl_duration,
                         },
+                        "error_message": None,
                     },
                 )
 
@@ -345,6 +383,39 @@ class ScanRunner:
                 except Exception as rec_err:
                     logger.warning("Failed to auto-generate recommendations for scan %s: %s", scan_id, rec_err)
 
+                # Real-time notification dispatch
+                try:
+                    from app.models.project import Project
+                    from app.models.notification import UserNotification
+                    from app.services.notification_service import NotificationService
+
+                    # Mark in-progress notification as dismissed
+                    await session.execute(
+                        update(UserNotification)
+                        .where(UserNotification.id == f"seo_scan_run_{scan_id}")
+                        .values(dismissed=True)
+                    )
+
+                    proj_uid_res = await session.execute(select(Project.user_id).where(Project.id == scan.project_id))
+                    p_user_id = proj_uid_res.scalar_one_or_none()
+                    if p_user_id:
+                        issue_count = len(issues)
+                        score = scores_data.get("overall_score", 0)
+                        await NotificationService.create_notification(
+                            db=session,
+                            user_id=p_user_id,
+                            title="SEO Technical Audit Completed",
+                            message=f"Crawled {len(crawl_result.pages)} pages on {scan.target_url}. Discovered {issue_count} technical issues (Health Score: {score}/100).",
+                            type="seo",
+                            severity="warning" if (issue_count > 0 or score < 70) else "success",
+                            link=f"/seo/scans?scanId={scan_id}",
+                            link_text="View Audit Report",
+                            notification_id=f"seo_scan_{scan_id}",
+                            broadcast=True,
+                        )
+                except Exception as bcast_err:
+                    logger.warning("Failed to broadcast scan completion notification: %s", bcast_err)
+
             except Exception as e:
                 logger.exception("Uncaught exception in scan runner %s: %s", scan_id, e)
                 try:
@@ -356,5 +427,35 @@ class ScanRunner:
                         level="ERROR",
                         extra_fields={"error_message": f"Scan failed during processing: {str(e)}"},
                     )
+
+                    # Real-time failure notification dispatch
+                    try:
+                        from app.models.project import Project
+                        from app.models.notification import UserNotification
+                        from app.services.notification_service import NotificationService
+
+                        await session.execute(
+                            update(UserNotification)
+                            .where(UserNotification.id == f"seo_scan_run_{scan_id}")
+                            .values(dismissed=True)
+                        )
+
+                        proj_uid_res = await session.execute(select(Project.user_id).where(Project.id == scan.project_id))
+                        p_user_id = proj_uid_res.scalar_one_or_none()
+                        if p_user_id:
+                            await NotificationService.create_notification(
+                                db=session,
+                                user_id=p_user_id,
+                                title="SEO Crawl Incomplete",
+                                message=f"Crawl for {scan.target_url} encountered an error: {str(e)}.",
+                                type="seo",
+                                severity="error",
+                                link="/seo/scans",
+                                link_text="Inspect Error",
+                                notification_id=f"seo_scan_fail_{scan_id}",
+                                broadcast=True,
+                            )
+                    except Exception as bcast_fail_err:
+                        logger.warning("Failed to broadcast scan failure notification: %s", bcast_fail_err)
                 except Exception as update_err:
                     logger.error("Failed to persist scan failure state for scan %s: %s", scan_id, update_err)

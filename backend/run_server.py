@@ -2,11 +2,11 @@ import sys
 import asyncio
 
 if sys.platform == "win32":
-    try:
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    except Exception:
-        pass
+    import uvicorn.loops.asyncio
+    uvicorn.loops.asyncio.asyncio_loop_factory = lambda use_subprocess=False: asyncio.SelectorEventLoop
+
+import uvicorn
+from app.main import app
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run(app, host="127.0.0.1", port=8000, loop="asyncio")

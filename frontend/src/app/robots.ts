@@ -68,6 +68,8 @@ export default function robots(): MetadataRoute.Robots {
           "/privacy-policy",
           "/terms",
           "/refund-policy",
+          "/llms.txt",
+          "/llms-full.txt",
         ],
         disallow: disallowedPrivatePaths,
       },

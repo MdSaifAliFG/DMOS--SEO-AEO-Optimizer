@@ -18,8 +18,10 @@ import {
   ContentRecommendationItem,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/useToast";
 
 export default function ContentOptimizationPage() {
+  const { error } = useToast();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [pages, setPages] = useState<SEOPage[]>([]);
@@ -79,7 +81,7 @@ export default function ContentOptimizationPage() {
       });
       setAnalysis(res);
     } catch (err: any) {
-      alert(`Analysis failed: ${err.message}`);
+      error("Analysis Failed", err.message);
     } finally {
       setIsAnalyzing(false);
     }

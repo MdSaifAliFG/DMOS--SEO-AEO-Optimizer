@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import {
   Globe,
   Plus,
@@ -26,32 +27,19 @@ import { api } from "@/lib/api-client";
 import { formatTimeAgo } from "@/lib/utils";
 
 export default function DashboardPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [totalProjects, setTotalProjects] = useState(0);
-  const [health, setHealth] = useState<HealthResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: projectsData, isLoading: isProjectsLoading } = useQuery({
+    queryKey: ["projects", 5],
+    queryFn: () => api.getProjects({ limit: 5 }),
+  });
+  const projects = projectsData?.projects || [];
+  const totalProjects = projectsData?.total || 0;
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const [projRes, healthRes] = await Promise.allSettled([
-          api.getProjects({ limit: 5 }),
-          api.getHealth(),
-        ]);
+  const { data: health, isLoading: isHealthLoading } = useQuery({
+    queryKey: ["health"],
+    queryFn: () => api.getHealth(),
+  });
 
-        if (projRes.status === "fulfilled") {
-          setProjects(projRes.value.projects);
-          setTotalProjects(projRes.value.total);
-        }
-        if (healthRes.status === "fulfilled") {
-          setHealth(healthRes.value);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadData();
-  }, []);
+  const isLoading = (isProjectsLoading && !projectsData) || (isHealthLoading && !health);
 
   const totalScans = projects.reduce((acc, p) => acc + (p.total_scans || 0), 0);
 

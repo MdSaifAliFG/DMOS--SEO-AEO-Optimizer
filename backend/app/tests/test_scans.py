@@ -4,11 +4,12 @@ from httpx import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_create_and_query_scan(client: AsyncClient):
+async def test_create_and_query_scan(client: AsyncClient, auth_headers: dict):
     # 1. Create project
     proj_res = await client.post(
         "/api/v1/projects",
         json={"name": "Vercel Web", "domain": "vercel.com"},
+        headers=auth_headers,
     )
     assert proj_res.status_code == 201
     project_id = proj_res.json()["id"]
@@ -17,6 +18,7 @@ async def test_create_and_query_scan(client: AsyncClient):
     scan_res = await client.post(
         f"/api/v1/projects/{project_id}/scans",
         json={"scan_type": "full_audit"},
+        headers=auth_headers,
     )
     assert scan_res.status_code == 201
     scan_data = scan_res.json()
@@ -33,7 +35,7 @@ async def test_create_and_query_scan(client: AsyncClient):
     assert "current_step" in details
 
     # 4. List scans for project
-    list_res = await client.get(f"/api/v1/projects/{project_id}/scans")
+    list_res = await client.get(f"/api/v1/projects/{project_id}/scans", headers=auth_headers)
     assert list_res.status_code == 200
     list_data = list_res.json()
     assert list_data["total"] >= 1
@@ -41,11 +43,12 @@ async def test_create_and_query_scan(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_cancel_scan(client: AsyncClient):
+async def test_cancel_scan(client: AsyncClient, auth_headers: dict):
     # 1. Create project
     proj_res = await client.post(
         "/api/v1/projects",
         json={"name": "Cancel Test Corp", "domain": "canceltest.dev"},
+        headers=auth_headers,
     )
     project_id = proj_res.json()["id"]
 
@@ -53,11 +56,12 @@ async def test_cancel_scan(client: AsyncClient):
     scan_res = await client.post(
         f"/api/v1/projects/{project_id}/scans",
         json={"scan_type": "full_audit"},
+        headers=auth_headers,
     )
     scan_id = scan_res.json()["id"]
 
     # 3. Cancel scan
-    cancel_res = await client.post(f"/api/v1/scans/{scan_id}/cancel")
+    cancel_res = await client.post(f"/api/v1/scans/{scan_id}/cancel", headers=auth_headers)
     assert cancel_res.status_code == 200
     cancel_data = cancel_res.json()
     assert cancel_data["status"] == "cancelled"

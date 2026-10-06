@@ -89,23 +89,13 @@ connect_args = {}
 if "sqlite" in database_url:
     connect_args["check_same_thread"] = False
 
-try:
-    engine = create_async_engine(
-        database_url,
-        echo=settings.DEBUG,
-        future=True,
-        pool_pre_ping=True,
-        connect_args=connect_args,
-    )
-except Exception as e:
-    logger.warning("Failed to initialize database engine for %s: %s. Falling back to SQLite.", database_url, e)
-    fallback_url = "sqlite+aiosqlite:///./dmos_dev.db"
-    engine = create_async_engine(
-        fallback_url,
-        echo=settings.DEBUG,
-        future=True,
-        connect_args={"check_same_thread": False},
-    )
+engine = create_async_engine(
+    database_url,
+    echo=(settings.DEBUG and settings.ENVIRONMENT == "development"),
+    future=True,
+    pool_pre_ping=True,
+    connect_args=connect_args,
+)
 
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,
@@ -134,7 +124,19 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_db() -> None:
-    """Initialize database tables and run lightweight column schema migrations."""
+    """Initialize database tables and run lightweight column schema migrations.
+
+    Deployment path uses Alembic (``alembic upgrade head``). Startup DDL runs
+    only for local SQLite development, and is skipped entirely when
+    ``SKIP_STARTUP_DDL`` is set or the environment is staging/production.
+    """
+    if settings.SKIP_STARTUP_DDL:
+        logger.info("Skipping startup DDL (SKIP_STARTUP_DDL is set).")
+        return
+
+    # Verify connection directly
+    async with engine.connect() as test_conn:
+        await test_conn.execute(text("SELECT 1"))
     async with engine.begin() as conn:
         # Import all models to ensure they are registered with Base.metadata
         import app.models  # noqa: F401
@@ -221,6 +223,7 @@ async def init_db() -> None:
         try:
             from sqlalchemy import select
             from app.models.project import Project
+            from app.models.user import User
             from app.services.crawler.url_normalizer import get_root_domain
 
             proj_res = await session.execute(select(Project))
@@ -230,6 +233,7 @@ async def init_db() -> None:
                     cleaned = get_root_domain(p.domain)
                     if cleaned and cleaned != p.domain:
                         p.domain = cleaned
+
             await session.commit()
         except Exception:
             pass
